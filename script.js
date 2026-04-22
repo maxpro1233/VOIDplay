@@ -1,10 +1,6 @@
 /* ═══════════════════════════════════════════════════
-   VØIDplay — script.js  v3
-   Session key : vp_active  (username string)
-   User data   : vp_users   (JSON object map)
+   VØIDplay — script.js  v4
    ═══════════════════════════════════════════════════ */
-
-/* ── LANG ── */
 const LANG={
   uk:{nav_home:'🏠 Головна',nav_bets:'🎯 Ставки',nav_tasks:'📋 Завдання',nav_mini:'🕹 Міні-ігри',nav_cases:'🎁 Кейси',nav_wheel:'🎡 Колесо',pd_profile:'👤 Мій профіль',pd_logout:'🚪 Вийти',arena:'Gaming Arena',tab_reg:'Реєстрація',tab_login:'Увійти',lbl_first:"Ім'я",lbl_last:'Прізвище',lbl_login:'Логін',lbl_birth:'Рік народження',lbl_pass:'Пароль',ph_first:'Іван',ph_last:'Петренко',btn_reg:'Зареєструватися →',btn_login:'Увійти →',err_year:'Введіть правильний рік',err_age:'❌ Реєстрація з 13 років',err_user:'Логін мінімум 3 символи',err_pass:'Пароль мінімум 4 символи',err_taken:'Логін вже зайнятий',err_notfound:'Користувача не знайдено',err_wrong:'Невірний пароль',ok_reg:'✅ Акаунт створено!',ok_login:'✅ Вхід успішний!'},
   ru:{nav_home:'🏠 Главная',nav_bets:'🎯 Ставки',nav_tasks:'📋 Задания',nav_mini:'🕹 Мини-игры',nav_cases:'🎁 Кейсы',nav_wheel:'🎡 Колесо',pd_profile:'👤 Мой профиль',pd_logout:'🚪 Выйти',arena:'Gaming Arena',tab_reg:'Регистрация',tab_login:'Войти',lbl_first:'Имя',lbl_last:'Фамилия',lbl_login:'Логин',lbl_birth:'Год рождения',lbl_pass:'Пароль',ph_first:'Иван',ph_last:'Петренко',btn_reg:'Зарегистрироваться →',btn_login:'Войти →',err_year:'Введите правильный год',err_age:'❌ Регистрация с 13 лет',err_user:'Логин минимум 3 символа',err_pass:'Пароль минимум 4 символа',err_taken:'Логин уже занят',err_notfound:'Пользователь не найден',err_wrong:'Неверный пароль',ok_reg:'✅ Аккаунт создан!',ok_login:'✅ Вход выполнен!'}
@@ -36,6 +32,18 @@ function setBalance(val){
   document.querySelectorAll('.js-coins').forEach(el=>el.textContent=val);
 }
 
+/* ── ROLES ── */
+const MOD_CODES=['XM7AS62','Q9KPLX8'];
+function getRole(){const m=getMe();return m?(m.role||'user'):'user';}
+function isMod(){return getRole()==='moderator';}
+function tryActivateCode(code){
+  if(MOD_CODES.includes((code||'').trim().toUpperCase())){
+    patchMe({role:'moderator'});
+    return {ok:true,msg:'✅ Роль MODERATOR активована!'};
+  }
+  return {ok:false,msg:'❌ Невірний код'};
+}
+
 /* ── AVATAR ── */
 function getAvatar(username){return localStorage.getItem('vp_av_'+username)||null;}
 function saveAvatar(username,dataUrl){try{localStorage.setItem('vp_av_'+username,dataUrl);}catch(e){}}
@@ -53,14 +61,45 @@ function requireAuth(){if(!getActiveUser())window.location.replace('register2.ht
 function redirectIfLoggedIn(){if(getActiveUser())window.location.replace('index.html');}
 function doLogout(){localStorage.removeItem('vp_active');window.location.href='register2.html';}
 
+/* ── HOURLY ONLINE REWARD ── */
+const HOURLY_AMOUNT=50;
+function checkHourlyReward(){
+  const me=getMe();if(!me)return null;
+  const key='vp_hourly_'+me.user;
+  const now=Date.now();
+  const last=parseInt(localStorage.getItem(key)||'0',10);
+  if(!last){localStorage.setItem(key,String(now));return null;}
+  const hours=Math.floor((now-last)/3600000);
+  if(hours<1)return null;
+  const earned=hours*HOURLY_AMOUNT;
+  setBalance(getBalance()+earned);
+  localStorage.setItem(key,String(last+hours*3600000));
+  return earned;
+}
+function getHourlyMs(){
+  const me=getMe();if(!me)return 0;
+  const last=parseInt(localStorage.getItem('vp_hourly_'+me.user)||'0',10);
+  if(!last)return 0;
+  return Math.max(0,last+3600000-Date.now());
+}
+
 /* ── NAVBAR ── */
 function buildNavbar(activePage){
   const el=document.getElementById('navbar');if(!el)return;
   const me=getMe();
   const bal=me?(me.balance??500):0;
   const av=me?getAvatar(me.user):null;
-  const links=[{key:'nav_home',href:'index.html',page:'home'},{key:'nav_bets',href:'#',page:'bets'},{key:'nav_tasks',href:'#',page:'tasks'},{key:'nav_mini',href:'#',page:'mini'},{key:'nav_cases',href:'cases.html',page:'cases'},{key:'nav_wheel',href:'wheel.html',page:'wheel'}];
+  const role=me?me.role||'user':'user';
+  const links=[
+    {key:'nav_home',href:'index.html',page:'home'},
+    {key:'nav_bets',href:'bets.html',page:'bets'},
+    {key:'nav_tasks',href:'#',page:'tasks'},
+    {key:'nav_mini',href:'#',page:'mini'},
+    {key:'nav_cases',href:'cases.html',page:'cases'},
+    {key:'nav_wheel',href:'wheel.html',page:'wheel'},
+  ];
   const avatarHtml=av?`<img src="${av}" style="width:32px;height:32px;border-radius:8px;object-fit:cover;">`:`<div class="profile-avatar">${me?(((me.first||'?')[0])+((me.last||'')[0]||'')).toUpperCase():'?'}</div>`;
+  const modBadgeNav=role==='moderator'?`<span class="mod-badge-sm">MOD</span>`:'';
   el.innerHTML=`
     <a href="index.html" class="nav-logo"><span class="nav-logo-title">VØIDᴘʟᴀʏ</span><span class="nav-logo-sub" data-i="arena">Gaming Arena</span></a>
     <nav class="nav-links">${links.map(l=>`<a href="${l.href}" class="nav-link${activePage===l.page?' active':''}"><span class="nav-link-text" data-i="${l.key}">${t(l.key)}</span></a>`).join('')}</nav>
@@ -73,17 +112,19 @@ function buildNavbar(activePage){
         <button class="profile-toggle" onclick="toggleProfileDrop()">
           ${avatarHtml}
           <span class="profile-name">${me.nickname||(me.first||me.user)}</span>
+          ${modBadgeNav}
           <svg class="profile-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
         </button>
         <div class="profile-dropdown" id="profile-dropdown">
           <div class="pd-head">
             <div class="pd-fullname">${me.nickname||((me.first||'')+(me.last?' '+me.last:''))}</div>
-            <div class="pd-username">@${me.user}</div>
+            <div class="pd-username">@${me.user}${role==='moderator'?' <span class="mod-badge-sm">MOD</span>':''}</div>
             <div class="pd-coins">🪙 <span class="js-coins">${bal}</span> монет</div>
           </div>
           <button class="pd-item" onclick="location.href='profile.html'">${t('pd_profile')}</button>
           <button class="pd-item" onclick="location.href='cases.html'">🎁 Кейси</button>
           <button class="pd-item" onclick="location.href='wheel.html'">🎡 Колесо</button>
+          <button class="pd-item" onclick="location.href='bets.html'">🎯 Ставки</button>
           <div class="pd-sep"></div>
           <button class="pd-item danger" onclick="doLogout()">${t('pd_logout')}</button>
         </div>
@@ -147,15 +188,16 @@ function coinRain(count){
 }
 
 /* ── SOUND FX ── */
-function playClick(){try{const a=new Audio();a.volume=0.4;/* silent fallback */}catch(e){}}
 function playSpin(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const buf=ctx.createBuffer(1,ctx.sampleRate*0.15,ctx.sampleRate);
-    const d=buf.getChannelData(0);
-    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(ctx.sampleRate*0.05));
-    const src=ctx.createBufferSource();src.buffer=buf;
-    const g=ctx.createGain();g.gain.value=0.3;
-    src.connect(g);g.connect(ctx.destination);src.start();
+    for(let i=0;i<30;i++){
+      const osc=ctx.createOscillator();const g=ctx.createGain();
+      osc.frequency.value=300+Math.random()*400;
+      const tt=ctx.currentTime+i*0.18;
+      g.gain.setValueAtTime(0.07,tt);g.gain.exponentialRampToValueAtTime(0.001,tt+0.14);
+      osc.connect(g);g.connect(ctx.destination);
+      osc.start(tt);osc.stop(tt+0.16);
+    }
   }catch(e){}
 }

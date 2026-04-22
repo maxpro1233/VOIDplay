@@ -133,6 +133,9 @@ input{font-family:var(--font);}
 .stat-badge-key{font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
 .stat-badge-val{font-size:17px;font-weight:900;}
 
+/* ── MOD BADGE ── */
+.mod-badge-sm{display:inline-block;background:rgba(255,50,50,.18);border:1px solid rgba(255,80,80,.35);color:#ff6060;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:900;letter-spacing:1px;vertical-align:middle;}
+
 /* ── MOBILE ── */
 @media(max-width:768px){
   .navbar{padding:0 14px;}
