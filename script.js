@@ -2,8 +2,8 @@
    VØIDplay — script.js  v4
    ═══════════════════════════════════════════════════ */
 const LANG={
-  uk:{nav_home:'🏠 Головна',nav_bets:'🎯 Ставки',nav_tasks:'📋 Завдання',nav_mini:'🕹 Міні-ігри',nav_cases:'🎁 Кейси',nav_wheel:'🎡 Колесо',pd_profile:'👤 Мій профіль',pd_logout:'🚪 Вийти',arena:'Gaming Arena',tab_reg:'Реєстрація',tab_login:'Увійти',lbl_first:"Ім'я",lbl_last:'Прізвище',lbl_login:'Логін',lbl_birth:'Рік народження',lbl_pass:'Пароль',ph_first:'Іван',ph_last:'Петренко',btn_reg:'Зареєструватися →',btn_login:'Увійти →',err_year:'Введіть правильний рік',err_age:'❌ Реєстрація з 13 років',err_user:'Логін мінімум 3 символи',err_pass:'Пароль мінімум 4 символи',err_taken:'Логін вже зайнятий',err_notfound:'Користувача не знайдено',err_wrong:'Невірний пароль',ok_reg:'✅ Акаунт створено!',ok_login:'✅ Вхід успішний!'},
-  ru:{nav_home:'🏠 Главная',nav_bets:'🎯 Ставки',nav_tasks:'📋 Задания',nav_mini:'🕹 Мини-игры',nav_cases:'🎁 Кейсы',nav_wheel:'🎡 Колесо',pd_profile:'👤 Мой профиль',pd_logout:'🚪 Выйти',arena:'Gaming Arena',tab_reg:'Регистрация',tab_login:'Войти',lbl_first:'Имя',lbl_last:'Фамилия',lbl_login:'Логин',lbl_birth:'Год рождения',lbl_pass:'Пароль',ph_first:'Иван',ph_last:'Петренко',btn_reg:'Зарегистрироваться →',btn_login:'Войти →',err_year:'Введите правильный год',err_age:'❌ Регистрация с 13 лет',err_user:'Логин минимум 3 символа',err_pass:'Пароль минимум 4 символа',err_taken:'Логин уже занят',err_notfound:'Пользователь не найден',err_wrong:'Неверный пароль',ok_reg:'✅ Аккаунт создан!',ok_login:'✅ Вход выполнен!'}
+  uk:{nav_home:'🏠 Головна',nav_bets:'🎯 Ставки',nav_crash:'💥 Crash',nav_cases:'🎁 Кейси',nav_wheel:'🎡 Колесо',pd_profile:'👤 Мій профіль',pd_logout:'🚪 Вийти',arena:'Gaming Arena',tab_reg:'Реєстрація',tab_login:'Увійти',lbl_first:"Ім'я",lbl_last:'Прізвище',lbl_login:'Логін',lbl_birth:'Рік народження',lbl_pass:'Пароль',ph_first:'Іван',ph_last:'Петренко',btn_reg:'Зареєструватися →',btn_login:'Увійти →',err_year:'Введіть правильний рік',err_age:'❌ Реєстрація з 13 років',err_user:'Логін мінімум 3 символи',err_pass:'Пароль мінімум 4 символи',err_taken:'Логін вже зайнятий',err_notfound:'Користувача не знайдено',err_wrong:'Невірний пароль',ok_reg:'✅ Акаунт створено!',ok_login:'✅ Вхід успішний!'},
+  ru:{nav_home:'🏠 Главная',nav_bets:'🎯 Ставки',nav_crash:'💥 Crash',nav_cases:'🎁 Кейсы',nav_wheel:'🎡 Колесо',pd_profile:'👤 Мой профиль',pd_logout:'🚪 Выйти',arena:'Gaming Arena',tab_reg:'Регистрация',tab_login:'Войти',lbl_first:'Имя',lbl_last:'Фамилия',lbl_login:'Логин',lbl_birth:'Год рождения',lbl_pass:'Пароль',ph_first:'Иван',ph_last:'Петренко',btn_reg:'Зарегистрироваться →',btn_login:'Войти →',err_year:'Введите правильный год',err_age:'❌ Регистрация с 13 лет',err_user:'Логин минимум 3 символа',err_pass:'Пароль минимум 4 символа',err_taken:'Логин уже занят',err_notfound:'Пользователь не найден',err_wrong:'Неверный пароль',ok_reg:'✅ Аккаунт создан!',ok_login:'✅ Вход выполнен!'}
 };
 let currentLang=localStorage.getItem('vp_lang')||'uk';
 function t(k){return(LANG[currentLang]||LANG.uk)[k]||k;}
@@ -93,8 +93,7 @@ function buildNavbar(activePage){
   const links=[
     {key:'nav_home',href:'index.html',page:'home'},
     {key:'nav_bets',href:'bets.html',page:'bets'},
-    {key:'nav_tasks',href:'#',page:'tasks'},
-    {key:'nav_mini',href:'#',page:'mini'},
+    {key:'nav_crash',href:'crash.html',page:'crash'},
     {key:'nav_cases',href:'cases.html',page:'cases'},
     {key:'nav_wheel',href:'wheel.html',page:'wheel'},
   ];
@@ -124,6 +123,7 @@ function buildNavbar(activePage){
           <button class="pd-item" onclick="location.href='profile.html'">${t('pd_profile')}</button>
           <button class="pd-item" onclick="location.href='cases.html'">🎁 Кейси</button>
           <button class="pd-item" onclick="location.href='wheel.html'">🎡 Колесо</button>
+          <button class="pd-item" onclick="location.href='crash.html'">💥 Crash</button>
           <button class="pd-item" onclick="location.href='bets.html'">🎯 Ставки</button>
           <div class="pd-sep"></div>
           <button class="pd-item danger" onclick="doLogout()">${t('pd_logout')}</button>
