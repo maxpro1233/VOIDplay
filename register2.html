@@ -1,359 +1,129 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Реєстрація — VØIDplay</title>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VØIDplay — Реєстрація</title>
+<link rel="stylesheet" href="style.css">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'Exo 2', sans-serif;
-  background: #0a0a0b;
-  color: #f0f0f0;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background-image: radial-gradient(ellipse at 30% 50%, rgba(255,107,0,0.1) 0%, transparent 60%);
-}
-
-.lang-bar {
-  position: fixed;
-  top: 14px; right: 16px;
-  display: flex; gap: 6px; z-index: 100;
-}
-.lang-btn {
-  background: #18181d;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px;
-  padding: 6px 13px;
-  color: #606070;
-  font-family: 'Exo 2', sans-serif;
-  font-size: 13px; font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.5px;
-}
-.lang-btn:hover { border-color: rgba(255,107,0,0.4); color: #ff8c00; }
-.lang-btn.active {
-  background: rgba(255,107,0,0.15);
-  border-color: #ff6b00;
-  color: #ff8c00;
-}
-
-.box {
-  background: #111114;
-  border: 1px solid rgba(255,107,0,0.2);
-  border-radius: 20px;
-  padding: 36px 32px;
-  width: 100%; max-width: 420px;
-  box-shadow: 0 0 60px rgba(255,107,0,0.08);
-}
-
-.logo { text-align: center; margin-bottom: 28px; }
-.logo-title {
-  font-size: 32px; font-weight: 900; letter-spacing: 4px;
-  background: linear-gradient(135deg, #ff6b00, #ff8c00);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: block;
-}
-.logo-sub {
-  font-size: 11px; color: #505060;
-  letter-spacing: 6px; text-transform: uppercase; margin-top: 2px;
-  display: block;
-}
-
-.tabs {
-  display: flex; background: #18181d;
-  border-radius: 10px; padding: 4px; margin-bottom: 24px; gap: 4px;
-}
-.tab {
-  flex: 1; padding: 10px; border: none; background: none;
-  color: #606070; font-family: 'Exo 2', sans-serif;
-  font-size: 14px; font-weight: 700; border-radius: 8px;
-  cursor: pointer; transition: all 0.2s;
-}
-.tab.active { background: #ff6b00; color: #fff; }
-
-.form { display: none; flex-direction: column; gap: 14px; }
-.form.show { display: flex; }
-
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.field label {
-  font-size: 11px; font-weight: 700; color: #606070;
-  text-transform: uppercase; letter-spacing: 1px;
-}
-.field input {
-  width: 100%; min-width: 0;
-  background: #18181d;
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 10px; padding: 13px 16px;
-  color: #f0f0f0; font-family: 'Exo 2', sans-serif;
-  font-size: 15px; outline: none;
-  transition: border 0.2s, box-shadow 0.2s;
-}
-.field input:focus {
-  border-color: #ff6b00;
-  box-shadow: 0 0 0 3px rgba(255,107,0,0.12);
-}
-.field input::placeholder { color: #404050; }
-.field input:disabled { opacity: 0.5; }
-
-.error {
-  background: rgba(255,58,58,0.1);
-  border: 1px solid rgba(255,58,58,0.25);
-  border-radius: 8px; padding: 10px 14px;
-  font-size: 13px; color: #ff5555;
-  display: none; text-align: center;
-}
-.error.show { display: block; }
-
-.success-box {
-  background: rgba(0,200,100,0.1);
-  border: 1px solid rgba(0,200,100,0.25);
-  border-radius: 8px; padding: 10px 14px;
-  font-size: 13px; color: #00e676;
-  display: none; text-align: center;
-}
-.success-box.show { display: block; }
-
-.btn {
-  background: linear-gradient(135deg, #ff6b00, #ff8c00);
-  border: none; border-radius: 10px; padding: 14px;
-  color: #fff; font-family: 'Exo 2', sans-serif;
-  font-size: 15px; font-weight: 700; cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
-  margin-top: 4px; letter-spacing: 0.5px; width: 100%;
-}
-.btn:hover { opacity: 0.9; }
-.btn:active { transform: scale(0.98); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-@media (max-width: 480px) {
-  .box { padding: 28px 18px; }
-  .row { grid-template-columns: 1fr; }
-  .lang-btn { padding: 5px 10px; font-size: 12px; }
-}
+body{display:flex;align-items:center;justify-content:center;padding:24px;
+  background-image:radial-gradient(ellipse 60% 55% at 25% 55%,rgba(255,107,0,.09) 0%,transparent 65%),
+    radial-gradient(ellipse 40% 40% at 75% 30%,rgba(255,107,0,.05) 0%,transparent 60%);}
+body::before{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(255,107,0,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,107,0,.025) 1px,transparent 1px);
+  background-size:56px 56px;pointer-events:none;z-index:0;}
+.box{background:#0f0f12;border:1px solid rgba(255,107,0,.22);border-radius:22px;
+  padding:38px 34px;width:100%;max-width:430px;
+  box-shadow:0 0 80px rgba(255,107,0,.07),0 40px 80px rgba(0,0,0,.5);
+  position:relative;z-index:1;animation:fadeUp .5s ease both;}
+.float-lang{position:fixed;top:16px;right:18px;display:flex;gap:6px;z-index:100;}
+.logo-box{text-align:center;margin-bottom:30px;}
+.logo-box .lt{font-size:30px;font-weight:900;letter-spacing:4px;
+  background:linear-gradient(135deg,#ff6b00,#ff9500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;}
+.logo-box .ls{font-size:10px;color:#404050;letter-spacing:5px;text-transform:uppercase;margin-top:3px;display:block;}
+.tabs{display:flex;background:var(--surface2);border-radius:11px;padding:4px;margin-bottom:26px;gap:4px;}
+.tab-btn{flex:1;padding:10px 8px;border:none;background:none;color:var(--muted);font-size:13px;font-weight:700;border-radius:9px;cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:var(--orange);color:#fff;}
+.tab-panel{display:none;flex-direction:column;gap:14px;}
+.tab-panel.show{display:flex;}
 </style>
 </head>
 <body>
-
-<div class="lang-bar">
-  <button class="lang-btn active" onclick="setLang('uk')">🇺🇦 УКР</button>
-  <button class="lang-btn" onclick="setLang('ru')">🇷🇺 РУС</button>
+<div class="float-lang">
+  <button class="lang-btn" data-lang="uk" onclick="setLang('uk')">🇺🇦 УКР</button>
+  <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">🇷🇺 РУС</button>
 </div>
-
 <div class="box">
-  <div class="logo">
-    <span class="logo-title">VØIDᴘʟᴀʏ</span>
-    <span class="logo-sub" data-i="arena">Gaming Arena</span>
+  <div class="logo-box">
+    <span class="lt">VØIDᴘʟᴀʏ</span>
+    <span class="ls" data-i="arena">Gaming Arena</span>
   </div>
-
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('reg')" data-i="tab_reg">Реєстрація</button>
-    <button class="tab" onclick="switchTab('login')" data-i="tab_login">Увійти</button>
+    <button class="tab-btn active" id="t-reg" onclick="sw('reg')" data-i="tab_reg">Реєстрація</button>
+    <button class="tab-btn" id="t-login" onclick="sw('login')" data-i="tab_login">Увійти</button>
   </div>
-
-  <!-- REGISTER -->
-  <form id="reg-form" class="form show" onsubmit="doRegister(event)">
-    <div class="row">
-      <div class="field">
-        <label data-i="lbl_first">Ім'я</label>
-        <input type="text" id="r-first" data-ph="ph_first" autocomplete="given-name" required>
-      </div>
-      <div class="field">
-        <label data-i="lbl_last">Прізвище</label>
-        <input type="text" id="r-last" data-ph="ph_last" autocomplete="family-name" required>
-      </div>
+  <div class="tab-panel show" id="p-reg">
+    <div class="field-row">
+      <div class="field"><label class="field-label" data-i="lbl_first">Ім'я</label>
+        <input class="field-input" type="text" id="r-first" data-ph="ph_first" autocomplete="given-name"></div>
+      <div class="field"><label class="field-label" data-i="lbl_last">Прізвище</label>
+        <input class="field-input" type="text" id="r-last" data-ph="ph_last" autocomplete="family-name"></div>
     </div>
-    <div class="field">
-      <label data-i="lbl_login">Логін</label>
-      <input type="text" id="r-user" placeholder="ivan123" autocomplete="username" required>
-    </div>
-    <div class="field">
-      <label data-i="lbl_birth">Рік народження</label>
-      <input type="number" id="r-year" placeholder="2003" min="1900" max="2099" required>
-    </div>
-    <div class="field">
-      <label data-i="lbl_pass">Пароль</label>
-      <input type="password" id="r-pass" placeholder="••••••••" autocomplete="new-password" required>
-    </div>
-    <div class="error" id="reg-err"></div>
-    <div class="success-box" id="reg-ok"></div>
-    <button type="submit" class="btn" id="reg-btn" data-i="btn_reg">Зареєструватися →</button>
-  </form>
-
-  <!-- LOGIN -->
-  <form id="login-form" class="form" onsubmit="doLogin(event)">
-    <div class="field">
-      <label data-i="lbl_login">Логін</label>
-      <input type="text" id="l-user" placeholder="ivan123" autocomplete="username" required>
-    </div>
-    <div class="field">
-      <label data-i="lbl_pass">Пароль</label>
-      <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password" required>
-    </div>
-    <div class="error" id="login-err"></div>
-    <div class="success-box" id="login-ok"></div>
-    <button type="submit" class="btn" id="login-btn" data-i="btn_login">Увійти →</button>
-  </form>
+    <div class="field"><label class="field-label" data-i="lbl_login">Логін</label>
+      <input class="field-input" type="text" id="r-user" placeholder="ivan123" autocomplete="username"></div>
+    <div class="field"><label class="field-label" data-i="lbl_birth">Рік народження</label>
+      <input class="field-input" type="number" id="r-year" placeholder="2003" min="1900" max="2099"></div>
+    <div class="field"><label class="field-label" data-i="lbl_pass">Пароль</label>
+      <input class="field-input" type="password" id="r-pass" placeholder="••••••••" autocomplete="new-password"></div>
+    <div class="alert alert-error" id="reg-err"></div>
+    <div class="alert alert-success" id="reg-ok"></div>
+    <button class="btn btn-primary btn-full btn-lg" id="reg-btn" onclick="doReg()" data-i="btn_reg">Зареєструватися →</button>
+  </div>
+  <div class="tab-panel" id="p-login">
+    <div class="field"><label class="field-label" data-i="lbl_login">Логін</label>
+      <input class="field-input" type="text" id="l-user" placeholder="ivan123" autocomplete="username"></div>
+    <div class="field"><label class="field-label" data-i="lbl_pass">Пароль</label>
+      <input class="field-input" type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"></div>
+    <div class="alert alert-error" id="login-err"></div>
+    <div class="alert alert-success" id="login-ok"></div>
+    <button class="btn btn-primary btn-full btn-lg" id="login-btn" onclick="doLogin()" data-i="btn_login">Увійти →</button>
+  </div>
 </div>
-
+<script src="script.js"></script>
 <script>
-const T = {
-  uk: {
-    arena:'Gaming Arena', tab_reg:'Реєстрація', tab_login:'Увійти',
-    lbl_first:"Ім'я", lbl_last:'Прізвище', lbl_login:'Логін',
-    lbl_birth:'Рік народження', lbl_pass:'Пароль',
-    ph_first:'Іван', ph_last:'Петренко',
-    btn_reg:'Зареєструватися →', btn_login:'Увійти →',
-    err_year:'Введіть правильний рік народження',
-    err_age:'❌ Реєстрація доступна лише з 13 років',
-    err_short_user:'Логін мінімум 3 символи',
-    err_short_pass:'Пароль мінімум 4 символи',
-    err_taken:'Цей логін вже зайнятий',
-    err_notfound:'Користувача не знайдено',
-    err_wrong:'Невірний пароль',
-    ok_reg:'✅ Акаунт створено! Переходимо...',
-    ok_login:'✅ Вхід успішний! Переходимо...',
-  },
-  ru: {
-    arena:'Gaming Arena', tab_reg:'Регистрация', tab_login:'Войти',
-    lbl_first:'Имя', lbl_last:'Фамилия', lbl_login:'Логин',
-    lbl_birth:'Год рождения', lbl_pass:'Пароль',
-    ph_first:'Иван', ph_last:'Петренко',
-    btn_reg:'Зарегистрироваться →', btn_login:'Войти →',
-    err_year:'Введите правильный год рождения',
-    err_age:'❌ Регистрация доступна только с 13 лет',
-    err_short_user:'Логин минимум 3 символа',
-    err_short_pass:'Пароль минимум 4 символа',
-    err_taken:'Этот логин уже занят',
-    err_notfound:'Пользователь не найден',
-    err_wrong:'Неверный пароль',
-    ok_reg:'✅ Аккаунт создан! Переходим...',
-    ok_login:'✅ Вход выполнен! Переходим...',
-  }
-};
+redirectIfLoggedIn();
+setLang(currentLang);
 
-let lang = localStorage.getItem('nx_lang') || 'uk';
+function sw(tab) {
+  document.getElementById('t-reg').classList.toggle('active', tab==='reg');
+  document.getElementById('t-login').classList.toggle('active', tab==='login');
+  document.getElementById('p-reg').classList.toggle('show', tab==='reg');
+  document.getElementById('p-login').classList.toggle('show', tab==='login');
+}
+function lock(ids){ids.forEach(id=>{var e=document.getElementById(id);if(e)e.disabled=true;});}
 
-function setLang(l) {
-  lang = l;
-  localStorage.setItem('nx_lang', l);
-  document.querySelectorAll('.lang-btn').forEach((b,i) =>
-    b.classList.toggle('active', i === 0 ? l==='uk' : l==='ru'));
-  const t = T[l];
-  document.querySelectorAll('[data-i]').forEach(el => {
-    const v = t[el.getAttribute('data-i')];
-    if (v != null) el.textContent = v;
-  });
-  document.querySelectorAll('[data-ph]').forEach(el => {
-    const v = t[el.getAttribute('data-ph')];
-    if (v != null) el.placeholder = v;
-  });
+function doReg() {
+  var first=document.getElementById('r-first').value.trim(),
+      last=document.getElementById('r-last').value.trim(),
+      user=document.getElementById('r-user').value.trim().toLowerCase(),
+      year=parseInt(document.getElementById('r-year').value,10),
+      pass=document.getElementById('r-pass').value,
+      err=document.getElementById('reg-err'), ok=document.getElementById('reg-ok');
+  err.classList.remove('show'); ok.classList.remove('show');
+  var now=new Date().getFullYear();
+  if(!year||year<1900||year>now){err.textContent=t('err_year');err.classList.add('show');return;}
+  if(now-year<13){err.textContent=t('err_age');err.classList.add('show');return;}
+  if(user.length<3){err.textContent=t('err_user');err.classList.add('show');return;}
+  if(pass.length<4){err.textContent=t('err_pass');err.classList.add('show');return;}
+  if(!first){err.textContent="Введіть ім'я";err.classList.add('show');return;}
+  var users=getUsers();
+  if(users[user]){err.textContent=t('err_taken');err.classList.add('show');return;}
+  var u={first,last,user,year,pass,balance:500,registered:new Date().toLocaleDateString('uk-UA'),nickname:first+' '+last};
+  users[user]=u; saveUsers(users); saveSession(u);
+  ok.textContent=t('ok_reg'); ok.classList.add('show');
+  lock(['r-first','r-last','r-user','r-year','r-pass','reg-btn']);
+  window.location.href='index.html';
 }
 
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem('nx_users') || '{}'); }
-  catch(e) { return {}; }
+function doLogin() {
+  var user=document.getElementById('l-user').value.trim().toLowerCase(),
+      pass=document.getElementById('l-pass').value,
+      err=document.getElementById('login-err'), ok=document.getElementById('login-ok');
+  err.classList.remove('show'); ok.classList.remove('show');
+  var users=getUsers();
+  if(!users[user]){err.textContent=t('err_notfound');err.classList.add('show');return;}
+  if(users[user].pass!==pass){err.textContent=t('err_wrong');err.classList.add('show');return;}
+  saveSession(users[user]);
+  ok.textContent=t('ok_login'); ok.classList.add('show');
+  lock(['l-user','l-pass','login-btn']);
+  window.location.href='index.html';
 }
 
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach((t,i) =>
-    t.classList.toggle('active', i === 0 ? tab==='reg' : tab==='login'));
-  document.getElementById('reg-form').classList.toggle('show', tab==='reg');
-  document.getElementById('login-form').classList.toggle('show', tab==='login');
-}
-
-function lockForm(ids) {
-  ids.forEach(id => {
-    var el = document.getElementById(id);
-    if (el) el.disabled = true;
-  });
-}
-
-function doRegister(e) {
-  e.preventDefault();
-  var t     = T[lang];
-  var first = document.getElementById('r-first').value.trim();
-  var last  = document.getElementById('r-last').value.trim();
-  var user  = document.getElementById('r-user').value.trim().toLowerCase();
-  var year  = parseInt(document.getElementById('r-year').value, 10);
-  var pass  = document.getElementById('r-pass').value;
-  var errEl = document.getElementById('reg-err');
-  var okEl  = document.getElementById('reg-ok');
-
-  errEl.classList.remove('show');
-  okEl.classList.remove('show');
-
-  var currentYear = new Date().getFullYear();
-  var age = currentYear - year;
-
-  if (!year || year < 1900 || year > currentYear) {
-    errEl.textContent = t.err_year; errEl.classList.add('show'); return;
-  }
-  if (age < 13) {
-    errEl.textContent = t.err_age; errEl.classList.add('show'); return;
-  }
-  if (user.length < 3) {
-    errEl.textContent = t.err_short_user; errEl.classList.add('show'); return;
-  }
-  if (pass.length < 4) {
-    errEl.textContent = t.err_short_pass; errEl.classList.add('show'); return;
-  }
-
-  var users = getUsers();
-  if (users[user]) {
-    errEl.textContent = t.err_taken; errEl.classList.add('show'); return;
-  }
-
-  var newUser = { first: first, last: last, user: user, year: year, pass: pass, balance: 200 };
-  users[user] = newUser;
-  localStorage.setItem('nx_users', JSON.stringify(users));
-  localStorage.setItem('nx_session', JSON.stringify(newUser));
-
-  okEl.textContent = t.ok_reg;
-  okEl.classList.add('show');
-  lockForm(['r-first','r-last','r-user','r-year','r-pass','reg-btn']);
-
-  window.location.href = 'index.html';
-}
-
-function doLogin(e) {
-  e.preventDefault();
-  var t    = T[lang];
-  var user = document.getElementById('l-user').value.trim().toLowerCase();
-  var pass = document.getElementById('l-pass').value;
-  var errEl = document.getElementById('login-err');
-  var okEl  = document.getElementById('login-ok');
-
-  errEl.classList.remove('show');
-  okEl.classList.remove('show');
-
-  var users = getUsers();
-  if (!users[user]) {
-    errEl.textContent = t.err_notfound; errEl.classList.add('show'); return;
-  }
-  if (users[user].pass !== pass) {
-    errEl.textContent = t.err_wrong; errEl.classList.add('show'); return;
-  }
-
-  localStorage.setItem('nx_session', JSON.stringify(users[user]));
-
-  okEl.textContent = t.ok_login;
-  okEl.classList.add('show');
-  lockForm(['l-user','l-pass','login-btn']);
-
-  window.location.href = 'index.html';
-}
-
-setLang(lang);
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  if(document.getElementById('p-reg').classList.contains('show'))doReg();
+  else doLogin();
+});
 </script>
 </body>
 </html>

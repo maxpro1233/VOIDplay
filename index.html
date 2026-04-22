@@ -1,1150 +1,173 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VØIDplay — Gaming Arena</title>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VØIDplay — Головна</title>
+<link rel="stylesheet" href="style.css">
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:calc(var(--header-h)+60px) 24px 80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 60% at 50% 42%,rgba(255,107,0,.10) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 35% at 15% 75%,rgba(255,107,0,.05) 0%,transparent 55%);}
+.hero-bg::after{content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,107,0,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,107,0,.025) 1px,transparent 1px);
+  background-size:60px 60px;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.25);
+  border-radius:50px;padding:6px 18px;font-size:11px;font-weight:700;color:var(--orange-light);
+  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:26px;animation:fadeUp .55s ease both;}
+.bdot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;}
+.hero-title{font-size:clamp(68px,13vw,138px);font-weight:900;letter-spacing:-3px;line-height:.88;
+  background:linear-gradient(160deg,#fff 0%,#ff8c00 48%,#ff3a00 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:fadeUp .6s .08s ease both;margin-bottom:20px;}
+.hero-sub{font-size:clamp(14px,1.8vw,16px);color:var(--muted);max-width:450px;line-height:1.7;
+  animation:fadeUp .6s .16s ease both;margin-bottom:36px;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;animation:fadeUp .6s .24s ease both;}
+.scroll-hint{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  color:var(--dim);font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  animation:fadeUp .8s .6s ease both;}
+.scroll-arr{width:17px;height:17px;border-right:2px solid var(--dim);border-bottom:2px solid var(--dim);
+  transform:rotate(45deg);animation:scrollBounce 1.6s infinite;}
+@keyframes scrollBounce{0%,100%{transform:rotate(45deg) translateY(0);opacity:.8;}50%{transform:rotate(45deg) translateY(5px);opacity:.3;}}
 
-:root {
-  --orange: #ff6b00;
-  --orange-light: #ff8c00;
-  --bg: #0a0a0b;
-  --surface: #111114;
-  --surface2: #18181d;
-  --border: rgba(255,107,0,0.18);
-  --text: #f0f0f0;
-  --muted: #606070;
-  --header-h: 68px;
-}
+.stats-section{padding:90px 0;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:46px;}
 
-html { scroll-behavior: smooth; }
+.info-section{background:var(--surface);border-top:1px solid var(--border-o);border-bottom:1px solid var(--border-o);padding:90px 0;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;}
+.warn-box{background:rgba(255,58,58,.07);border:1px solid rgba(255,58,58,.22);border-radius:var(--r-lg);
+  padding:20px 22px;display:flex;align-items:flex-start;gap:13px;margin-top:22px;}
+.warn-icon{font-size:26px;flex-shrink:0;line-height:1;}
+.warn-title{font-size:14px;font-weight:900;color:#ff5555;margin-bottom:4px;}
+.warn-text{font-size:12.5px;color:#906060;line-height:1.6;}
+.info-cards{display:flex;flex-direction:column;gap:11px;}
+.icard{background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.14);border-radius:11px;
+  padding:14px 16px;display:flex;align-items:center;gap:13px;}
+.icard-icon{width:36px;height:36px;border-radius:9px;background:rgba(255,107,0,.14);
+  display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.icard-title{font-size:13px;font-weight:700;margin-bottom:2px;}
+.icard-text{font-size:12px;color:var(--muted);line-height:1.5;}
 
-body {
-  font-family: 'Exo 2', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+footer{background:var(--surface);border-top:1px solid var(--border-o);padding:60px 0 38px;}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:48px;margin-bottom:46px;}
+.flt{font-size:22px;font-weight:900;letter-spacing:3px;background:linear-gradient(135deg,#ff6b00,#ff9500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.fls{font-size:8px;color:var(--dim);letter-spacing:4px;text-transform:uppercase;margin-top:2px;}
+.fdesc{font-size:13px;color:var(--muted);line-height:1.65;margin-top:12px;max-width:230px;}
+.fcol-title{font-size:10px;font-weight:700;color:var(--orange);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:14px;}
+.flinks{list-style:none;display:flex;flex-direction:column;gap:9px;}
+.flinks a{font-size:13.5px;color:var(--muted);transition:color .2s;}
+.flinks a:hover{color:var(--orange-light);}
+.socials{display:flex;flex-direction:column;gap:8px;}
+.soc-btn{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;color:#909090;transition:all .2s;}
+.soc-btn:hover{border-color:rgba(255,107,0,.35);color:var(--orange-light);}
+.soc-ico{width:27px;height:27px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.fbottom{border-top:1px solid var(--border);padding-top:22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.fcopy{font-size:12px;color:var(--dim);}
+.flegal{display:flex;gap:16px;}
+.flegal a{font-size:12px;color:var(--dim);transition:color .2s;}
+.flegal a:hover{color:var(--muted);}
+.age-chip{background:rgba(255,58,58,.12);border:1px solid rgba(255,58,58,.28);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:900;color:#ff5050;letter-spacing:1px;}
 
-/* ─── HEADER ─────────────────────────────────────────── */
-header {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: var(--header-h);
-  background: rgba(10,10,11,0.85);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-bottom: 1px solid var(--border);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  padding: 0 28px;
-  gap: 32px;
-}
-
-.logo {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-.logo-title {
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: 3px;
-  background: linear-gradient(135deg, #ff6b00, #ff8c00);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.logo-sub {
-  font-size: 8px;
-  color: var(--muted);
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-nav {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-}
-
-.nav-link {
-  color: #a0a0b0;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  padding: 8px 13px;
-  border-radius: 8px;
-  transition: color 0.2s, background 0.2s;
-  white-space: nowrap;
-}
-.nav-link:hover {
-  color: var(--orange-light);
-  background: rgba(255,107,0,0.08);
-}
-.nav-link.active {
-  color: var(--orange-light);
-  background: rgba(255,107,0,0.12);
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.lang-btn {
-  background: var(--surface2);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 8px;
-  padding: 6px 11px;
-  color: var(--muted);
-  font-family: 'Exo 2', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.5px;
-}
-.lang-btn:hover { border-color: rgba(255,107,0,0.4); color: var(--orange-light); }
-.lang-btn.active {
-  background: rgba(255,107,0,0.15);
-  border-color: var(--orange);
-  color: var(--orange-light);
-}
-
-.btn-profile {
-  background: rgba(255,107,0,0.12);
-  border: 1px solid rgba(255,107,0,0.3);
-  border-radius: 10px;
-  padding: 8px 16px;
-  color: var(--orange-light);
-  font-family: 'Exo 2', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  letter-spacing: 0.3px;
-}
-.btn-profile:hover {
-  background: rgba(255,107,0,0.2);
-  border-color: var(--orange);
-}
-.btn-profile svg { width: 16px; height: 16px; fill: var(--orange-light); }
-
-/* ── PROFILE DROPDOWN ── */
-.profile-wrap { position: relative; }
-
-.profile-avatar {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ff6b00, #ff8c00);
-  border: none;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Exo 2', sans-serif;
-  font-size: 14px; font-weight: 900;
-  color: #fff;
-  letter-spacing: 0.5px;
-  transition: opacity 0.2s, transform 0.2s;
-  flex-shrink: 0;
-}
-.profile-avatar:hover { opacity: 0.85; transform: scale(1.05); }
-
-.profile-name-btn {
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(255,107,0,0.10);
-  border: 1px solid rgba(255,107,0,0.25);
-  border-radius: 10px;
-  padding: 6px 12px 6px 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.profile-name-btn:hover { background: rgba(255,107,0,0.18); border-color: var(--orange); }
-.profile-name-text {
-  font-family: 'Exo 2', sans-serif;
-  font-size: 13px; font-weight: 700;
-  color: var(--orange-light);
-  max-width: 120px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.profile-chevron {
-  width: 14px; height: 14px;
-  fill: var(--orange-light);
-  transition: transform 0.2s;
-  flex-shrink: 0;
-}
-.profile-wrap.open .profile-chevron { transform: rotate(180deg); }
-
-.profile-dropdown {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  min-width: 200px;
-  background: #111114;
-  border: 1px solid rgba(255,107,0,0.25);
-  border-radius: 14px;
-  padding: 8px;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
-  opacity: 0; pointer-events: none;
-  transform: translateY(-8px);
-  transition: opacity 0.2s, transform 0.2s;
-  z-index: 200;
-}
-.profile-wrap.open .profile-dropdown {
-  opacity: 1; pointer-events: all;
-  transform: translateY(0);
-}
-
-.pd-header {
-  padding: 10px 12px 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  margin-bottom: 6px;
-}
-.pd-fullname { font-size: 14px; font-weight: 900; color: var(--text); }
-.pd-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.pd-balance {
-  display: flex; align-items: center; gap: 6px;
-  background: rgba(255,107,0,0.1);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 13px; font-weight: 700;
-  color: var(--orange-light);
-  margin-top: 8px;
-}
-
-.pd-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 12px;
-  border-radius: 9px;
-  font-size: 13px; font-weight: 600;
-  color: #a0a0b0;
-  cursor: pointer;
-  transition: all 0.15s;
-  border: none; background: none;
-  width: 100%; text-align: left;
-  font-family: 'Exo 2', sans-serif;
-}
-.pd-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
-.pd-item.danger:hover { background: rgba(255,58,58,0.08); color: #ff5555; }
-.pd-sep { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0; }
-
-/* ─── HERO ─────────────────────────────────────────────── */
-.hero {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: calc(var(--header-h) + 40px) 24px 60px;
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 70% 60% at 50% 40%, rgba(255,107,0,0.10) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(255,107,0,0.05) 0%, transparent 60%);
-  pointer-events: none;
-}
-
-/* Grid lines decoration */
-.hero-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,107,0,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,107,0,0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: rgba(255,107,0,0.1);
-  border: 1px solid rgba(255,107,0,0.25);
-  border-radius: 50px;
-  padding: 6px 16px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--orange-light);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-bottom: 28px;
-  animation: fadeDown 0.6s ease both;
-}
-
-.hero-badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--orange);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%,100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.7); }
-}
-
-.hero-title {
-  font-size: clamp(72px, 14vw, 140px);
-  font-weight: 900;
-  letter-spacing: -2px;
-  line-height: 0.9;
-  background: linear-gradient(160deg, #fff 0%, #ff8c00 50%, #ff4400 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: fadeDown 0.7s 0.1s ease both;
-  margin-bottom: 20px;
-}
-
-.hero-sub {
-  font-size: clamp(14px, 2vw, 17px);
-  color: var(--muted);
-  max-width: 480px;
-  line-height: 1.65;
-  animation: fadeDown 0.7s 0.2s ease both;
-  margin-bottom: 36px;
-}
-
-.hero-btns {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-  animation: fadeDown 0.7s 0.3s ease both;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #ff6b00, #ff8c00);
-  border: none;
-  border-radius: 12px;
-  padding: 14px 28px;
-  color: #fff;
-  font-family: 'Exo 2', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
-  letter-spacing: 0.5px;
-  text-decoration: none;
-  display: inline-block;
-}
-.btn-primary:hover { opacity: 0.88; }
-.btn-primary:active { transform: scale(0.97); }
-
-.btn-secondary {
-  background: var(--surface2);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  padding: 14px 28px;
-  color: #c0c0d0;
-  font-family: 'Exo 2', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.5px;
-  text-decoration: none;
-  display: inline-block;
-}
-.btn-secondary:hover { border-color: rgba(255,107,0,0.4); color: var(--orange-light); }
-
-.scroll-hint {
-  position: absolute;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  color: var(--muted);
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  animation: fadeDown 1s 0.8s ease both;
-}
-.scroll-arrow {
-  width: 20px;
-  height: 20px;
-  border-right: 2px solid var(--muted);
-  border-bottom: 2px solid var(--muted);
-  transform: rotate(45deg);
-  animation: scrollBounce 1.5s infinite;
-}
-@keyframes scrollBounce {
-  0%,100% { transform: rotate(45deg) translateY(0); opacity: 1; }
-  50% { transform: rotate(45deg) translateY(5px); opacity: 0.5; }
-}
-
-/* ─── SCROLL ANIMATIONS ────────────────────────────────── */
-@keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
-
-/* ─── STATS SECTION ─────────────────────────────────────── */
-.stats-section {
-  padding: 80px 24px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.section-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--orange);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.section-title {
-  font-size: clamp(28px, 5vw, 42px);
-  font-weight: 900;
-  margin-bottom: 14px;
-  letter-spacing: -0.5px;
-}
-
-.section-desc {
-  font-size: 15px;
-  color: var(--muted);
-  max-width: 520px;
-  line-height: 1.6;
-  margin-bottom: 48px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-}
-
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 28px 24px;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.3s, transform 0.3s;
-}
-.stat-card:hover {
-  border-color: rgba(255,107,0,0.4);
-  transform: translateY(-3px);
-}
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--orange), transparent);
-}
-
-.stat-num {
-  font-size: 40px;
-  font-weight: 900;
-  color: var(--orange-light);
-  letter-spacing: -1px;
-  line-height: 1;
-  margin-bottom: 6px;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: var(--muted);
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-/* ─── INFO SECTION ──────────────────────────────────────── */
-.info-section {
-  padding: 80px 24px;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.info-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: center;
-}
-
-.info-warning {
-  background: rgba(255,58,58,0.07);
-  border: 1px solid rgba(255,58,58,0.2);
-  border-radius: 16px;
-  padding: 24px 28px;
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-}
-.warn-icon {
-  font-size: 32px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-.warn-title {
-  font-size: 16px;
-  font-weight: 900;
-  color: #ff5555;
-  margin-bottom: 6px;
-  letter-spacing: 0.3px;
-}
-.warn-text {
-  font-size: 13px;
-  color: #a06060;
-  line-height: 1.6;
-}
-
-.info-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.info-card {
-  background: rgba(255,107,0,0.06);
-  border: 1px solid rgba(255,107,0,0.15);
-  border-radius: 12px;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.info-card-icon {
-  width: 36px;
-  height: 36px;
-  background: rgba(255,107,0,0.15);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-.info-card-text { font-size: 13px; color: #b0b0c0; line-height: 1.5; }
-.info-card-text strong { color: var(--text); font-weight: 700; display: block; margin-bottom: 2px; }
-
-/* ─── FOOTER ─────────────────────────────────────────────── */
-footer {
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  padding: 60px 24px 40px;
-}
-
-.footer-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.footer-top {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
-  gap: 48px;
-  margin-bottom: 48px;
-}
-
-.footer-brand .logo-title { font-size: 26px; letter-spacing: 3px; }
-.footer-brand .logo-sub { margin-top: 2px; }
-
-.footer-brand-desc {
-  font-size: 13px;
-  color: var(--muted);
-  line-height: 1.65;
-  margin-top: 14px;
-  max-width: 260px;
-}
-
-.footer-col-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--orange);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 16px;
-}
-
-.footer-links {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.footer-links li a {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.2s;
-}
-.footer-links li a:hover { color: var(--orange-light); }
-
-/* Social buttons */
-.socials {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.social-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--surface2);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 10px;
-  padding: 10px 14px;
-  text-decoration: none;
-  color: #a0a0b0;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-.social-btn:hover {
-  border-color: rgba(255,107,0,0.35);
-  color: var(--orange-light);
-  background: rgba(255,107,0,0.06);
-}
-.social-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-.social-icon.tg  { background: rgba(41,182,246,0.15); }
-.social-icon.dc  { background: rgba(88,101,242,0.15); }
-.social-icon.yt  { background: rgba(255,0,0,0.12); }
-.social-icon.tt  { background: rgba(255,255,255,0.06); }
-
-.footer-bottom {
-  border-top: 1px solid var(--border);
-  padding-top: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.footer-copy {
-  font-size: 12px;
-  color: #404050;
-}
-
-.footer-legal {
-  display: flex;
-  gap: 20px;
-}
-.footer-legal a {
-  font-size: 12px;
-  color: #404050;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.footer-legal a:hover { color: var(--muted); }
-
-.age-badge {
-  background: rgba(255,58,58,0.15);
-  border: 1px solid rgba(255,58,58,0.3);
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 900;
-  color: #ff5555;
-  letter-spacing: 1px;
-}
-
-/* ─── MOBILE ─────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .nav-link span { display: none; }
-  .nav-link { padding: 8px 10px; font-size: 11px; }
-
-  .info-inner { grid-template-columns: 1fr; gap: 24px; }
-
-  .footer-top {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-
-  .footer-bottom { flex-direction: column; align-items: flex-start; }
-}
-
-@media (max-width: 520px) {
-  header { padding: 0 16px; gap: 12px; }
-  nav { gap: 2px; }
-  .logo-title { font-size: 18px; }
-}
+@media(max-width:768px){.info-grid{grid-template-columns:1fr;gap:26px;}.footer-grid{grid-template-columns:1fr;gap:28px;}.fbottom{flex-direction:column;align-items:flex-start;}}
 </style>
 </head>
 <body>
+<header class="navbar" id="navbar"></header>
 
-<!-- ─── HEADER ──────────────────────────────────────────── -->
-<header>
-  <a href="#" class="logo">
-    <span class="logo-title">VØIDᴘʟᴀʏ</span>
-    <span class="logo-sub" data-i="arena">Gaming Arena</span>
-  </a>
-
-  <nav>
-    <a href="#" class="nav-link active" data-i="nav_bets">🎯 Ставки</a>
-    <a href="#" class="nav-link" data-i="nav_tasks">📋 Завдання</a>
-    <a href="#" class="nav-link" data-i="nav_mini">🕹 Міні-ігри</a>
-    <a href="#" class="nav-link" data-i="nav_cases">🎁 Кейси і скіни</a>
-    <a href="#" class="nav-link" data-i="nav_wheel">🎡 Колесо фортуни</a>
-  </nav>
-
-  <div class="header-right">
-    <button class="lang-btn active" onclick="setLang('uk')">🇺🇦 УКР</button>
-    <button class="lang-btn" onclick="setLang('ru')">🇷🇺 РУС</button>
-    <!-- Shown when logged OUT -->
-    <button class="btn-profile" id="btn-go-login" onclick="window.location.href='register.html'">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-      </svg>
-      <span data-i="profile">Профіль</span>
-    </button>
-
-    <!-- Shown when logged IN -->
-    <div class="profile-wrap" id="profile-wrap" style="display:none">
-      <button class="profile-name-btn" onclick="toggleDropdown()">
-        <div class="profile-avatar" id="hdr-avatar">?</div>
-        <span class="profile-name-text" id="hdr-name">—</span>
-        <svg class="profile-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-      </button>
-      <div class="profile-dropdown" id="profile-dropdown">
-        <div class="pd-header">
-          <div class="pd-fullname" id="pd-fullname">—</div>
-          <div class="pd-meta" id="pd-meta">—</div>
-          <div class="pd-balance">🪙 <span id="pd-balance">200</span> монет</div>
-        </div>
-        <button class="pd-item" onclick="alert('Скоро!')">👤 Мій профіль</button>
-        <button class="pd-item" onclick="alert('Скоро!')">🎁 Мої кейси</button>
-        <div class="pd-sep"></div>
-        <button class="pd-item danger" onclick="logout()">🚪 Вийти</button>
-      </div>
-    </div>
-  </div>
-</header>
-
-<!-- ─── HERO ──────────────────────────────────────────────── -->
 <section class="hero" id="home">
   <div class="hero-bg"></div>
-
-  <div class="hero-badge">
-    <span class="hero-badge-dot"></span>
-    <span data-i="badge">Платформа онлайн-ставок</span>
-  </div>
-
-  <h1 class="hero-title">VØIDᴘʟᴀʏ</h1>
-
-  <p class="hero-sub" data-i="hero_desc">
-    Твоя арена для ставок, мініігор, кейсів та скінів. Отримуй нагороди, виконуй завдання та крути колесо фортуни щодня.
-  </p>
-
+  <div class="hero-badge"><span class="bdot"></span><span>Платформа онлайн-ставок</span></div>
+  <h1 class="hero-title">VØIDplay</h1>
+  <p class="hero-sub">Твоя арена для ставок, мініігор, кейсів та скінів. Отримуй нагороди, виконуй завдання та крути колесо фортуни щодня.</p>
   <div class="hero-btns">
-    <a href="register.html" class="btn-primary" id="hero-start" data-i="btn_start">Почати грати →</a>
-    <a href="#about" class="btn-secondary" data-i="btn_learn">Дізнатись більше</a>
+    <a href="cases.html" class="btn btn-primary btn-lg">🎁 Відкрити кейси →</a>
+    <a href="#about" class="btn btn-secondary btn-lg">Дізнатись більше</a>
   </div>
-
-  <div class="scroll-hint">
-    <span data-i="scroll">Гортай</span>
-    <div class="scroll-arrow"></div>
-  </div>
+  <div class="scroll-hint"><span>ГОРТАЙ</span><div class="scroll-arr"></div></div>
 </section>
 
-<!-- ─── STATS (ПРО НАС) ──────────────────────────────────── -->
 <section class="stats-section" id="about">
-  <div class="reveal">
-    <div class="section-label" data-i="about_label">Про нас</div>
-    <h2 class="section-title" data-i="about_title">Нас обирають тисячі</h2>
-    <p class="section-desc" data-i="about_desc">
-      VØIDplay — це жива платформа з реальними гравцями, щоденними ставками та моментальними виплатами. Ось наша статистика:
-    </p>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card reveal reveal-delay-1">
-      <div class="stat-num" id="cnt-players">0</div>
-      <div class="stat-label" data-i="stat_players">Активних гравців</div>
-    </div>
-    <div class="stat-card reveal reveal-delay-2">
-      <div class="stat-num" id="cnt-bets">0</div>
-      <div class="stat-label" data-i="stat_bets">Ставок зроблено</div>
-    </div>
-    <div class="stat-card reveal reveal-delay-3">
-      <div class="stat-num" id="cnt-won">0</div>
-      <div class="stat-label" data-i="stat_won">Виплачено монет</div>
-    </div>
-    <div class="stat-card reveal reveal-delay-4">
-      <div class="stat-num" id="cnt-online">0</div>
-      <div class="stat-label" data-i="stat_online">Онлайн зараз</div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── ВАЖЛИВА ІНФОРМАЦІЯ ──────────────────────────────── -->
-<section class="info-section">
-  <div class="info-inner">
-
+  <div class="container">
     <div class="reveal">
-      <div class="section-label" data-i="info_label">Важливо</div>
-      <h2 class="section-title" data-i="info_title">Безпека та правила</h2>
-      <p class="section-desc" data-i="info_desc">
-        Перш ніж почати — ознайомся з основними правилами платформи.
-      </p>
-      <div class="info-warning">
-        <div class="warn-icon">⚠️</div>
-        <div>
-          <div class="warn-title" data-i="warn_title">Вікове обмеження: 13+</div>
-          <div class="warn-text" data-i="warn_text">
-            Якщо тобі немає 13 років — будь ласка, покинь сайт. Ця платформа містить ігровий контент, заборонений для дітей молодше 13 років.
-          </div>
-        </div>
-      </div>
+      <div class="section-label">Про нас</div>
+      <h2 class="section-title">Нас обирають тисячі</h2>
+      <p class="section-desc">VØIDplay — жива платформа з реальними гравцями, щоденними ставками та миттєвими виплатами.</p>
     </div>
-
-    <div class="info-cards reveal reveal-delay-1">
-      <div class="info-card">
-        <div class="info-card-icon">🔒</div>
-        <div class="info-card-text">
-          <strong data-i="rule1_title">Безпечне середовище</strong>
-          <span data-i="rule1_text">Усі дані зашифровані. Ми не передаємо інформацію третім особам.</span>
-        </div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">🎮</div>
-        <div class="info-card-text">
-          <strong data-i="rule2_title">Тільки монети</strong>
-          <span data-i="rule2_text">На платформі використовуються ігрові монети — без реальних грошей.</span>
-        </div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">📋</div>
-        <div class="info-card-text">
-          <strong data-i="rule3_title">Чесна гра</strong>
-          <span data-i="rule3_text">Шахрайство і мультиакаунти заборонені та призведуть до бану.</span>
-        </div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">💬</div>
-        <div class="info-card-text">
-          <strong data-i="rule4_title">Підтримка 24/7</strong>
-          <span data-i="rule4_text">Наша команда завжди готова допомогти в Telegram або Discord.</span>
-        </div>
-      </div>
+    <div class="stats-grid counters-group">
+      <div class="stat-card reveal reveal-d1"><div class="stat-num" data-count="14280">0</div><div class="stat-lbl">Активних гравців</div></div>
+      <div class="stat-card reveal reveal-d2"><div class="stat-num" data-count="382000">0</div><div class="stat-lbl">Ставок зроблено</div></div>
+      <div class="stat-card reveal reveal-d3"><div class="stat-num" data-count="9400000">0</div><div class="stat-lbl">Виплачено монет</div></div>
+      <div class="stat-card reveal reveal-d4"><div class="stat-num" data-count="847">0</div><div class="stat-lbl">Онлайн зараз</div></div>
     </div>
-
   </div>
 </section>
 
-<!-- ─── FOOTER ──────────────────────────────────────────── -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-top reveal">
-
-      <div class="footer-brand">
-        <div class="logo">
-          <span class="logo-title">VØIDᴘʟᴀʏ</span>
-          <span class="logo-sub" data-i="arena">Gaming Arena</span>
-        </div>
-        <p class="footer-brand-desc" data-i="footer_desc">
-          Найкраща ігрова арена для ставок, кейсів та нагород. Грай чесно, вигравай більше.
-        </p>
+<section class="info-section">
+  <div class="container">
+    <div class="info-grid">
+      <div class="reveal">
+        <div class="section-label">Важливо</div>
+        <h2 class="section-title">Безпека та правила</h2>
+        <p class="section-desc">Перш ніж почати — ознайомся з основними правилами платформи.</p>
+        <div class="warn-box"><div class="warn-icon">⚠️</div>
+          <div><div class="warn-title">Вікове обмеження: 13+</div>
+            <div class="warn-text">Якщо тобі немає 13 років — покинь сайт. Ця платформа містить ігровий контент, заборонений для молодших.</div></div></div>
       </div>
+      <div class="info-cards reveal reveal-d1">
+        <div class="icard"><div class="icard-icon">🔒</div><div><div class="icard-title">Безпечне середовище</div><div class="icard-text">Всі дані зашифровані. Ми не передаємо інформацію третім особам.</div></div></div>
+        <div class="icard"><div class="icard-icon">🪙</div><div><div class="icard-title">Тільки ігрові монети</div><div class="icard-text">На платформі немає реальних грошей — лише ігрова валюта.</div></div></div>
+        <div class="icard"><div class="icard-icon">📋</div><div><div class="icard-title">Чесна гра</div><div class="icard-text">Шахрайство і мультиакаунти заборонені та призведуть до бану.</div></div></div>
+        <div class="icard"><div class="icard-icon">💬</div><div><div class="icard-title">Підтримка 24/7</div><div class="icard-text">Наша команда допоможе в Telegram або Discord у будь-який час.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<footer>
+  <div class="container">
+    <div class="footer-grid">
       <div>
-        <div class="footer-col-title" data-i="footer_nav">Навігація</div>
-        <ul class="footer-links">
-          <li><a href="#" data-i="nav_bets">🎯 Ставки</a></li>
-          <li><a href="#" data-i="nav_tasks">📋 Завдання</a></li>
-          <li><a href="#" data-i="nav_mini">🕹 Міні-ігри</a></li>
-          <li><a href="#" data-i="nav_cases">🎁 Кейси і скіни</a></li>
-          <li><a href="#" data-i="nav_wheel">🎡 Колесо фортуни</a></li>
+        <div class="flt">VØIDᴘʟᴀʏ</div><div class="fls">Gaming Arena</div>
+        <p class="fdesc">Найкраща ігрова арена для ставок, кейсів та нагород. Грай чесно, вигравай більше.</p>
+      </div>
+      <div>
+        <div class="fcol-title">Навігація</div>
+        <ul class="flinks">
+          <li><a href="index.html">🏠 Головна</a></li>
+          <li><a href="cases.html">🎁 Кейси</a></li>
+          <li><a href="profile.html">👤 Профіль</a></li>
         </ul>
       </div>
-
       <div>
-        <div class="footer-col-title" data-i="footer_social">Соціальні мережі</div>
+        <div class="fcol-title">Соціальні мережі</div>
         <div class="socials">
-          <a href="#" class="social-btn">
-            <span class="social-icon tg">✈️</span>
-            <span>Telegram</span>
-          </a>
-          <a href="#" class="social-btn">
-            <span class="social-icon dc">💬</span>
-            <span>Discord</span>
-          </a>
-          <a href="#" class="social-btn">
-            <span class="social-icon yt">▶️</span>
-            <span>YouTube</span>
-          </a>
-          <a href="#" class="social-btn">
-            <span class="social-icon tt">🎵</span>
-            <span>TikTok</span>
-          </a>
+          <a href="#" class="soc-btn"><span class="soc-ico" style="background:rgba(41,182,246,.15)">✈️</span>Telegram</a>
+          <a href="#" class="soc-btn"><span class="soc-ico" style="background:rgba(88,101,242,.15)">💬</span>Discord</a>
+          <a href="#" class="soc-btn"><span class="soc-ico" style="background:rgba(255,0,0,.12)">▶️</span>YouTube</a>
+          <a href="#" class="soc-btn"><span class="soc-ico" style="background:rgba(255,255,255,.06)">🎵</span>TikTok</a>
         </div>
       </div>
-
     </div>
-
-    <div class="footer-bottom">
-      <span class="footer-copy" data-i="footer_copy">© 2025 VØIDplay. Усі права захищені.</span>
-      <div class="footer-legal">
-        <a href="#" data-i="footer_terms">Умови використання</a>
-        <a href="#" data-i="footer_privacy">Конфіденційність</a>
-        <a href="#" data-i="footer_rules">Правила</a>
-      </div>
-      <span class="age-badge">13+</span>
+    <div class="fbottom">
+      <span class="fcopy">© 2025 VØIDplay. Усі права захищені.</span>
+      <div class="flegal"><a href="#">Умови використання</a><a href="#">Конфіденційність</a><a href="#">Правила</a></div>
+      <span class="age-chip">13+</span>
     </div>
   </div>
 </footer>
 
+<script src="script.js"></script>
 <script>
-/* ── TRANSLATIONS ─────────────────────────────────────── */
-const T = {
-  uk: {
-    arena: 'Gaming Arena',
-    nav_bets: '🎯 Ставки',
-    nav_tasks: '📋 Завдання',
-    nav_mini: '🕹 Міні-ігри',
-    nav_cases: '🎁 Кейси і скіни',
-    nav_wheel: '🎡 Колесо фортуни',
-    profile: 'Профіль',
-    badge: 'Платформа онлайн-ставок',
-    hero_desc: 'Твоя арена для ставок, мініігор, кейсів та скінів. Отримуй нагороди, виконуй завдання та крути колесо фортуни щодня.',
-    btn_start: 'Почати грати →',
-    btn_learn: 'Дізнатись більше',
-    scroll: 'Гортай',
-    about_label: 'Про нас',
-    about_title: 'Нас обирають тисячі',
-    about_desc: 'VØIDplay — це жива платформа з реальними гравцями, щоденними ставками та моментальними виплатами.',
-    stat_players: 'Активних гравців',
-    stat_bets: 'Ставок зроблено',
-    stat_won: 'Виплачено монет',
-    stat_online: 'Онлайн зараз',
-    info_label: 'Важливо',
-    info_title: 'Безпека та правила',
-    info_desc: 'Перш ніж почати — ознайомся з основними правилами платформи.',
-    warn_title: 'Вікове обмеження: 13+',
-    warn_text: 'Якщо тобі немає 13 років — будь ласка, покинь сайт. Ця платформа містить ігровий контент, заборонений для дітей молодше 13 років.',
-    rule1_title: 'Безпечне середовище',
-    rule1_text: 'Усі дані зашифровані. Ми не передаємо інформацію третім особам.',
-    rule2_title: 'Тільки монети',
-    rule2_text: 'На платформі використовуються ігрові монети — без реальних грошей.',
-    rule3_title: 'Чесна гра',
-    rule3_text: 'Шахрайство і мультиакаунти заборонені та призведуть до бану.',
-    rule4_title: 'Підтримка 24/7',
-    rule4_text: 'Наша команда завжди готова допомогти в Telegram або Discord.',
-    footer_desc: 'Найкраща ігрова арена для ставок, кейсів та нагород. Грай чесно, вигравай більше.',
-    footer_nav: 'Навігація',
-    footer_social: 'Соціальні мережі',
-    footer_copy: '© 2025 VØIDplay. Усі права захищені.',
-    footer_terms: 'Умови використання',
-    footer_privacy: 'Конфіденційність',
-    footer_rules: 'Правила',
-  },
-  ru: {
-    arena: 'Gaming Arena',
-    nav_bets: '🎯 Ставки',
-    nav_tasks: '📋 Задания',
-    nav_mini: '🕹 Мини-игры',
-    nav_cases: '🎁 Кейсы и скины',
-    nav_wheel: '🎡 Колесо фортуны',
-    profile: 'Профиль',
-    badge: 'Платформа онлайн-ставок',
-    hero_desc: 'Твоя арена для ставок, мини-игр, кейсов и скинов. Получай награды, выполняй задания и крути колесо фортуны каждый день.',
-    btn_start: 'Начать играть →',
-    btn_learn: 'Узнать больше',
-    scroll: 'Листай',
-    about_label: 'О нас',
-    about_title: 'Нас выбирают тысячи',
-    about_desc: 'VØIDplay — живая платформа с реальными игроками, ежедневными ставками и мгновенными выплатами.',
-    stat_players: 'Активных игроков',
-    stat_bets: 'Ставок сделано',
-    stat_won: 'Выплачено монет',
-    stat_online: 'Онлайн сейчас',
-    info_label: 'Важно',
-    info_title: 'Безопасность и правила',
-    info_desc: 'Перед началом — ознакомься с основными правилами платформы.',
-    warn_title: 'Возрастное ограничение: 13+',
-    warn_text: 'Если тебе нет 13 лет — пожалуйста, покинь сайт. Эта платформа содержит игровой контент, запрещённый для детей младше 13 лет.',
-    rule1_title: 'Безопасная среда',
-    rule1_text: 'Все данные зашифрованы. Мы не передаём информацию третьим лицам.',
-    rule2_title: 'Только монеты',
-    rule2_text: 'На платформе используются игровые монеты — без реальных денег.',
-    rule3_title: 'Честная игра',
-    rule3_text: 'Мошенничество и мультиаккаунты запрещены и приведут к бану.',
-    rule4_title: 'Поддержка 24/7',
-    rule4_text: 'Наша команда всегда готова помочь в Telegram или Discord.',
-    footer_desc: 'Лучшая игровая арена для ставок, кейсов и наград. Играй честно, выигрывай больше.',
-    footer_nav: 'Навигация',
-    footer_social: 'Социальные сети',
-    footer_copy: '© 2025 VØIDplay. Все права защищены.',
-    footer_terms: 'Условия использования',
-    footer_privacy: 'Конфиденциальность',
-    footer_rules: 'Правила',
-  }
-};
-
-let lang = localStorage.getItem('vp_lang') || 'uk';
-
-function setLang(l) {
-  lang = l;
-  localStorage.setItem('vp_lang', l);
-  document.querySelectorAll('.lang-btn').forEach((b, i) =>
-    b.classList.toggle('active', (i === 0) === (l === 'uk')));
-  applyLang();
-}
-
-function applyLang() {
-  const t = T[lang];
-  document.querySelectorAll('[data-i]').forEach(el => {
-    const k = el.getAttribute('data-i');
-    if (t[k] != null) el.textContent = t[k];
-  });
-}
-
-/* ── SCROLL REVEAL ──────────────────────────────────────── */
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-    }
-  });
-}, { threshold: 0.12 });
-
-document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-/* ── COUNTER ANIMATION ──────────────────────────────────── */
-const counters = [
-  { id: 'cnt-players', target: 14280, suffix: '' },
-  { id: 'cnt-bets',    target: 382000, suffix: '' },
-  { id: 'cnt-won',     target: 9400000, suffix: '' },
-  { id: 'cnt-online',  target: 847, suffix: '' },
-];
-
-function formatNum(n) {
-  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-  if (n >= 1000)    return Math.round(n / 1000) + 'K';
-  return n.toString();
-}
-
-function animateCounter(el, target, duration) {
-  let start = null;
-  function step(ts) {
-    if (!start) start = ts;
-    const progress = Math.min((ts - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = formatNum(Math.round(eased * target));
-    if (progress < 1) requestAnimationFrame(step);
-    else el.textContent = formatNum(target);
-  }
-  requestAnimationFrame(step);
-}
-
-const statsObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      counters.forEach(c => {
-        const el = document.getElementById(c.id);
-        if (el) animateCounter(el, c.target, 1800);
-      });
-      statsObserver.disconnect();
-    }
-  });
-}, { threshold: 0.2 });
-
-const statsSection = document.querySelector('.stats-grid');
-if (statsSection) statsObserver.observe(statsSection);
-
-/* ── SESSION / PROFILE ──────────────────────────────────── */
-function getSession() {
-  try { return JSON.parse(localStorage.getItem('nx_session') || 'null'); } catch(e){ return null; }
-}
-
-function initSession() {
-  const s = getSession();
-  if (s) {
-    // show profile widget, hide login btn
-    document.getElementById('btn-go-login').style.display = 'none';
-    document.getElementById('profile-wrap').style.display = 'block';
-
-    // avatar initials
-    const initials = (s.first[0] || '') + (s.last[0] || '');
-    document.getElementById('hdr-avatar').textContent = initials.toUpperCase();
-    document.getElementById('hdr-name').textContent = s.first;
-
-    // dropdown details
-    document.getElementById('pd-fullname').textContent = s.first + ' ' + s.last;
-    const age = new Date().getFullYear() - s.year;
-    document.getElementById('pd-meta').textContent = '@' + s.user + ' · ' + age + ' р.';
-    document.getElementById('pd-balance').textContent = s.balance ?? 200;
-
-    // change hero button
-    const heroBtn = document.getElementById('hero-start');
-    if (heroBtn) { heroBtn.textContent = '🎮 Грати →'; heroBtn.removeAttribute('href'); }
-  }
-}
-
-function toggleDropdown() {
-  document.getElementById('profile-wrap').classList.toggle('open');
-}
-
-document.addEventListener('click', (e) => {
-  const wrap = document.getElementById('profile-wrap');
-  if (wrap && !wrap.contains(e.target)) wrap.classList.remove('open');
-});
-
-function logout() {
-  localStorage.removeItem('nx_session');
-  location.reload();
-}
-
-/* ── INIT ────────────────────────────────────────────────── */
-window.onload = () => { setLang(lang); initSession(); };
+requireAuth();
+buildNavbar('home');
+setLang(currentLang);
+initReveal();
+initCounters();
 </script>
 </body>
 </html>

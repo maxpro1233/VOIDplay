@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VØIDplay — Кейси</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ── PAGE ── */
+.cases-page{padding-top:var(--header-h);min-height:100vh;}
+
+/* ── CASE CARDS SHOP ── */
+.shop-section{padding:50px 0 40px;}
+.cases-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:32px;}
+
+.case-card{
+  background:var(--surface);
+  border-radius:20px;
+  padding:28px 24px 24px;
+  cursor:pointer;
+  position:relative;overflow:hidden;
+  transition:transform .25s, box-shadow .25s;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.case-card:hover{transform:translateY(-6px);}
+
+/* void case */
+.case-card.void{
+  border:1px solid rgba(157,78,221,.35);
+  box-shadow:0 0 0 rgba(157,78,221,0);
+}
+.case-card.void:hover{box-shadow:0 8px 40px rgba(157,78,221,.3),0 0 60px rgba(157,78,221,.1);}
+.case-card.void::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#7b2fff,#c77dff,transparent);}
+
+/* cyber case */
+.case-card.cyber{
+  border:1px solid rgba(0,212,255,.35);
+  box-shadow:0 0 0 rgba(0,212,255,0);
+}
+.case-card.cyber:hover{box-shadow:0 8px 40px rgba(0,212,255,.25),0 0 60px rgba(0,212,255,.08);}
+.case-card.cyber::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#00b4d8,#00d4ff,transparent);}
+
+/* case emoji big */
+.case-emoji{
+  font-size:80px;line-height:1;margin-bottom:18px;
+  filter:drop-shadow(0 0 20px rgba(255,255,255,.1));
+  transition:transform .3s, filter .3s;
+}
+.case-card:hover .case-emoji{transform:scale(1.08) rotate(-3deg);}
+.case-card.void:hover .case-emoji{filter:drop-shadow(0 0 22px rgba(157,78,221,.6));}
+.case-card.cyber:hover .case-emoji{filter:drop-shadow(0 0 22px rgba(0,212,255,.6));}
+
+.case-name{font-size:18px;font-weight:900;letter-spacing:.5px;margin-bottom:6px;text-align:center;}
+.case-card.void  .case-name{color:#c77dff;}
+.case-card.cyber .case-name{color:#00d4ff;}
+
+.case-desc{font-size:12.5px;color:var(--muted);text-align:center;line-height:1.5;margin-bottom:18px;}
+
+.case-price{
+  display:flex;align-items:center;gap:6px;
+  font-size:16px;font-weight:900;color:#ffb800;margin-bottom:16px;
+}
+
+.case-drops{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:22px;}
+.drop-pill{
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+  letter-spacing:.5px;
+}
+.drop-pill.common  {background:rgba(180,180,180,.15);color:#c0c0c0;border:1px solid rgba(180,180,180,.2);}
+.drop-pill.uncommon{background:rgba(0,180,100,.15);color:#00c878;border:1px solid rgba(0,200,100,.2);}
+.drop-pill.rare    {background:rgba(50,100,255,.15);color:#6699ff;border:1px solid rgba(50,100,255,.25);}
+.drop-pill.epic    {background:rgba(157,78,221,.2);color:#c77dff;border:1px solid rgba(157,78,221,.3);}
+
+/* ── REEL MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-overlay.show{opacity:1;pointer-events:all;}
+
+.reel-modal{
+  width:min(780px,96vw);
+  background:#0c0c10;
+  border-radius:22px;
+  padding:36px 32px 32px;
+  position:relative;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 30px 80px rgba(0,0,0,.8);
+  animation:popIn .3s ease;
+}
+
+.reel-title{font-size:20px;font-weight:900;text-align:center;margin-bottom:28px;color:var(--text);}
+.reel-title span{color:var(--orange);}
+
+/* ── SPIN TRACK ── */
+.reel-wrap{
+  width:100%;overflow:hidden;
+  position:relative;border-radius:12px;
+  border:1px solid rgba(255,255,255,.1);
+  background:#0a0a0d;
+}
+/* orange center line */
+.reel-wrap::before,.reel-wrap::after{
+  content:'';position:absolute;top:0;bottom:0;width:2px;z-index:10;
+  background:var(--orange);box-shadow:0 0 12px var(--orange);
+}
+.reel-wrap::before{left:50%;transform:translateX(-1px);}
+.reel-wrap::after{display:none;}
+
+/* fade edges */
+.reel-wrap::after{
+  content:'';position:absolute;inset:0;z-index:9;
+  background:linear-gradient(90deg,#0a0a0d 0%,transparent 20%,transparent 80%,#0a0a0d 100%);
+  display:block;pointer-events:none;
+}
+
+.reel-track{
+  display:flex;align-items:center;
+  width:max-content;
+  will-change:transform;
+}
+
+.reel-item{
+  width:110px;height:110px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;margin:8px 4px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.07);
+  background:var(--surface2);
+  transition:border-color .2s;
+  position:relative;overflow:hidden;
+}
+.reel-item::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.reel-item.common::before   {background:linear-gradient(90deg,#808080,transparent);}
+.reel-item.uncommon::before {background:linear-gradient(90deg,#00c878,transparent);}
+.reel-item.rare::before     {background:linear-gradient(90deg,#6699ff,transparent);}
+.reel-item.epic::before     {background:linear-gradient(90deg,#c77dff,transparent);}
+
+.reel-item .ri-emoji{font-size:36px;line-height:1;}
+.reel-item .ri-val{font-size:13px;font-weight:900;color:#ffb800;}
+.reel-item .ri-rarity{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);}
+
+/* ── WIN DISPLAY ── */
+.win-display{
+  display:none;flex-direction:column;align-items:center;gap:14px;
+  padding:24px 0 8px;animation:fadeUp .5s ease both;
+}
+.win-display.show{display:flex;}
+.win-emoji{font-size:56px;animation:popIn .4s ease both;}
+.win-amount{font-size:36px;font-weight:900;color:#ffb800;letter-spacing:-1px;}
+.win-rarity{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 12px;border-radius:20px;}
+.win-rarity.common  {background:rgba(180,180,180,.15);color:#c0c0c0;}
+.win-rarity.uncommon{background:rgba(0,180,100,.15);color:#00c878;}
+.win-rarity.rare    {background:rgba(50,100,255,.15);color:#6699ff;}
+.win-rarity.epic    {background:rgba(157,78,221,.2);color:#c77dff;}
+
+.modal-actions{display:flex;gap:12px;justify-content:center;margin-top:22px;flex-wrap:wrap;}
+
+/* close btn */
+.modal-close{
+  position:absolute;top:14px;right:16px;
+  background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;
+  width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  transition:background .2s,color .2s;
+}
+.modal-close:hover{background:rgba(255,255,255,.06);color:var(--text);}
+
+/* ── BALANCE BAR ── */
+.balance-bar{
+  background:var(--surface);border-bottom:1px solid var(--border-o);
+  padding:14px 0;position:sticky;top:var(--header-h);z-index:100;
+}
+.balance-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.bal-left{display:flex;align-items:center;gap:10px;}
+.bal-label{font-size:13px;color:var(--muted);font-weight:600;}
+.bal-val{font-size:22px;font-weight:900;color:#ffb800;letter-spacing:-.5px;}
+.bal-coins-icon{font-size:22px;}
+.no-coins-msg{font-size:13px;color:var(--red);font-weight:700;display:none;}
+.no-coins-msg.show{display:block;}
+
+/* ── HISTORY ── */
+.history-section{padding:40px 0 60px;}
+.history-list{display:flex;flex-direction:column;gap:10px;margin-top:20px;max-height:340px;overflow-y:auto;padding-right:4px;}
+.hist-item{
+  display:flex;align-items:center;gap:14px;
+  background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:12px 16px;
+  animation:fadeUp .3s ease both;
+}
+.hist-item .hi-emoji{font-size:22px;}
+.hist-item .hi-info{flex:1;}
+.hist-item .hi-case{font-size:13px;font-weight:700;color:var(--text);}
+.hist-item .hi-time{font-size:11px;color:var(--muted);margin-top:1px;}
+.hist-item .hi-won{font-size:15px;font-weight:900;color:#ffb800;}
+.hist-empty{font-size:14px;color:var(--muted);text-align:center;padding:28px;}
+
+@media(max-width:600px){
+  .reel-modal{padding:28px 16px 24px;}
+  .reel-item{width:90px;height:90px;}
+  .reel-item .ri-emoji{font-size:28px;}
+}
+</style>
+</head>
+<body>
+<header class="navbar" id="navbar"></header>
+
+<div class="cases-page">
+
+  <!-- BALANCE BAR -->
+  <div class="balance-bar">
+    <div class="container">
+      <div class="balance-inner">
+        <div class="bal-left">
+          <span class="bal-coins-icon">🪙</span>
+          <span class="bal-label">Твій баланс:</span>
+          <span class="bal-val" id="page-balance">500</span>
+          <span class="bal-label">монет</span>
+        </div>
+        <div class="no-coins-msg" id="no-coins-msg">❌ Недостатньо монет!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOP -->
+  <div class="shop-section">
+    <div class="container">
+      <div class="section-label">Магазин кейсів</div>
+      <h2 class="section-title">Обери свій кейс</h2>
+      <p class="section-desc">Кожен кейс коштує 100 монет. Виграй від 50 до 500 монет!</p>
+
+      <div class="cases-grid">
+        <!-- VOID CASE -->
+        <div class="case-card void reveal" onclick="openCaseModal('void')">
+          <div class="case-emoji">🟣</div>
+          <div class="case-name">VOID Basic Case</div>
+          <div class="case-desc">Таємниця темряви. Фіолетовий неон пронизує кожну нагороду. Для справжніх мисливців за скінами.</div>
+          <div class="case-price">🪙 100 монет</div>
+          <div class="case-drops">
+            <span class="drop-pill common">50 🪙</span>
+            <span class="drop-pill uncommon">100 🪙</span>
+            <span class="drop-pill rare">200 🪙</span>
+            <span class="drop-pill epic">500 🪙 RARE</span>
+          </div>
+          <button class="btn btn-purple btn-full" onclick="openCaseModal('void');event.stopPropagation()">🟣 Відкрити кейс</button>
+        </div>
+
+        <!-- CYBER CASE -->
+        <div class="case-card cyber reveal reveal-d1" onclick="openCaseModal('cyber')">
+          <div class="case-emoji">🔵</div>
+          <div class="case-name">Cyber Neon Case</div>
+          <div class="case-desc">Кіберпанк майбутнього. Синьо-бірюзовий неон. Відкрий кейс і отримай нагороду з матриці.</div>
+          <div class="case-price">🪙 100 монет</div>
+          <div class="case-drops">
+            <span class="drop-pill common">50 🪙</span>
+            <span class="drop-pill uncommon">100 🪙</span>
+            <span class="drop-pill rare">200 🪙</span>
+            <span class="drop-pill epic">500 🪙 RARE</span>
+          </div>
+          <button class="btn btn-cyan btn-full" onclick="openCaseModal('cyber');event.stopPropagation()">🔵 Відкрити кейс</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="history-section">
+    <div class="container">
+      <div class="section-label">Остання активність</div>
+      <h3 style="font-size:20px;font-weight:900;margin-bottom:6px;">Історія відкриттів</h3>
+      <div class="history-list" id="history-list">
+        <div class="hist-empty">Ти ще не відкривав жодного кейсу 📦</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL ══ -->
+<div class="modal-overlay" id="case-modal">
+  <div class="reel-modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="reel-title" id="reel-title">Відкриття <span id="reel-case-name">кейсу</span></div>
+
+    <!-- SPIN REEL -->
+    <div class="reel-wrap" id="reel-wrap">
+      <div class="reel-track" id="reel-track"></div>
+    </div>
+
+    <!-- WIN RESULT -->
+    <div class="win-display" id="win-display">
+      <div class="win-emoji" id="win-emoji">🎉</div>
+      <div class="win-amount" id="win-amount">+200 🪙</div>
+      <div class="win-rarity" id="win-rarity">UNCOMMON</div>
+    </div>
+
+    <div class="modal-actions" id="modal-actions" style="display:none;">
+      <button class="btn btn-primary btn-lg" id="open-again-btn" onclick="reOpenCase()">🔄 Відкрити ще раз</button>
+      <button class="btn btn-secondary" onclick="closeModal()">✖ Закрити</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+requireAuth();
+buildNavbar('cases');
+setLang(currentLang);
+initReveal();
+
+/* ── REWARDS TABLE ── */
+const REWARDS = [
+  { val:50,  rarity:'common',   label:'ЗВИЧАЙНЕ',  emoji:'💰', weight:50 },
+  { val:100, rarity:'uncommon', label:'НЕЗВИЧАЙНЕ', emoji:'💵', weight:30 },
+  { val:200, rarity:'rare',     label:'РІДКІСНЕ',  emoji:'💎', weight:15 },
+  { val:500, rarity:'epic',     label:'ЕПІЧНЕ',    emoji:'🌟', weight:5  },
+];
+
+const CASES = {
+  void:  { name:'VOID Basic Case',  accentClass:'purple' },
+  cyber: { name:'Cyber Neon Case',  accentClass:'cyan'   },
+};
+
+let activeCaseType = null;
+let spinning = false;
+
+/* generate weighted random reward */
+function pickReward() {
+  const total = REWARDS.reduce((s,r)=>s+r.weight,0);
+  let rand = Math.random() * total;
+  for (const r of REWARDS) { rand -= r.weight; if (rand <= 0) return r; }
+  return REWARDS[0];
+}
+
+/* build 60 random items for the reel */
+function buildReel(winnerIdx) {
+  const items = [];
+  for (let i = 0; i < 60; i++) {
+    const r = (i === winnerIdx) ? pickReward() : REWARDS[Math.floor(Math.random()*REWARDS.length)];
+    items.push(r);
+  }
+  return items;
+}
+
+function renderReel(items) {
+  const track = document.getElementById('reel-track');
+  track.style.transform = 'translateX(0)';
+  track.style.transition = 'none';
+  track.innerHTML = items.map(r => `
+    <div class="reel-item ${r.rarity}">
+      <div class="ri-emoji">${r.emoji}</div>
+      <div class="ri-val">+${r.val} 🪙</div>
+      <div class="ri-rarity">${r.label}</div>
+    </div>`).join('');
+}
+
+function openCaseModal(caseType) {
+  const bal = getBalance();
+  if (bal < 100) {
+    document.getElementById('no-coins-msg').classList.add('show');
+    setTimeout(()=>document.getElementById('no-coins-msg').classList.remove('show'), 2500);
+    return;
+  }
+  activeCaseType = caseType;
+  const caseInfo = CASES[caseType];
+
+  document.getElementById('reel-case-name').textContent = caseInfo.name;
+  document.getElementById('win-display').classList.remove('show');
+  document.getElementById('modal-actions').style.display = 'none';
+
+  /* reset reel */
+  const WINNER_IDX = 45; /* item that lands in center */
+  const items = buildReel(WINNER_IDX);
+  /* override winner slot */
+  const winner = pickReward();
+  items[WINNER_IDX] = winner;
+
+  renderReel(items);
+  document.getElementById('case-modal').classList.add('show');
+
+  /* spin after short delay */
+  setTimeout(() => startSpin(items, WINNER_IDX, winner), 200);
+}
+
+function startSpin(items, winnerIdx, winner) {
+  if (spinning) return;
+  spinning = true;
+
+  const track = document.getElementById('reel-track');
+  const itemW = 118; /* item width + margin */
+  const containerW = document.getElementById('reel-wrap').offsetWidth;
+  const centerOffset = containerW / 2 - itemW / 2;
+
+  /* target: winner in center */
+  const targetX = -(winnerIdx * itemW - centerOffset);
+
+  /* ease out cubic */
+  track.style.transition = `transform 4.2s cubic-bezier(0.12, 0.8, 0.25, 1)`;
+  track.style.transform  = `translateX(${targetX}px)`;
+
+  setTimeout(() => {
+    spinning = false;
+    showWin(winner);
+
+    /* deduct coins */
+    const newBal = getBalance() - 100;
+    setBalance(newBal);
+    document.getElementById('page-balance').textContent = newBal;
+
+    /* add reward */
+    setTimeout(() => {
+      const rewarded = newBal + winner.val;
+      setBalance(rewarded);
+      document.getElementById('page-balance').textContent = rewarded;
+      coinRain(winner.val >= 200 ? 20 : 10);
+      addHistory(activeCaseType, winner);
+    }, 600);
+
+    document.getElementById('modal-actions').style.display = 'flex';
+  }, 4400);
+}
+
+function showWin(reward) {
+  const wd = document.getElementById('win-display');
+  document.getElementById('win-emoji').textContent   = reward.emoji;
+  document.getElementById('win-amount').textContent  = `+${reward.val} 🪙`;
+  const wr = document.getElementById('win-rarity');
+  wr.textContent  = reward.label;
+  wr.className    = `win-rarity ${reward.rarity}`;
+  wd.classList.add('show');
+}
+
+function reOpenCase() {
+  document.getElementById('win-display').classList.remove('show');
+  document.getElementById('modal-actions').style.display = 'none';
+
+  const bal = getBalance();
+  if (bal < 100) {
+    document.getElementById('no-coins-msg').classList.add('show');
+    closeModal();
+    setTimeout(()=>document.getElementById('no-coins-msg').classList.remove('show'), 2500);
+    return;
+  }
+  const WINNER_IDX = 45;
+  const items = buildReel(WINNER_IDX);
+  const winner = pickReward();
+  items[WINNER_IDX] = winner;
+  renderReel(items);
+  setTimeout(() => startSpin(items, WINNER_IDX, winner), 200);
+}
+
+function closeModal() {
+  document.getElementById('case-modal').classList.remove('show');
+  spinning = false;
+}
+
+/* click outside to close */
+document.getElementById('case-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+/* ── HISTORY ── */
+function addHistory(caseType, reward) {
+  const s   = getSyncedSession();
+  const key = 'vp_history_' + (s ? s.user : 'guest');
+  let hist  = [];
+  try { hist = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){}
+
+  hist.unshift({
+    case: CASES[caseType].name,
+    emoji: reward.emoji,
+    val: reward.val,
+    rarity: reward.rarity,
+    time: new Date().toLocaleTimeString('uk-UA', {hour:'2-digit',minute:'2-digit'}),
+    date: new Date().toLocaleDateString('uk-UA')
+  });
+  if (hist.length > 30) hist.pop();
+  localStorage.setItem(key, JSON.stringify(hist));
+  renderHistory(hist);
+}
+
+function renderHistory(hist) {
+  const el = document.getElementById('history-list');
+  if (!hist || !hist.length) {
+    el.innerHTML = '<div class="hist-empty">Ти ще не відкривав жодного кейсу 📦</div>';
+    return;
+  }
+  el.innerHTML = hist.slice(0,20).map(h=>`
+    <div class="hist-item">
+      <div class="hi-emoji">${h.emoji}</div>
+      <div class="hi-info">
+        <div class="hi-case">${h.case}</div>
+        <div class="hi-time">${h.date} · ${h.time}</div>
+      </div>
+      <div class="hi-won">+${h.val} 🪙</div>
+    </div>`).join('');
+}
+
+/* ── INIT ── */
+document.getElementById('page-balance').textContent = getBalance();
+
+const s   = getSyncedSession();
+const key = 'vp_history_' + (s ? s.user : 'guest');
+try { renderHistory(JSON.parse(localStorage.getItem(key)||'[]')); } catch(e){}
+</script>
+</body>
+</html>
