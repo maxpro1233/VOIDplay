@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VØIDplay — Колесо фортуни</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.wheel-page{padding:calc(var(--header-h)+50px) 0 80px;min-height:100vh;}
+.wheel-layout{display:grid;grid-template-columns:1fr 340px;gap:40px;align-items:start;}
+
+/* ── WHEEL ── */
+.wheel-wrapper{display:flex;flex-direction:column;align-items:center;gap:30px;}
+.wheel-container{position:relative;width:400px;height:400px;max-width:90vw;}
+.wheel-canvas-wrap{position:relative;width:100%;padding-bottom:100%;border-radius:50%;overflow:hidden;
+  box-shadow:0 0 60px rgba(255,107,0,.25),0 0 120px rgba(255,107,0,.08);}
+.wheel-canvas-wrap canvas{position:absolute;inset:0;width:100%;height:100%;}
+.wheel-pointer{
+  position:absolute;top:-18px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;
+  border-top:28px solid var(--orange);filter:drop-shadow(0 0 10px var(--orange));z-index:10;
+}
+.wheel-center{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle,#ff8c00,#ff3a00);
+  box-shadow:0 0 20px rgba(255,107,0,.6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;z-index:10;
+}
+
+.spin-btn-wrap{text-align:center;}
+.spin-info{font-size:13px;color:var(--muted);margin-top:10px;}
+
+/* ── RESULT PANEL ── */
+.result-panel{
+  background:var(--surface);border:1px solid var(--border-o);border-radius:20px;
+  padding:30px;position:relative;overflow:hidden;
+}
+.result-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange),transparent);}
+.result-title{font-size:14px;font-weight:700;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;}
+.result-display{
+  text-align:center;padding:28px 16px;border:1px solid var(--border);border-radius:14px;
+  background:var(--surface2);margin-bottom:20px;min-height:120px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+}
+.res-emoji{font-size:50px;animation:popIn .4s ease both;}
+.res-amount{font-size:32px;font-weight:900;color:#ffb800;}
+.res-label{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.res-placeholder{font-size:14px;color:var(--dim);}
+
+.rewards-list{display:flex;flex-direction:column;gap:8px;}
+.reward-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:13px;}
+.reward-row .rr-emoji{font-size:18px;}
+.reward-row .rr-val{font-weight:900;color:#ffb800;}
+.reward-row .rr-chance{font-size:11px;color:var(--muted);}
+
+/* ── HISTORY ── */
+.wheel-history{margin-top:40px;}
+.wheel-hist-list{display:flex;flex-direction:column;gap:8px;margin-top:14px;max-height:260px;overflow-y:auto;}
+.wh-item{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;}
+.wh-emoji{font-size:20px;}
+.wh-info{flex:1;}
+.wh-val{font-size:15px;font-weight:900;color:#ffb800;}
+.wh-time{font-size:11px;color:var(--muted);}
+.wh-empty{font-size:13px;color:var(--muted);text-align:center;padding:20px;}
+
+@media(max-width:768px){
+  .wheel-layout{grid-template-columns:1fr;}
+  .wheel-container{width:320px;}
+}
+</style>
+</head>
+<body>
+<header class="navbar" id="navbar"></header>
+
+<div class="wheel-page">
+  <div class="container">
+    <div class="section-label" style="margin-bottom:8px">Колесо фортуни</div>
+    <h2 class="section-title" style="margin-bottom:8px">🎡 Wheel of Fortune</h2>
+    <p class="section-desc" style="margin-bottom:36px">Кожен крутяж коштує 100 монет. Виграш — від 0 до 1000!</p>
+
+    <div class="wheel-layout">
+      <!-- WHEEL -->
+      <div class="wheel-wrapper">
+        <div class="wheel-container">
+          <div class="wheel-pointer"></div>
+          <div class="wheel-canvas-wrap">
+            <canvas id="wheel-canvas" width="500" height="500"></canvas>
+          </div>
+          <div class="wheel-center">🎡</div>
+        </div>
+
+        <div class="spin-btn-wrap">
+          <button class="btn btn-primary btn-lg" id="spin-btn" onclick="doSpin()">🎡 Крутити (100 монет)</button>
+          <div class="spin-info">Баланс: 🪙 <span class="js-coins" id="wheel-balance">500</span> монет</div>
+        </div>
+
+        <!-- WHEEL HISTORY -->
+        <div class="wheel-history" style="width:100%">
+          <div class="section-label">Мої спіни</div>
+          <div class="wheel-hist-list" id="wheel-hist-list">
+            <div class="wh-empty">Ти ще не крутив колесо 🎡</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT & REWARDS -->
+      <div class="result-panel">
+        <div class="result-title">🏆 Результат</div>
+        <div class="result-display" id="result-display">
+          <div class="res-placeholder">Крути колесо щоб побачити результат!</div>
+        </div>
+
+        <div class="section-label" style="margin-bottom:10px;font-size:9.5px;">Можливі виграші</div>
+        <div class="rewards-list" id="rewards-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+requireAuth();
+buildNavbar('wheel');
+setLang(currentLang);
+initMusic();
+
+/* ── SEGMENTS ── */
+const SEGMENTS=[
+  {label:'💰 50',   val:50,   color:'#1a1a2e', textColor:'#ffb800', weight:28},
+  {label:'🚫 0',    val:0,    color:'#2d1b1b', textColor:'#ff4444', weight:30},
+  {label:'💵 100',  val:100,  color:'#0d1b2a', textColor:'#4dc9ff', weight:20},
+  {label:'💎 200',  val:200,  color:'#1a0d2e', textColor:'#c77dff', weight:12},
+  {label:'🚫 0',    val:0,    color:'#2d1b1b', textColor:'#ff4444', weight:0},  /* duplicate for balance */
+  {label:'⭐ 1000', val:1000, color:'#1a2200', textColor:'#ffe600', weight:2},
+  {label:'💰 50',   val:50,   color:'#1a1a2e', textColor:'#ffb800', weight:0},
+  {label:'💵 100',  val:100,  color:'#0d1b2a', textColor:'#4dc9ff', weight:0},
+];
+/* Fill real segments array for visual (8 equal slices) */
+const WHEEL_SEGS=[
+  {label:'💰 50',   val:50,   bg:'#1e1e2e', accent:'#ff8800'},
+  {label:'🚫 0',    val:0,    bg:'#2a1515', accent:'#ff3333'},
+  {label:'💵 100',  val:100,  bg:'#0d1a28', accent:'#00d4ff'},
+  {label:'💎 200',  val:200,  bg:'#1a0d2e', accent:'#c77dff'},
+  {label:'🚫 0',    val:0,    bg:'#2a1515', accent:'#ff3333'},
+  {label:'⭐ 1000', val:1000, bg:'#1a1e00', accent:'#ffe600'},
+  {label:'💰 50',   val:50,   bg:'#1e1e2e', accent:'#ff8800'},
+  {label:'💵 100',  val:100,  bg:'#0d1a28', accent:'#00d4ff'},
+];
+const REWARDS_TABLE=[
+  {label:'50 монет',   val:50,   emoji:'💰',chance:'28%'},
+  {label:'0 монет',    val:0,    emoji:'🚫',chance:'30%'},
+  {label:'100 монет',  val:100,  emoji:'💵',chance:'20%'},
+  {label:'200 монет',  val:200,  emoji:'💎',chance:'12%'},
+  {label:'1000 монет', val:1000, emoji:'⭐',chance:'2%'},
+];
+
+/* ── DRAW WHEEL ── */
+const canvas=document.getElementById('wheel-canvas');
+const ctx=canvas.getContext('2d');
+let currentAngle=0;
+
+function drawWheel(angle){
+  const cx=250,cy=250,r=240;
+  const n=WHEEL_SEGS.length;
+  const arc=(2*Math.PI)/n;
+  ctx.clearRect(0,0,500,500);
+  WHEEL_SEGS.forEach((seg,i)=>{
+    const start=angle+i*arc;
+    const end=start+arc;
+    /* slice */
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,end);ctx.closePath();
+    ctx.fillStyle=seg.bg;ctx.fill();
+    ctx.strokeStyle=seg.accent;ctx.lineWidth=2;ctx.stroke();
+    /* accent outer ring */
+    ctx.beginPath();ctx.arc(cx,cy,r-4,start,end);
+    ctx.strokeStyle=seg.accent+'44';ctx.lineWidth=8;ctx.stroke();
+    /* text */
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(start+arc/2);
+    ctx.textAlign='right';ctx.fillStyle=seg.accent;
+    ctx.font='bold 18px "Exo 2",sans-serif';ctx.shadowColor=seg.accent;ctx.shadowBlur=8;
+    ctx.fillText(seg.label,r-18,6);
+    ctx.restore();
+  });
+  /* center circle */
+  ctx.beginPath();ctx.arc(cx,cy,38,0,2*Math.PI);
+  const g=ctx.createRadialGradient(cx,cy,0,cx,cy,38);
+  g.addColorStop(0,'#ff8c00');g.addColorStop(1,'#ff3a00');
+  ctx.fillStyle=g;ctx.fill();
+  ctx.strokeStyle='rgba(255,107,0,.5)';ctx.lineWidth=3;ctx.stroke();
+}
+drawWheel(0);
+
+/* populate rewards list */
+document.getElementById('rewards-list').innerHTML=REWARDS_TABLE.map(r=>`
+  <div class="reward-row">
+    <span class="rr-emoji">${r.emoji}</span>
+    <span>${r.label}</span>
+    <span class="rr-chance">${r.chance}</span>
+    <span class="rr-val">${r.val>0?'+'+r.val+' 🪙':'—'}</span>
+  </div>`).join('');
+
+/* ── SPIN LOGIC ── */
+let spinning=false;
+
+function pickSegment(){
+  /* weighted: 0=28%, 1=30%, 2=20%, 3=12%, 4=0%, 5=2%, 6=8%(extra 50), 7=0% */
+  const W=[28,30,20,12,0,2,8,0];
+  const total=W.reduce((a,b)=>a+b,0);
+  let r=Math.random()*total;
+  for(let i=0;i<W.length;i++){r-=W[i];if(r<=0)return i;}
+  return 0;
+}
+
+function doSpin(){
+  if(spinning)return;
+  if(getBalance()<100){
+    document.getElementById('result-display').innerHTML='<div class="res-placeholder" style="color:var(--red)">❌ Недостатньо монет!</div>';
+    return;
+  }
+  spinning=true;
+  setBalance(getBalance()-100);
+  document.getElementById('wheel-balance').textContent=getBalance();
+  document.getElementById('spin-btn').disabled=true;
+  document.getElementById('result-display').innerHTML='<div class="res-placeholder">⏳ Крутимо...</div>';
+
+  const targetIdx=pickSegment();
+  const n=WHEEL_SEGS.length;
+  const arc=(2*Math.PI)/n;
+
+  /* angle so targetIdx lands under pointer (top = -PI/2) */
+  const targetAngle=-(targetIdx*arc + arc/2) - Math.PI/2;
+  /* add several full rotations for effect */
+  const spins=8+Math.floor(Math.random()*4);
+  const finalAngle=targetAngle + spins*2*Math.PI;
+
+  playSpin();
+
+  const dur=6000;
+  const start=performance.now();
+  const startA=currentAngle;
+
+  function frame(now){
+    const t=Math.min((now-start)/dur,1);
+    /* ease-out */
+    const ease=1-Math.pow(1-t,4);
+    const a=startA+(finalAngle-startA)*ease;
+    currentAngle=a;
+    drawWheel(a);
+    if(t<1){requestAnimationFrame(frame);}
+    else{
+      currentAngle=finalAngle;
+      onSpinDone(WHEEL_SEGS[targetIdx]);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function playSpin(){
+  try{
+    const ctx2=new(window.AudioContext||window.webkitAudioContext)();
+    for(let i=0;i<30;i++){
+      const osc=ctx2.createOscillator();const g=ctx2.createGain();
+      osc.frequency.value=300+Math.random()*400;
+      const t=ctx2.currentTime+i*0.18;
+      g.gain.setValueAtTime(0.07,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.14);
+      osc.connect(g);g.connect(ctx2.destination);
+      osc.start(t);osc.stop(t+0.16);
+    }
+  }catch(e){}
+}
+
+function onSpinDone(seg){
+  spinning=false;
+  document.getElementById('spin-btn').disabled=false;
+  const val=seg.val;
+  setBalance(getBalance()+val);
+  document.getElementById('wheel-balance').textContent=getBalance();
+
+  const emoji=val===0?'🚫':val>=1000?'⭐':val>=200?'💎':val>=100?'💵':'💰';
+  document.getElementById('result-display').innerHTML=`
+    <div class="res-emoji">${emoji}</div>
+    <div class="res-amount">${val>0?'+'+val+' 🪙':'😢 Нічого'}</div>
+    <div class="res-label">${val>=1000?'ДЖЕКПОТ!':val>=200?'РІДКІСНЕ':val>=100?'НЕПОГАНО':'ЗВИЧАЙНЕ'}</div>`;
+
+  if(val>0) coinRain(val>=1000?30:val>=200?15:8);
+
+  /* save history */
+  const u=getActiveUser()||'g';
+  let h=[];try{h=JSON.parse(localStorage.getItem('vp_wheel_'+u)||'[]');}catch(e){}
+  h.unshift({val,emoji,time:new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'}),date:new Date().toLocaleDateString('uk-UA')});
+  if(h.length>30)h.pop();
+  localStorage.setItem('vp_wheel_'+u,JSON.stringify(h));
+  renderWheelHistory(h);
+}
+
+function renderWheelHistory(h){
+  const el=document.getElementById('wheel-hist-list');
+  if(!h||!h.length){el.innerHTML='<div class="wh-empty">Ти ще не крутив колесо 🎡</div>';return;}
+  el.innerHTML=h.map(e=>`
+    <div class="wh-item">
+      <div class="wh-emoji">${e.emoji}</div>
+      <div class="wh-info"><div class="wh-val">${e.val>0?'+'+e.val+' 🪙':'Нічого'}</div><div class="wh-time">${e.date} · ${e.time}</div></div>
+    </div>`).join('');
+}
+
+/* init */
+document.getElementById('wheel-balance').textContent=getBalance();
+try{const u=getActiveUser()||'g';renderWheelHistory(JSON.parse(localStorage.getItem('vp_wheel_'+u)||'[]'));}catch(e){}
+</script>
+</body>
+</html>

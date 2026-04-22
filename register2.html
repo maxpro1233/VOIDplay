@@ -5,7 +5,7 @@
 <title>VØIDplay — Реєстрація</title>
 <link rel="stylesheet" href="style.css">
 <style>
-body{display:flex;align-items:center;justify-content:center;padding:24px;
+body{display:flex;align-items:center;justify-content:center;padding:24px;min-height:100vh;
   background-image:radial-gradient(ellipse 60% 55% at 25% 55%,rgba(255,107,0,.09) 0%,transparent 65%),
     radial-gradient(ellipse 40% 40% at 75% 30%,rgba(255,107,0,.05) 0%,transparent 60%);}
 body::before{content:'';position:fixed;inset:0;
@@ -42,6 +42,7 @@ body::before{content:'';position:fixed;inset:0;
     <button class="tab-btn active" id="t-reg" onclick="sw('reg')" data-i="tab_reg">Реєстрація</button>
     <button class="tab-btn" id="t-login" onclick="sw('login')" data-i="tab_login">Увійти</button>
   </div>
+
   <div class="tab-panel show" id="p-reg">
     <div class="field-row">
       <div class="field"><label class="field-label" data-i="lbl_first">Ім'я</label>
@@ -52,13 +53,14 @@ body::before{content:'';position:fixed;inset:0;
     <div class="field"><label class="field-label" data-i="lbl_login">Логін</label>
       <input class="field-input" type="text" id="r-user" placeholder="ivan123" autocomplete="username"></div>
     <div class="field"><label class="field-label" data-i="lbl_birth">Рік народження</label>
-      <input class="field-input" type="number" id="r-year" placeholder="2003" min="1900" max="2099"></div>
+      <input class="field-input" type="number" id="r-year" placeholder="2005" min="1900" max="2099"></div>
     <div class="field"><label class="field-label" data-i="lbl_pass">Пароль</label>
       <input class="field-input" type="password" id="r-pass" placeholder="••••••••" autocomplete="new-password"></div>
     <div class="alert alert-error" id="reg-err"></div>
     <div class="alert alert-success" id="reg-ok"></div>
     <button class="btn btn-primary btn-full btn-lg" id="reg-btn" onclick="doReg()" data-i="btn_reg">Зареєструватися →</button>
   </div>
+
   <div class="tab-panel" id="p-login">
     <div class="field"><label class="field-label" data-i="lbl_login">Логін</label>
       <input class="field-input" type="text" id="l-user" placeholder="ivan123" autocomplete="username"></div>
@@ -69,54 +71,58 @@ body::before{content:'';position:fixed;inset:0;
     <button class="btn btn-primary btn-full btn-lg" id="login-btn" onclick="doLogin()" data-i="btn_login">Увійти →</button>
   </div>
 </div>
+
 <script src="script.js"></script>
 <script>
 redirectIfLoggedIn();
 setLang(currentLang);
 
-function sw(tab) {
-  document.getElementById('t-reg').classList.toggle('active', tab==='reg');
-  document.getElementById('t-login').classList.toggle('active', tab==='login');
-  document.getElementById('p-reg').classList.toggle('show', tab==='reg');
-  document.getElementById('p-login').classList.toggle('show', tab==='login');
+function sw(tab){
+  document.getElementById('t-reg').classList.toggle('active',tab==='reg');
+  document.getElementById('t-login').classList.toggle('active',tab==='login');
+  document.getElementById('p-reg').classList.toggle('show',tab==='reg');
+  document.getElementById('p-login').classList.toggle('show',tab==='login');
 }
 function lock(ids){ids.forEach(id=>{var e=document.getElementById(id);if(e)e.disabled=true;});}
 
-function doReg() {
+function doReg(){
   var first=document.getElementById('r-first').value.trim(),
-      last=document.getElementById('r-last').value.trim(),
-      user=document.getElementById('r-user').value.trim().toLowerCase(),
-      year=parseInt(document.getElementById('r-year').value,10),
-      pass=document.getElementById('r-pass').value,
-      err=document.getElementById('reg-err'), ok=document.getElementById('reg-ok');
-  err.classList.remove('show'); ok.classList.remove('show');
+      last =document.getElementById('r-last').value.trim(),
+      user =document.getElementById('r-user').value.trim().toLowerCase(),
+      year =parseInt(document.getElementById('r-year').value,10),
+      pass =document.getElementById('r-pass').value,
+      err  =document.getElementById('reg-err'),
+      ok   =document.getElementById('reg-ok');
+  err.classList.remove('show');ok.classList.remove('show');
   var now=new Date().getFullYear();
   if(!year||year<1900||year>now){err.textContent=t('err_year');err.classList.add('show');return;}
   if(now-year<13){err.textContent=t('err_age');err.classList.add('show');return;}
+  if(!first){err.textContent="Введіть ім'я";err.classList.add('show');return;}
   if(user.length<3){err.textContent=t('err_user');err.classList.add('show');return;}
   if(pass.length<4){err.textContent=t('err_pass');err.classList.add('show');return;}
-  if(!first){err.textContent="Введіть ім'я";err.classList.add('show');return;}
   var users=getUsers();
   if(users[user]){err.textContent=t('err_taken');err.classList.add('show');return;}
-  var u={first,last,user,year,pass,balance:500,registered:new Date().toLocaleDateString('uk-UA'),nickname:first+' '+last};
-  users[user]=u; saveUsers(users); saveSession(u);
-  ok.textContent=t('ok_reg'); ok.classList.add('show');
+  users[user]={first,last,user,year,pass,balance:500,registered:new Date().toLocaleDateString('uk-UA'),nickname:first+(last?' '+last:''),friends:[]};
+  saveUsers(users);
+  setActiveUser(user);
+  ok.textContent=t('ok_reg');ok.classList.add('show');
   lock(['r-first','r-last','r-user','r-year','r-pass','reg-btn']);
-  window.location.href='index.html';
+  setTimeout(()=>{window.location.href='index.html';},800);
 }
 
-function doLogin() {
+function doLogin(){
   var user=document.getElementById('l-user').value.trim().toLowerCase(),
       pass=document.getElementById('l-pass').value,
-      err=document.getElementById('login-err'), ok=document.getElementById('login-ok');
-  err.classList.remove('show'); ok.classList.remove('show');
+      err =document.getElementById('login-err'),
+      ok  =document.getElementById('login-ok');
+  err.classList.remove('show');ok.classList.remove('show');
   var users=getUsers();
   if(!users[user]){err.textContent=t('err_notfound');err.classList.add('show');return;}
   if(users[user].pass!==pass){err.textContent=t('err_wrong');err.classList.add('show');return;}
-  saveSession(users[user]);
-  ok.textContent=t('ok_login'); ok.classList.add('show');
+  setActiveUser(user);
+  ok.textContent=t('ok_login');ok.classList.add('show');
   lock(['l-user','l-pass','login-btn']);
-  window.location.href='index.html';
+  setTimeout(()=>{window.location.href='index.html';},800);
 }
 
 document.addEventListener('keydown',e=>{
