@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VØIDplay — Ставки</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.bets-page{padding:calc(var(--header-h)+50px) 0 80px;min-height:100vh;}
+.bets-layout{display:grid;grid-template-columns:1fr 360px;gap:36px;align-items:start;}
+
+/* bet card */
+.bet-card{background:var(--surface);border:1px solid var(--border-o);border-radius:20px;padding:30px;position:relative;overflow:hidden;}
+.bet-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange),transparent 70%);}
+.bet-title{font-size:18px;font-weight:900;margin-bottom:6px;}
+.bet-desc{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5;}
+
+/* bet amount row */
+.bet-amt-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.bet-preset{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:7px 14px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;}
+.bet-preset:hover,.bet-preset.active{background:rgba(255,107,0,.15);border-color:var(--orange);color:var(--orange-light);}
+
+/* multiplier row */
+.mult-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
+.mult-btn{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:13px 8px;cursor:pointer;text-align:center;transition:all .2s;font-family:var(--font);}
+.mult-btn:hover{transform:translateY(-2px);}
+.mult-btn.active{border-color:var(--orange);background:rgba(255,107,0,.12);}
+.mult-btn .mb-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.mult-btn .mb-mult{font-size:20px;font-weight:900;}
+.mult-btn .mb-chance{font-size:10px;color:var(--muted);margin-top:2px;}
+.mult-btn.x2 .mb-mult{color:#00e676;}
+.mult-btn.x3 .mb-mult{color:#00d4ff;}
+.mult-btn.x5 .mb-mult{color:#c77dff;}
+
+/* summary */
+.bet-summary{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.bs-item{font-size:13px;color:var(--muted);}
+.bs-item strong{color:var(--text);font-weight:900;}
+.bs-win{font-size:15px;font-weight:900;color:#00e676;}
+
+/* result anim */
+.bet-result{display:none;text-align:center;padding:22px 16px;border-radius:14px;animation:popIn .4s ease both;}
+.bet-result.win{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);}
+.bet-result.lose{background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2);}
+.br-emoji{font-size:46px;margin-bottom:8px;}
+.br-amount{font-size:28px;font-weight:900;}
+.br-amount.win{color:#00e676;}
+.br-amount.lose{color:var(--red);}
+.br-label{font-size:13px;color:var(--muted);margin-top:4px;}
+
+/* sidebar */
+.side-card{background:var(--surface);border:1px solid var(--border-o);border-radius:18px;padding:24px;position:relative;overflow:hidden;margin-bottom:20px;}
+.side-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,var(--orange),transparent 70%);}
+.side-title{font-size:13px;font-weight:700;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+
+.bet-hist-list{display:flex;flex-direction:column;gap:7px;max-height:320px;overflow-y:auto;}
+.bh-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;}
+.bh-emoji{font-size:18px;}
+.bh-info{flex:1;min-width:0;}
+.bh-line{font-size:13px;font-weight:700;}
+.bh-line.win{color:#00e676;}
+.bh-line.lose{color:var(--red);}
+.bh-meta{font-size:11px;color:var(--muted);margin-top:1px;}
+.bh-empty{font-size:13px;color:var(--muted);text-align:center;padding:16px;}
+
+.stats-bets{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.sb-item{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;text-align:center;}
+.sb-val{font-size:18px;font-weight:900;color:var(--orange-light);}
+.sb-key{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+
+@media(max-width:800px){.bets-layout{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header class="navbar" id="navbar"></header>
+<div class="bets-page">
+  <div class="container">
+    <div class="section-label" style="margin-bottom:8px">Ставки</div>
+    <h2 class="section-title" style="margin-bottom:8px">🎯 Зроби ставку</h2>
+    <p class="section-desc" style="margin-bottom:34px">Ризикуй монетами та множ виграш. Чим більше множник — тим менший шанс.</p>
+
+    <div class="bets-layout">
+      <!-- BET FORM -->
+      <div>
+        <div class="bet-card reveal">
+          <div class="bet-title">💰 Сума ставки</div>
+          <div class="bet-desc">Вибери суму та множник. Твій баланс: 🪙 <span class="js-coins" id="bet-bal">500</span></div>
+
+          <label class="field-label" style="margin-bottom:8px;">Сума ставки</label>
+          <div class="bet-amt-row">
+            <button class="bet-preset" onclick="setAmt(50)">50</button>
+            <button class="bet-preset" onclick="setAmt(100)">100</button>
+            <button class="bet-preset" onclick="setAmt(250)">250</button>
+            <button class="bet-preset" onclick="setAmt(500)">500</button>
+            <button class="bet-preset" onclick="setAmt(Math.floor(getBalance()/2))">½</button>
+            <button class="bet-preset" onclick="setAmt(getBalance())">MAX</button>
+          </div>
+          <input class="field-input" type="number" id="bet-amt" placeholder="Введи суму..." min="1" style="margin-bottom:20px;" oninput="updateSummary()">
+
+          <label class="field-label" style="margin-bottom:10px;">Множник</label>
+          <div class="mult-row">
+            <button class="mult-btn x2 active" id="mb-2" onclick="setMult(2)">
+              <div class="mb-label">Безпечна</div><div class="mb-mult">×2</div><div class="mb-chance">45% виграш</div>
+            </button>
+            <button class="mult-btn x3" id="mb-3" onclick="setMult(3)">
+              <div class="mb-label">Ризикована</div><div class="mb-mult">×3</div><div class="mb-chance">30% виграш</div>
+            </button>
+            <button class="mult-btn x5" id="mb-5" onclick="setMult(5)">
+              <div class="mb-label">Хардкор</div><div class="mb-mult">×5</div><div class="mb-chance">18% виграш</div>
+            </button>
+          </div>
+
+          <div class="bet-summary">
+            <div class="bs-item">Ставка: <strong id="sum-bet">—</strong> 🪙</div>
+            <div class="bs-item">Множник: <strong id="sum-mult">×2</strong></div>
+            <div class="bs-win" id="sum-win">Виграш: —</div>
+          </div>
+
+          <button class="btn btn-primary btn-full btn-lg" id="bet-btn" onclick="doBet()">🎯 Зробити ставку</button>
+          <div id="bet-result-wrap" style="margin-top:18px;"></div>
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div>
+        <div class="side-card reveal">
+          <div class="side-title">📊 Статистика</div>
+          <div class="stats-bets" id="stats-bets">
+            <div class="sb-item"><div class="sb-val" id="st-bets">0</div><div class="sb-key">Ставок</div></div>
+            <div class="sb-item"><div class="sb-val" id="st-wins">0</div><div class="sb-key">Виграшів</div></div>
+            <div class="sb-item"><div class="sb-val" id="st-earned">0</div><div class="sb-key">Зароблено</div></div>
+            <div class="sb-item"><div class="sb-val" id="st-lost">0</div><div class="sb-key">Втрачено</div></div>
+          </div>
+        </div>
+
+        <div class="side-card reveal">
+          <div class="side-title">📋 Остання активність</div>
+          <div class="bet-hist-list" id="bet-hist-list"><div class="bh-empty">Ще немає ставок 🎯</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+requireAuth();
+buildNavbar('bets');
+setLang(currentLang);
+initReveal();
+initMusic();
+
+/* ── STATE ── */
+let selectedMult=2;
+
+function setAmt(v){
+  var a=Math.min(Math.max(1,Math.floor(v)),getBalance());
+  document.getElementById('bet-amt').value=a;
+  updateSummary();
+}
+function setMult(m){
+  selectedMult=m;
+  [2,3,5].forEach(x=>document.getElementById('mb-'+x).classList.toggle('active',x===m));
+  updateSummary();
+}
+function updateSummary(){
+  var amt=parseInt(document.getElementById('bet-amt').value,10)||0;
+  document.getElementById('sum-bet').textContent=amt||'—';
+  document.getElementById('sum-mult').textContent='×'+selectedMult;
+  document.getElementById('sum-win').textContent=amt?'Виграш: '+(amt*selectedMult)+' 🪙':'Виграш: —';
+}
+updateSummary();
+
+/* ── WIN CHANCES ── */
+const WIN_CHANCE={2:0.45,3:0.30,5:0.18};
+
+function doBet(){
+  var amt=parseInt(document.getElementById('bet-amt').value,10);
+  var wrap=document.getElementById('bet-result-wrap');
+  wrap.innerHTML='';
+  if(!amt||amt<1){showBetMsg('❌ Введіть суму ставки','var(--red)');return;}
+  if(amt>getBalance()){showBetMsg('❌ Недостатньо монет!','var(--red)');return;}
+  document.getElementById('bet-btn').disabled=true;
+  setTimeout(()=>{
+    var win=Math.random()<(WIN_CHANCE[selectedMult]||0.45);
+    if(win){
+      var earned=amt*selectedMult;
+      setBalance(getBalance()-amt+earned);
+      var net=earned-amt;
+      wrap.innerHTML=`<div class="bet-result win" style="display:block"><div class="br-emoji">🎉</div><div class="br-amount win">+${net} 🪙</div><div class="br-label">Ти виграв! Ставка: ${amt} → ${earned} 🪙</div></div>`;
+      coinRain(net>=500?20:10);
+      saveBetHistory({win:true,amt,mult:selectedMult,earned:net,time:nowStr()});
+    } else {
+      setBalance(getBalance()-amt);
+      wrap.innerHTML=`<div class="bet-result lose" style="display:block"><div class="br-emoji">😞</div><div class="br-amount lose">-${amt} 🪙</div><div class="br-label">Не пощастило. Ставка ${amt} 🪙 програна.</div></div>`;
+      saveBetHistory({win:false,amt,mult:selectedMult,earned:-amt,time:nowStr()});
+    }
+    document.getElementById('bet-bal').textContent=getBalance();
+    document.getElementById('bet-btn').disabled=false;
+    renderBetHistory();renderStats();
+  },800);
+}
+function showBetMsg(msg,color){document.getElementById('bet-result-wrap').innerHTML=`<div style="color:${color};font-size:13px;font-weight:700;padding:8px 0;">${msg}</div>`;}
+function nowStr(){return new Date().toLocaleDateString('uk-UA')+' '+new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});}
+
+/* ── HISTORY ── */
+function getBetHistory(){const u=getActiveUser()||'g';try{return JSON.parse(localStorage.getItem('vp_bets_'+u)||'[]');}catch(e){return [];}}
+function saveBetHistory(entry){
+  const u=getActiveUser()||'g';
+  const h=getBetHistory();h.unshift(entry);if(h.length>50)h.pop();
+  localStorage.setItem('vp_bets_'+u,JSON.stringify(h));
+}
+function renderBetHistory(){
+  const el=document.getElementById('bet-hist-list');
+  const h=getBetHistory();
+  if(!h.length){el.innerHTML='<div class="bh-empty">Ще немає ставок 🎯</div>';return;}
+  el.innerHTML=h.slice(0,20).map(e=>`
+    <div class="bh-item">
+      <div class="bh-emoji">${e.win?'🏆':'💀'}</div>
+      <div class="bh-info">
+        <div class="bh-line ${e.win?'win':'lose'}">${e.win?'+'+e.earned:''+e.earned} 🪙</div>
+        <div class="bh-meta">Ставка ${e.amt} × ${e.mult} · ${e.time}</div>
+      </div>
+    </div>`).join('');
+}
+function renderStats(){
+  const h=getBetHistory();
+  const wins=h.filter(x=>x.win).length;
+  const earned=h.filter(x=>x.win).reduce((s,x)=>s+x.earned,0);
+  const lost=h.filter(x=>!x.win).reduce((s,x)=>s+Math.abs(x.earned),0);
+  document.getElementById('st-bets').textContent=h.length;
+  document.getElementById('st-wins').textContent=wins;
+  document.getElementById('st-earned').textContent=earned;
+  document.getElementById('st-lost').textContent=lost;
+}
+
+document.getElementById('bet-bal').textContent=getBalance();
+renderBetHistory();
+renderStats();
+document.getElementById('bet-amt').addEventListener('input',updateSummary);
+</script>
+</body>
+</html>

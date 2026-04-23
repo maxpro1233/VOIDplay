@@ -1,10 +1,12 @@
 /* ═══════════════════════════════════════════
-   VØIDplay — style.css  v3
+   VØIDplay — style.css  v4  (themes + fixes)
    ═══════════════════════════════════════════ */
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&display=swap');
 
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{
+
+/* ── DARK THEME (default) ── */
+:root,[data-theme="dark"]{
   --orange:#ff6b00;--orange-light:#ff8c00;--orange-dim:rgba(255,107,0,.18);--orange-glow:rgba(255,107,0,.08);
   --purple:#9d4edd;--purple-dim:rgba(157,78,221,.2);
   --cyan:#00d4ff;--cyan-dim:rgba(0,212,255,.2);
@@ -12,7 +14,29 @@
   --border:rgba(255,255,255,.07);--border-o:rgba(255,107,0,.22);
   --text:#f0f0f0;--muted:#606070;--dim:#404050;
   --green:#00e676;--red:#ff4444;
+  --navbar-bg:rgba(10,10,11,.92);
   --header-h:64px;--r:12px;--r-lg:18px;
+  --font:'Exo 2',sans-serif;
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"]{
+  --orange:#e55000;--orange-light:#c94400;--orange-dim:rgba(229,80,0,.15);--orange-glow:rgba(229,80,0,.07);
+  --purple:#6d25b5;--purple-dim:rgba(109,37,181,.15);
+  --cyan:#0077a8;--cyan-dim:rgba(0,119,168,.15);
+  --bg:#f0f0f5;--bg2:#e6e6ec;--surface:#ffffff;--surface2:#f4f4f8;--surface3:#e8e8f0;
+  --border:rgba(0,0,0,.09);--border-o:rgba(229,80,0,.28);
+  --text:#0e0e14;--muted:#5a5a6a;--dim:#9090a8;
+  --green:#007a38;--red:#c42020;
+  --navbar-bg:rgba(255,255,255,.94);
+  --header-h:64px;--r:12px;--r-lg:18px;
+  --font:'Exo 2',sans-serif;
+}
+
+/* ── SMOOTH THEME TRANSITION ── */
+html{transition:background-color .3s,color .3s;}
+body,button,input,.navbar,.card,.stat-card{transition:background .3s,border-color .3s,color .3s;}
+
   --font:'Exo 2',sans-serif;
 }
 html{scroll-behavior:smooth;}
@@ -150,3 +174,17 @@ input{font-family:var(--font);}
   .profile-name{display:none;}
   .lang-btn{padding:4px 7px;font-size:10px;}
 }
+
+/* ── THEME BUTTON ── */
+.theme-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer;transition:all .2s;color:var(--muted);}
+.theme-btn:hover{border-color:var(--orange-dim);background:var(--orange-glow);}
+
+/* ── LIGHT THEME: navbar fix ── */
+[data-theme="light"] .navbar{background:var(--navbar-bg);}
+[data-theme="light"] .profile-dropdown{background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.15);}
+[data-theme="light"] .nav-logo-title{background:linear-gradient(135deg,#e55000,#c44000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+[data-theme="light"] .btn-primary{background:linear-gradient(135deg,#e55000,#c44000);}
+[data-theme="light"] .hero-title{background:linear-gradient(160deg,#0e0e14 0%,#e55000 48%,#c03000 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+[data-theme="light"] .stat-card{background:var(--surface);border-color:var(--border-o);}
+[data-theme="light"] .field-input{background:var(--surface2);color:var(--text);}
+[data-theme="light"] .card::before,[data-theme="light"] .pcard::before,[data-theme="light"] .side-card::before,[data-theme="light"] .controls-card::before,[data-theme="light"] .bet-card::before{background:linear-gradient(90deg,var(--orange),transparent 70%);}

@@ -1,241 +1,313 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>VØIDplay — Профіль</title>
 <link rel="stylesheet" href="style.css">
 <style>
-/* ── HERO ── */
-.profile-hero{background:var(--surface);border-bottom:1px solid var(--border-o);padding:calc(var(--header-h)+32px) 0 32px;position:relative;overflow:hidden;}
-.profile-hero::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 55% 80% at 0% 50%,rgba(255,107,0,.07) 0%,transparent 65%);}
-.profile-top{display:flex;align-items:flex-start;gap:22px;flex-wrap:wrap;}
+/* ═══════════════════════════════════
+   PROFILE PAGE — clean, centered
+   ═══════════════════════════════════ */
+.prof-page{
+  padding-top:calc(var(--header-h) + 32px);
+  padding-bottom:60px;
+  min-height:100vh;
+  background:var(--bg);
+}
+.prof-center{
+  max-width:520px;
+  margin:0 auto;
+  padding:0 16px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
 
-/* ── AVATAR ── */
-.avatar-zone{position:relative;flex-shrink:0;}
-.big-av-wrap{width:88px;height:88px;border-radius:18px;overflow:hidden;border:2px solid rgba(255,107,0,.35);cursor:pointer;position:relative;transition:border-color .2s;}
-.big-av-wrap:hover{border-color:var(--orange);}
-.big-av-wrap:hover .av-ov{opacity:1;}
-.big-av-img{width:100%;height:100%;object-fit:cover;display:none;}
-.big-av-init{width:100%;height:100%;background:linear-gradient(135deg,#ff6b00,#ff9500);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;}
-.av-ov{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;font-size:20px;opacity:0;transition:opacity .2s;}
-.av-edit{position:absolute;bottom:-5px;right:-5px;width:24px;height:24px;border-radius:7px;background:var(--orange);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;}
-.av-edit:hover{background:var(--orange-light);}
+/* ── AVATAR CARD ── */
+.av-card{
+  background:var(--surface);
+  border:1px solid var(--border-o);
+  border-radius:20px;
+  padding:28px 24px 22px;
+  position:relative;
+  overflow:hidden;
+  text-align:center;
+}
+.av-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--orange),transparent 70%);
+}
 
-/* avatar upload panel */
-.av-panel{background:#0f0f14;border:1px solid rgba(255,107,0,.22);border-radius:14px;padding:18px;margin-top:12px;display:none;width:290px;box-shadow:0 10px 40px rgba(0,0,0,.5);position:absolute;z-index:50;left:0;}
-.av-panel.show{display:block;animation:fadeUp .2s ease;}
-.av-panel-title{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:10px;text-transform:uppercase;}
+/* avatar circle */
+.av-circle-wrap{
+  position:relative;
+  display:inline-block;
+  margin-bottom:14px;
+  cursor:pointer;
+}
+.av-circle{
+  width:96px;height:96px;
+  border-radius:50%;
+  overflow:hidden;
+  border:3px solid rgba(255,107,0,.4);
+  background:linear-gradient(135deg,#ff6b00,#ff9500);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;font-weight:900;color:#fff;
+  margin:0 auto;
+  position:relative;
+  transition:border-color .2s;
+}
+.av-circle:hover{ border-color:var(--orange); }
+.av-circle img{width:100%;height:100%;object-fit:cover;display:none;}
+.av-circle-overlay{
+  position:absolute;inset:0;border-radius:50%;
+  background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  opacity:0;transition:opacity .2s;
+}
+.av-circle-wrap:hover .av-circle-overlay{opacity:1;}
+
+/* avatar panel */
+.av-panel{
+  background:var(--surface2);
+  border:1px solid var(--border-o);
+  border-radius:14px;
+  padding:16px;
+  margin-top:12px;
+  display:none;
+  text-align:left;
+}
+.av-panel.open{display:block;animation:fadeUp .2s ease both;}
 .av-tabs{display:flex;gap:5px;margin-bottom:12px;}
-.av-tab{flex:1;padding:6px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;}
+.av-tab{
+  flex:1;padding:7px 6px;border:1px solid var(--border);
+  border-radius:7px;background:none;color:var(--muted);
+  font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);
+  transition:all .2s;
+}
 .av-tab.active{background:rgba(255,107,0,.14);border-color:var(--orange);color:var(--orange-light);}
-.av-file-drop{border:2px dashed rgba(255,107,0,.25);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,107,0,.03);}
-.av-file-drop:hover{border-color:var(--orange);background:rgba(255,107,0,.06);}
-.av-file-drop input{display:none;}
-.av-url-row{display:flex;gap:7px;}
+.av-drop{border:2px dashed rgba(255,107,0,.25);border-radius:10px;padding:14px;
+  text-align:center;cursor:pointer;transition:all .2s;}
+.av-drop:hover{border-color:var(--orange);background:rgba(255,107,0,.05);}
+.av-drop input{display:none;}
+.av-url-row{display:flex;gap:7px;margin-top:2px;}
+.av-url-row .field-input{flex:1;min-width:0;}
+#av-fb{margin-top:8px;font-size:12px;display:none;}
+#av-fb.show{display:block;}
+#av-fb.ok{color:var(--green);}
+#av-fb.err{color:var(--red);}
 
-/* ── PROFILE INFO ── */
-.profile-info{flex:1;min-width:0;}
-.pname{font-size:22px;font-weight:900;letter-spacing:-.4px;margin-bottom:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.pusername{font-size:13px;color:var(--muted);margin-bottom:10px;}
-.pmeta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);}
-.role-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:7px;font-size:11px;font-weight:900;letter-spacing:1px;}
+/* nickname + meta */
+.prof-name{font-size:22px;font-weight:900;letter-spacing:-.3px;margin-bottom:4px;word-break:break-word;}
+.prof-username{font-size:13px;color:var(--muted);margin-bottom:10px;}
+.prof-badges{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.role-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.8px;}
 .role-badge.mod{background:rgba(255,50,50,.15);border:1px solid rgba(255,80,80,.35);color:#ff6060;}
 .role-badge.user{background:rgba(255,107,0,.12);border:1px solid rgba(255,107,0,.25);color:var(--orange-light);}
-.coins-big{background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.22);border-radius:12px;padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:17px;font-weight:900;color:#ffb800;align-self:flex-start;flex-shrink:0;}
+.prof-coins-big{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.22);
+  border-radius:12px;padding:8px 16px;
+  font-size:18px;font-weight:900;color:#ffb800;
+}
 
-/* ── CARD SECTION ── */
-.pcard{background:var(--surface);border:1px solid var(--border-o);border-radius:var(--r-lg);padding:24px;position:relative;overflow:hidden;margin-bottom:20px;}
-.pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,var(--orange),transparent 70%);}
-.pcard-title{font-size:14px;font-weight:900;margin-bottom:4px;}
-.pcard-desc{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5;}
-.edit-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
-.edit-row .field{flex:1;min-width:140px;}
-.fb{font-size:13px;margin-top:8px;display:none;}
+/* ── INFO SECTION ── */
+.pcard{
+  background:var(--surface);
+  border:1px solid var(--border-o);
+  border-radius:16px;
+  padding:20px;
+  position:relative;overflow:hidden;
+}
+.pcard::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,var(--orange),transparent 70%);
+}
+.pcard-title{
+  font-size:11px;font-weight:700;color:var(--orange);
+  letter-spacing:2.5px;text-transform:uppercase;margin-bottom:14px;
+}
+
+/* nick edit */
+.nick-row{display:flex;gap:8px;align-items:stretch;}
+.nick-row .field-input{flex:1;min-width:0;}
+.fb{font-size:12px;margin-top:7px;display:none;}
 .fb.show{display:block;}.fb.ok{color:var(--green);}.fb.err{color:var(--red);}
 
-/* ── STATS ── */
-.stats-grid-p{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
-.stat-badge{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;transition:border-color .2s;}
-.stat-badge:hover{border-color:var(--orange-dim);}
-.stat-badge-key{font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;}
-.stat-badge-val{font-size:16px;font-weight:900;}
-.info-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;}
-.info-chip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--muted);}
-.info-chip strong{color:var(--text);font-weight:700;display:block;margin-bottom:1px;font-size:14px;}
+/* stats row */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.stat-chip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;}
+.stat-chip-key{font-size:9px;font-weight:700;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:3px;}
+.stat-chip-val{font-size:15px;font-weight:900;}
+
+/* info chips */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.info-chip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+.info-chip-key{font-size:9px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
+.info-chip-val{font-size:13px;font-weight:700;word-break:break-word;}
 
 /* ── TABS ── */
-.tab-nav{display:flex;background:var(--surface2);border-radius:11px;padding:4px;margin-bottom:18px;gap:4px;}
-.tab-nav-btn{flex:1;padding:9px 8px;border:none;background:none;color:var(--muted);font-size:13px;font-weight:700;border-radius:9px;cursor:pointer;transition:all .2s;}
+.tab-nav{display:flex;background:var(--surface2);border-radius:11px;padding:4px;gap:4px;}
+.tab-nav-btn{flex:1;padding:9px 6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:700;border-radius:9px;cursor:pointer;font-family:var(--font);transition:all .2s;}
 .tab-nav-btn.active{background:var(--orange);color:#fff;}
 .tab-pane{display:none;}
-.tab-pane.show{display:block;}
+.tab-pane.show{display:block;animation:fadeUp .2s ease both;}
 
 /* ── FRIENDS ── */
-.friend-add-row{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;}
-.friend-add-row .field-input{flex:1;min-width:120px;}
-.friends-list{display:flex;flex-direction:column;gap:8px;}
-.friend-card{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:11px 13px;transition:border-color .2s;}
-.friend-card:hover{border-color:var(--border-o);}
-.friend-av{width:34px;height:34px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,#ff6b00,#ff9500);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;}
+.friend-add-row{display:flex;gap:8px;margin-bottom:14px;}
+.friend-add-row .field-input{flex:1;min-width:0;}
+.friends-list{display:flex;flex-direction:column;gap:7px;}
+.friend-card{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+.friend-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#ff6b00,#ff9500);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;}
 .friend-info{flex:1;min-width:0;}
-.friend-nick{font-size:13px;font-weight:700;}
+.friend-nick{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .friend-login{font-size:11px;color:var(--muted);}
-.friend-rm{background:none;border:none;color:var(--dim);cursor:pointer;font-size:15px;padding:4px;border-radius:5px;transition:color .2s;}
+.friend-rm{background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;padding:4px;border-radius:5px;transition:color .2s;flex-shrink:0;}
 .friend-rm:hover{color:var(--red);}
-.friends-empty{font-size:13px;color:var(--muted);text-align:center;padding:18px 0;}
+.friends-empty{font-size:13px;color:var(--muted);text-align:center;padding:16px 0;}
 
 /* ── CODES ── */
-.code-input-row{display:flex;gap:9px;flex-wrap:wrap;}
-.code-input-row .field-input{flex:1;min-width:140px;font-family:monospace;letter-spacing:2px;text-transform:uppercase;}
-
-/* ── MOD PANEL ── */
-.mod-panel{background:rgba(255,50,50,.06);border:1px solid rgba(255,80,80,.22);border-radius:14px;padding:20px;margin-bottom:20px;}
-.mod-panel-title{font-size:13px;font-weight:900;color:#ff6060;letter-spacing:1px;margin-bottom:12px;}
-.mod-add-row{display:flex;gap:9px;align-items:flex-end;flex-wrap:wrap;}
-.mod-add-row .field{flex:1;min-width:120px;}
+.code-row{display:flex;gap:8px;}
+.code-row .field-input{flex:1;min-width:0;font-family:monospace;letter-spacing:1.5px;text-transform:uppercase;}
+.perks-area{margin-top:14px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:13px;}
 
 /* ── HOURLY ── */
-.hourly-card{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);border-radius:14px;padding:16px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
-.hourly-info{flex:1;}
-.hourly-title{font-size:13px;font-weight:900;color:var(--green);margin-bottom:2px;}
-.hourly-desc{font-size:12px;color:var(--muted);}
-.hourly-timer{font-size:13px;font-weight:700;color:var(--muted);}
+.hourly-card{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.hourly-title{font-size:13px;font-weight:900;color:var(--green);}
+.hourly-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+.hourly-timer{font-size:13px;font-weight:700;color:var(--muted);flex-shrink:0;}
 
-/* ── DANGER ── */
-.danger-zone{background:rgba(255,58,58,.05);border:1px solid rgba(255,58,58,.18);border-radius:var(--r-lg);padding:20px 24px;margin-bottom:20px;}
-.dz-title{font-size:14px;font-weight:900;color:var(--red);margin-bottom:4px;}
+/* ── MOD ── */
+.mod-panel{background:rgba(255,50,50,.06);border:1px solid rgba(255,80,80,.22);border-radius:12px;padding:16px;margin-bottom:0;}
+.mod-title{font-size:12px;font-weight:900;color:#ff6060;letter-spacing:1px;margin-bottom:12px;text-transform:uppercase;}
+.mod-row{display:flex;gap:8px;}
+.mod-row .field-input{flex:1;min-width:0;}
+
+/* ── DANGER ZONE ── */
+.danger-zone{background:rgba(255,58,58,.05);border:1px solid rgba(255,58,58,.18);border-radius:14px;padding:18px;}
+.dz-title{font-size:12px;font-weight:900;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
 .dz-desc{font-size:12px;color:#906060;margin-bottom:14px;line-height:1.5;}
+.dz-warn{font-size:12px;color:var(--red);margin-top:10px;display:none;}
+.dz-warn.show{display:block;}
 
-@media(max-width:540px){
-  .profile-top{flex-direction:column;gap:16px;align-items:flex-start;}
-  .coins-big{align-self:auto;}
-  .info-row{grid-template-columns:1fr;}
-  .av-panel{width:260px;}
+/* ── CONFIRM MODAL ── */
+.confirm-overlay{
+  position:fixed;inset:0;z-index:8000;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(5px);
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;
+}
+.confirm-box{
+  background:var(--surface);
+  border:1px solid rgba(255,58,58,.35);
+  border-radius:18px;
+  padding:28px 24px;
+  max-width:380px;width:100%;
+  animation:fadeUp .25s ease both;
+  text-align:center;
+}
+.confirm-title{font-size:16px;font-weight:900;color:var(--red);margin-bottom:8px;}
+.confirm-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:22px;}
+.confirm-btns{display:flex;gap:10px;}
+.confirm-btns button{flex:1;}
+.countdown-circle{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,58,58,.15);border:1px solid rgba(255,58,58,.3);
+  font-size:13px;font-weight:900;color:var(--red);
+  margin-bottom:12px;
 }
 </style>
 </head>
 <body>
 <header class="navbar" id="navbar"></header>
 
-<!-- HERO -->
-<div class="profile-hero">
-  <div class="container">
-    <div class="profile-top">
-      <!-- Avatar -->
-      <div class="avatar-zone">
-        <div class="big-av-wrap" onclick="toggleAvPanel()">
-          <div class="big-av-init" id="big-init">??</div>
-          <img class="big-av-img" id="big-img" alt="">
-          <div class="av-ov">✏️</div>
-        </div>
-        <div class="av-edit" onclick="toggleAvPanel()">✏️</div>
-        <div class="av-panel" id="av-panel">
-          <div class="av-panel-title">Змінити аватар</div>
-          <div class="av-tabs">
-            <button class="av-tab active" id="av-tab-f" onclick="swAvTab('f')">📁 Файл</button>
-            <button class="av-tab" id="av-tab-u" onclick="swAvTab('u')">🔗 URL</button>
-          </div>
-          <div id="av-f-pane">
-            <label class="av-file-drop" for="av-file-in">
-              <div style="font-size:24px;margin-bottom:4px;">🖼️</div>
-              <div style="font-size:12px;color:var(--muted)">Натисни або перетягни зображення</div>
-              <input type="file" id="av-file-in" accept="image/*" onchange="handleAvFile(this)">
-            </label>
-          </div>
-          <div id="av-u-pane" style="display:none;">
-            <div class="av-url-row">
-              <input class="field-input" type="url" id="av-url-in" placeholder="https://i.imgur.com/...">
-              <button class="btn btn-ghost btn-sm" onclick="handleAvUrl()">OK</button>
-            </div>
-          </div>
-          <div class="fb" id="av-fb"></div>
-          <button class="btn btn-danger btn-sm btn-full" style="margin-top:10px;" onclick="removeAvatar()">🗑️ Видалити</button>
+<div class="prof-page">
+  <div class="prof-center">
+
+    <!-- ══ AVATAR CARD ══ -->
+    <div class="av-card">
+      <div class="av-circle-wrap" onclick="toggleAvPanel()">
+        <div class="av-circle" id="av-circle">
+          <img id="av-img" alt="">
+          <span id="av-init">??</span>
+          <div class="av-circle-overlay">✏️</div>
         </div>
       </div>
 
-      <!-- Info -->
-      <div class="profile-info">
-        <div class="pname">
-          <span id="pname">—</span>
-          <span class="role-badge user" id="role-badge">🎮 USER</span>
-          <span class="badge-tag new-player" id="new-badge" style="display:none">✨ NEW</span>
-        </div>
-        <div class="pusername" id="pusername">@—</div>
-        <div class="pmeta">
-          <span>📅 <span id="preg">—</span></span>
-          <span>🎂 <span id="page">—</span> р.</span>
-        </div>
-      </div>
+      <div class="prof-name" id="prof-name">—</div>
+      <div class="prof-username" id="prof-username">@—</div>
+      <div class="prof-badges" id="prof-badges"></div>
+      <div class="prof-coins-big">🪙 <span class="js-coins" id="prof-coins">0</span></div>
 
-      <div class="coins-big">🪙 <span class="js-coins" id="pcoins">500</span></div>
+      <!-- Avatar panel (hidden by default) -->
+      <div class="av-panel" id="av-panel">
+        <div class="av-tabs">
+          <button class="av-tab active" id="av-tab-f" onclick="swAvTab('f')">📁 Файл</button>
+          <button class="av-tab" id="av-tab-u" onclick="swAvTab('u')">🔗 URL</button>
+        </div>
+        <div id="av-f-pane">
+          <label class="av-drop" for="av-file-in">
+            <div style="font-size:24px;margin-bottom:4px;">🖼️</div>
+            <div style="font-size:12px;color:var(--muted)">Натисни або перетягни зображення</div>
+            <input type="file" id="av-file-in" accept="image/*" onchange="handleAvFile(this)">
+          </label>
+        </div>
+        <div id="av-u-pane" style="display:none;">
+          <div class="av-url-row">
+            <input class="field-input" type="url" id="av-url-in" placeholder="https://...">
+            <button class="btn btn-ghost btn-sm" onclick="handleAvUrl()">OK</button>
+          </div>
+        </div>
+        <div id="av-fb"></div>
+        <button class="btn btn-danger btn-sm btn-full" style="margin-top:10px;" onclick="removeAvatar()" data-i="lbl_remove_av">Видалити аватар</button>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- MAIN -->
-<div class="page-wrap" style="padding-top:32px;">
-  <div class="container">
-
-    <!-- HOURLY REWARD -->
-    <div class="hourly-card" id="hourly-card" style="display:none">
-      <div class="hourly-info">
-        <div class="hourly-title">⏰ Щогодинна нагорода</div>
-        <div class="hourly-desc">+50 монет кожну годину онлайн</div>
+    <!-- ══ HOURLY REWARD ══ -->
+    <div class="hourly-card" id="hourly-card" style="display:none;">
+      <div>
+        <div class="hourly-title" data-i="prof_hourly">⏱ Нагорода за онлайн</div>
+        <div class="hourly-desc" data-i="prof_hourly_desc">Ти отримуєш 50 монет щогодини.</div>
       </div>
       <div class="hourly-timer" id="hourly-timer"></div>
     </div>
 
-    <!-- MOD PANEL -->
-    <div class="mod-panel" id="mod-panel" style="display:none">
-      <div class="mod-panel-title">🛡️ Панель Модератора</div>
-      <div class="mod-add-row">
-        <div class="field">
-          <label class="field-label">Видати монети собі</label>
-          <input class="field-input" type="number" id="mod-amount" placeholder="500" min="1" max="99999">
-        </div>
-        <button class="btn btn-primary" onclick="modGiveCoins()">💰 Видати</button>
-      </div>
-      <div class="fb" id="mod-fb"></div>
-    </div>
-
-    <!-- NICKNAME -->
-    <div class="section-label" style="margin-bottom:8px">Налаштування</div>
-    <div class="pcard reveal">
-      <div class="pcard-title">✏️ Змінити відображуване ім'я</div>
-      <div class="pcard-desc">Це ім'я показується в навбарі та профілі. Логін не змінюється.</div>
-      <div class="edit-row">
-        <div class="field">
-          <label class="field-label">Нове ім'я</label>
-          <input class="field-input" type="text" id="nick-in" placeholder="Введи нове ім'я..." maxlength="32">
-        </div>
-        <button class="btn btn-primary" onclick="saveNick()">💾 Зберегти</button>
+    <!-- ══ NICKNAME EDIT ══ -->
+    <div class="pcard">
+      <div class="pcard-title" data-i="prof_nickname">Нікнейм</div>
+      <div class="nick-row">
+        <input class="field-input" type="text" id="nick-in" placeholder="Твій нікнейм..." maxlength="32">
+        <button class="btn btn-primary btn-sm" onclick="saveNick()" data-i="prof_save">Зберегти</button>
       </div>
       <div class="fb" id="nick-fb"></div>
     </div>
 
-    <!-- STATS -->
-    <div class="section-label" style="margin-bottom:8px">Статистика</div>
-    <div class="pcard reveal">
-      <div class="stats-grid-p" id="stats-grid"></div>
-      <div class="info-row">
-        <div class="info-chip"><strong id="info-reg">—</strong>Дата реєстрації</div>
-        <div class="info-chip"><strong id="info-bal">500 🪙</strong>Баланс монет</div>
+    <!-- ══ STATS ══ -->
+    <div class="pcard">
+      <div class="pcard-title">СТАТИСТИКА</div>
+      <div class="stats-row" id="stats-row">
+        <div class="stat-chip"><div class="stat-chip-key">Баланс</div><div class="stat-chip-val" id="st-bal">0</div></div>
+        <div class="stat-chip"><div class="stat-chip-key">Кейси</div><div class="stat-chip-val" id="st-cases">0</div></div>
+        <div class="stat-chip"><div class="stat-chip-key">Друзі</div><div class="stat-chip-val" id="st-friends">0</div></div>
       </div>
+      <div class="info-grid" id="info-grid"></div>
     </div>
 
-    <!-- SOCIAL TABS: Friends / Codes -->
-    <div class="section-label" style="margin-bottom:8px">Соціальне</div>
-    <div class="pcard reveal">
-      <div class="tab-nav">
-        <button class="tab-nav-btn active" id="tn-friends" onclick="swSocTab('friends')">🧑‍🤝‍🧑 Друзі</button>
-        <button class="tab-nav-btn" id="tn-codes" onclick="swSocTab('codes')">🔑 Коди</button>
+    <!-- ══ SOCIAL TABS ══ -->
+    <div class="pcard">
+      <div class="tab-nav" style="margin-bottom:16px;">
+        <button class="tab-nav-btn active" id="tn-friends" onclick="swSocTab('friends')" data-i="prof_friends">Друзі</button>
+        <button class="tab-nav-btn" id="tn-codes" onclick="swSocTab('codes')" data-i="prof_codes">Коди</button>
       </div>
 
       <!-- FRIENDS -->
       <div class="tab-pane show" id="tp-friends">
         <div class="friend-add-row">
-          <input class="field-input" type="text" id="friend-in" placeholder="Логін гравця..." maxlength="32">
-          <button class="btn btn-primary" onclick="addFriend()">➕ Додати</button>
+          <input class="field-input" type="text" id="friend-in" data-ph="prof_friend_ph" placeholder="Логін гравця...">
+          <button class="btn btn-primary btn-sm" onclick="addFriend()" data-i="prof_add_friend">Додати</button>
         </div>
         <div class="fb" id="friend-fb"></div>
         <div class="friends-list" id="friends-list"></div>
@@ -243,223 +315,355 @@
 
       <!-- CODES -->
       <div class="tab-pane" id="tp-codes">
-        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.55;">Введи секретний код щоб активувати особливу роль або привілеї.</p>
-        <div class="code-input-row">
-          <input class="field-input" type="text" id="code-in" placeholder="XXXXXXX" maxlength="10">
-          <button class="btn btn-primary" onclick="activateCode()">🔑 Активувати</button>
+        <div class="pcard-title" style="margin-bottom:10px;">АКТИВУВАТИ КОД</div>
+        <div class="code-row">
+          <input class="field-input" type="text" id="code-in" data-ph="prof_code_ph" placeholder="Введіть код..." maxlength="16" style="letter-spacing:1.5px;text-transform:uppercase;">
+          <button class="btn btn-primary btn-sm" onclick="activateCode()" data-i="prof_activate">Активувати</button>
         </div>
         <div class="fb" id="code-fb"></div>
-        <div style="margin-top:18px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;">
-          <div style="font-size:11px;font-weight:700;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">Активовані привілеї</div>
-          <div id="active-perks">—</div>
-        </div>
+        <div class="perks-area" id="active-perks" style="margin-top:14px;"></div>
       </div>
     </div>
 
-    <!-- DANGER -->
-    <div class="section-label" style="margin-bottom:8px">Небезпечна зона</div>
-    <div class="danger-zone reveal">
-      <div class="dz-title">⚠️ Вийти з акаунту</div>
-      <div class="dz-desc">Після виходу потрібно знову ввести логін та пароль. Всі дані залишаються.</div>
-      <button class="btn btn-danger" onclick="doLogout()">🚪 Вийти</button>
+    <!-- ══ MOD PANEL (shown only if mod) ══ -->
+    <div class="pcard" id="mod-panel-wrap" style="display:none;">
+      <div class="mod-panel">
+        <div class="mod-title">🛡️ MODERATOR PANEL</div>
+        <div class="mod-row">
+          <input class="field-input" type="number" id="mod-amount" placeholder="Кількість монет..." min="1">
+          <button class="btn btn-sm" style="background:rgba(255,50,50,.2);border:1px solid rgba(255,80,80,.35);color:#ff6060;" onclick="modGiveCoins()" data-i="prof_mod_give">Видати</button>
+        </div>
+        <div class="fb" id="mod-fb"></div>
+      </div>
     </div>
 
+    <!-- ══ DANGER ZONE ══ -->
+    <div class="danger-zone">
+      <div class="dz-title" data-i="prof_danger">Небезпечна зона</div>
+      <div class="dz-desc" data-i="prof_del_warn">Ця дія видалить всі твої монети без можливості відновлення!</div>
+      <button class="btn btn-danger btn-full" id="del-coins-btn" onclick="confirmDeleteCoins()" data-i="prof_del_coins">Видалити всі монети</button>
+      <div class="dz-warn" id="dz-warn" data-i="prof_coins_deleted"></div>
+    </div>
+
+  </div><!-- /prof-center -->
+</div><!-- /prof-page -->
+
+<!-- ══ CONFIRM MODAL ══ -->
+<div class="confirm-overlay" id="confirm-overlay" style="display:none;">
+  <div class="confirm-box">
+    <div class="countdown-circle" id="confirm-cd">10</div>
+    <div class="confirm-title" data-i="prof_del_confirm">⚠️ Підтвердити видалення монет</div>
+    <div class="confirm-desc" data-i="prof_del_warn">Ця дія видалить всі твої монети без можливості відновлення!</div>
+    <div class="confirm-btns">
+      <button class="btn btn-secondary btn-sm" onclick="closeConfirm()">Скасувати</button>
+      <button class="btn btn-danger btn-sm" id="confirm-ok-btn" onclick="doDeleteCoins()" disabled>Видалити</button>
+    </div>
   </div>
 </div>
 
 <script src="script.js"></script>
 <script>
 requireAuth();
-var me=getMe();
-if(!me) doLogout();
 buildNavbar('profile');
 setLang(currentLang);
-initReveal();
 initMusic();
 
-// Check hourly reward on open
-var earned=checkHourlyReward();
-if(earned){
-  coinRain(10);
-  setTimeout(()=>alert('🎉 Отримано '+earned+' монет за перебування онлайн!'),600);
-}
+let me = getMe();
 
-/* ── LOAD ── */
-function loadProfile(){
-  me=getMe();if(!me){doLogout();return;}
-  var av=getAvatar(me.user);
-  applyAvUI(av);
-  var init=((me.first||'?')[0]||'?').toUpperCase()+((me.last||'')[0]||'').toUpperCase();
-  document.getElementById('big-init').textContent=init||'?';
-  var name=me.nickname||(me.first+(me.last?' '+me.last:''));
-  document.getElementById('pname').textContent=name;
-  document.getElementById('pusername').textContent='@'+me.user;
-  document.getElementById('pcoins').textContent=me.balance??500;
-  document.getElementById('nick-in').value=name;
-  var age=new Date().getFullYear()-(me.year||2000);
-  document.getElementById('page').textContent=age;
-  document.getElementById('preg').textContent=me.registered||'—';
-  document.getElementById('info-reg').textContent=me.registered||'—';
-  document.getElementById('info-bal').textContent=(me.balance??500)+' 🪙';
-  // role badge
-  var rb=document.getElementById('role-badge');
-  var role=me.role||'user';
-  if(role==='moderator'){rb.textContent='🛡️ MODERATOR';rb.className='role-badge mod';}
-  else{rb.textContent='🎮 USER';rb.className='role-badge user';}
-  // new badge
-  if(me.registered){var p=me.registered.split('.');if(p.length===3){var d=new Date(p[2],p[1]-1,p[0]);if((Date.now()-d)/86400000<=7)document.getElementById('new-badge').style.display='';}}
-  // mod panel
-  document.getElementById('mod-panel').style.display=role==='moderator'?'block':'none';
-  // stats
-  var caseCount=0;try{caseCount=JSON.parse(localStorage.getItem('vp_hist_'+me.user)||'[]').length;}catch(e){}
-  var fr=getFriends(me.user).length;
-  document.getElementById('stats-grid').innerHTML=[
-    {k:'БАЛАНС',v:(me.balance??500)+' 🪙'},
-    {k:'ЛОГІН',v:'@'+me.user},
-    {k:'ВІК',v:age+' р.'},
-    {k:'РЕЄСТРАЦІЯ',v:me.registered||'—'},
-    {k:'КЕЙСІВ',v:caseCount},
-    {k:'ДРУЗІВ',v:fr},
-  ].map(s=>`<div class="stat-badge"><div class="stat-badge-key">${s.k}</div><div class="stat-badge-val">${s.v}</div></div>`).join('');
+/* ══════════════════════════════════
+   LOAD PROFILE
+══════════════════════════════════ */
+function loadProfile() {
+  me = getMe();
+  if (!me) return;
+
+  // Avatar
+  const url = getAvatar(me.user);
+  applyAvUI(url);
+
+  // Name / username
+  const nick = me.nickname || ((me.first||'') + (me.last ? ' '+me.last : ''));
+  document.getElementById('prof-name').textContent = nick || me.user;
+  document.getElementById('prof-username').textContent = '@' + me.user;
+  document.getElementById('nick-in').value = nick;
+
+  // Badges
+  const role = me.role || 'user';
+  const badgeHTML = role === 'moderator'
+    ? `<span class="role-badge mod">🛡️ MODERATOR</span>`
+    : `<span class="role-badge user">👤 USER</span>`;
+  document.getElementById('prof-badges').innerHTML = badgeHTML;
+
+  // Coins
+  const bal = me.balance ?? 500;
+  document.querySelectorAll('.js-coins').forEach(el => el.textContent = bal);
+  document.getElementById('prof-coins').textContent = bal;
+
+  // Stats
+  document.getElementById('st-bal').textContent = bal;
+  document.getElementById('st-cases').textContent = getCaseHistory().length;
+  document.getElementById('st-friends').textContent = getFriends(me.user).length;
+
+  // Info chips
+  const regDate = me.registered || '—';
+  const yearAge = me.year ? (new Date().getFullYear() - me.year) + ' р.' : '—';
+  document.getElementById('info-grid').innerHTML = `
+    <div class="info-chip">
+      <div class="info-chip-key" data-i="prof_registered">Зареєстровано</div>
+      <div class="info-chip-val">${regDate}</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip-key">Вік</div>
+      <div class="info-chip-val">${yearAge}</div>
+    </div>`;
+
+  // Mod panel
+  document.getElementById('mod-panel-wrap').style.display = role === 'moderator' ? 'block' : 'none';
+
   renderFriends();
   renderPerks();
   startHourlyTimer();
+  applyLang();
 }
 
-/* hourly timer */
-function startHourlyTimer(){
-  var card=document.getElementById('hourly-card');
-  var timer=document.getElementById('hourly-timer');
-  var ms=getHourlyMs();
-  if(!ms){card.style.display='none';return;}
-  card.style.display='flex';
-  function update(){
-    ms=getHourlyMs();
-    if(ms<=0){card.style.display='none';return;}
-    var m=Math.floor(ms/60000),s=Math.floor((ms%60000)/1000);
-    timer.textContent='⏱ '+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-    setTimeout(update,1000);
+/* ══════════════════════════════════
+   HOURLY TIMER
+══════════════════════════════════ */
+function startHourlyTimer() {
+  const card = document.getElementById('hourly-card');
+  const timer = document.getElementById('hourly-timer');
+  const ms = getHourlyMs();
+  if (!ms) { card.style.display = 'none'; return; }
+  card.style.display = 'flex';
+  let remaining = ms;
+  (function upd() {
+    remaining = getHourlyMs();
+    if (remaining <= 0) { card.style.display = 'none'; return; }
+    const m = Math.floor(remaining/60000), s = Math.floor((remaining%60000)/1000);
+    timer.textContent = '⏱ ' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    setTimeout(upd, 1000);
+  })();
+}
+
+/* ══════════════════════════════════
+   AVATAR
+══════════════════════════════════ */
+function applyAvUI(url) {
+  const img = document.getElementById('av-img');
+  const init = document.getElementById('av-init');
+  if (url) {
+    img.src = url; img.style.display = 'block'; init.style.display = 'none';
+  } else {
+    img.style.display = 'none'; init.style.display = 'block';
+    const nick = me ? (me.nickname || me.first || me.user) : '?';
+    const parts = nick.split(' ');
+    init.textContent = (parts[0][0] || '?').toUpperCase() + (parts[1] ? (parts[1][0]||'').toUpperCase() : '');
   }
-  update();
 }
-
-/* ── AVATAR ── */
-function applyAvUI(url){
-  var img=document.getElementById('big-img'),init=document.getElementById('big-init');
-  if(url){img.src=url;img.style.display='block';init.style.display='none';}
-  else{img.style.display='none';init.style.display='flex';}
+function toggleAvPanel() {
+  document.getElementById('av-panel').classList.toggle('open');
 }
-function toggleAvPanel(){document.getElementById('av-panel').classList.toggle('show');}
-function swAvTab(t){
-  ['f','u'].forEach(x=>{document.getElementById('av-tab-'+x).classList.toggle('active',x===t);});
-  document.getElementById('av-f-pane').style.display=t==='f'?'block':'none';
-  document.getElementById('av-u-pane').style.display=t==='u'?'block':'none';
+function swAvTab(t) {
+  ['f','u'].forEach(x => document.getElementById('av-tab-'+x).classList.toggle('active', x===t));
+  document.getElementById('av-f-pane').style.display = t==='f' ? 'block' : 'none';
+  document.getElementById('av-u-pane').style.display = t==='u' ? 'block' : 'none';
 }
-function handleAvFile(input){
-  var file=input.files[0];if(!file)return;
-  if(!file.type.startsWith('image/')){showFb('av-fb','❌ Оберіть зображення','err');return;}
-  if(file.size>2*1024*1024){showFb('av-fb','❌ Файл > 2MB','err');return;}
-  var r=new FileReader();r.onload=e=>applyAndSaveAv(e.target.result);r.readAsDataURL(file);
+function handleAvFile(input) {
+  const file = input.files[0]; if (!file) return;
+  if (!file.type.startsWith('image/')) { showFb('av-fb','❌ Оберіть зображення','err'); return; }
+  if (file.size > 3*1024*1024) { showFb('av-fb','❌ Файл > 3MB','err'); return; }
+  const r = new FileReader();
+  r.onload = e => applyAndSaveAv(e.target.result);
+  r.readAsDataURL(file);
 }
-function handleAvUrl(){
-  var url=document.getElementById('av-url-in').value.trim();
-  if(!url){showFb('av-fb','❌ Введіть URL','err');return;}
-  var img=new Image();img.onload=()=>applyAndSaveAv(url);img.onerror=()=>showFb('av-fb','❌ Не вдалося завантажити','err');img.src=url;
+function handleAvUrl() {
+  const url = document.getElementById('av-url-in').value.trim();
+  if (!url) { showFb('av-fb','❌ Введіть URL','err'); return; }
+  const img = new Image();
+  img.onload = () => applyAndSaveAv(url);
+  img.onerror = () => showFb('av-fb','❌ Не вдалося завантажити','err');
+  img.src = url;
 }
-function applyAndSaveAv(url){
-  try{saveAvatar(me.user,url);applyAvUI(url);showFb('av-fb','✅ Збережено!','ok');buildNavbar('profile');setTimeout(()=>document.getElementById('av-panel').classList.remove('show'),1100);}
-  catch(e){showFb('av-fb','❌ Помилка збереження','err');}
+function applyAndSaveAv(url) {
+  try {
+    saveAvatar(me.user, url);
+    applyAvUI(url);
+    showFb('av-fb','✅ Збережено!','ok');
+    buildNavbar('profile');
+    setTimeout(() => document.getElementById('av-panel').classList.remove('open'), 1100);
+  } catch(e) {
+    showFb('av-fb','❌ Помилка (файл занадто великий?)','err');
+  }
 }
-function removeAvatar(){localStorage.removeItem('vp_av_'+me.user);applyAvUI(null);buildNavbar('profile');showFb('av-fb','✅ Видалено','ok');}
-document.addEventListener('click',e=>{
-  var panel=document.getElementById('av-panel'),zone=document.querySelector('.avatar-zone');
-  if(panel&&panel.classList.contains('show')&&zone&&!zone.contains(e.target))panel.classList.remove('show');
+function removeAvatar() {
+  localStorage.removeItem('vp_av_' + me.user);
+  applyAvUI(null);
+  buildNavbar('profile');
+  showFb('av-fb','✅ Видалено','ok');
+}
+// Close av panel on outside click
+document.addEventListener('click', e => {
+  const panel = document.getElementById('av-panel');
+  const wrap = document.querySelector('.av-circle-wrap');
+  if (panel && panel.classList.contains('open') && !panel.contains(e.target) && wrap && !wrap.contains(e.target))
+    panel.classList.remove('open');
 });
 
-/* ── NICKNAME ── */
-function saveNick(){
-  var val=document.getElementById('nick-in').value.trim();
-  if(val.length<2){showFb('nick-fb','❌ Мінімум 2 символи','err');return;}
-  var parts=val.split(' ');
-  patchMe({nickname:val,first:parts[0]||val,last:parts.slice(1).join(' ')||''});
-  me=getMe();
-  document.getElementById('pname').textContent=val;
-  var init=(val[0]||'').toUpperCase()+(parts[1]?(parts[1][0]||'').toUpperCase():'');
-  document.getElementById('big-init').textContent=init||val[0].toUpperCase();
+/* ══════════════════════════════════
+   NICKNAME
+══════════════════════════════════ */
+function saveNick() {
+  const val = document.getElementById('nick-in').value.trim();
+  if (val.length < 2) { showFb('nick-fb','❌ Мінімум 2 символи','err'); return; }
+  const parts = val.split(' ');
+  patchMe({ nickname: val, first: parts[0]||val, last: parts.slice(1).join(' ')||'' });
+  me = getMe();
+  document.getElementById('prof-name').textContent = val;
+  applyAvUI(getAvatar(me.user));
   buildNavbar('profile');
   showFb('nick-fb',"✅ Ім'я збережено!",'ok');
 }
-document.getElementById('nick-in').addEventListener('keydown',e=>{if(e.key==='Enter')saveNick();});
+document.getElementById('nick-in').addEventListener('keydown', e => { if (e.key==='Enter') saveNick(); });
 
-/* ── SOCIAL TABS ── */
-function swSocTab(tab){
-  ['friends','codes'].forEach(x=>{
-    document.getElementById('tn-'+x).classList.toggle('active',x===tab);
-    document.getElementById('tp-'+x).classList.toggle('show',x===tab);
+/* ══════════════════════════════════
+   SOCIAL TABS
+══════════════════════════════════ */
+function swSocTab(tab) {
+  ['friends','codes'].forEach(x => {
+    document.getElementById('tn-'+x).classList.toggle('active', x===tab);
+    document.getElementById('tp-'+x).classList.toggle('show', x===tab);
   });
 }
 
-/* ── FRIENDS ── */
-function addFriend(){
-  var nick=document.getElementById('friend-in').value.trim().toLowerCase();
-  if(!nick){showFb('friend-fb','❌ Введіть логін','err');return;}
-  if(nick===me.user){showFb('friend-fb','❌ Не можна додати себе','err');return;}
-  var users=getUsers();
-  if(!users[nick]){showFb('friend-fb','❌ Гравця не знайдено','err');return;}
-  var fr=getFriends(me.user);
-  if(fr.includes(nick)){showFb('friend-fb','⚠️ Вже у списку','err');return;}
-  fr.push(nick);saveFriends(me.user,fr);
-  document.getElementById('friend-in').value='';
+/* ══════════════════════════════════
+   FRIENDS
+══════════════════════════════════ */
+function addFriend() {
+  const nick = document.getElementById('friend-in').value.trim().toLowerCase();
+  if (!nick) { showFb('friend-fb','❌ Введіть логін','err'); return; }
+  if (nick === me.user) { showFb('friend-fb','❌ Не можна додати себе','err'); return; }
+  const users = getUsers();
+  if (!users[nick]) { showFb('friend-fb','❌ Гравця не знайдено','err'); return; }
+  const fr = getFriends(me.user);
+  if (fr.includes(nick)) { showFb('friend-fb','⚠️ Вже у списку','err'); return; }
+  fr.push(nick);
+  saveFriends(me.user, fr);
+  document.getElementById('friend-in').value = '';
   showFb('friend-fb','✅ Друга додано!','ok');
-  renderFriends();loadProfile();
+  renderFriends();
+  document.getElementById('st-friends').textContent = getFriends(me.user).length;
 }
-function removeFriend(nick){saveFriends(me.user,getFriends(me.user).filter(f=>f!==nick));renderFriends();loadProfile();}
-function renderFriends(){
-  var list=document.getElementById('friends-list');
-  var fr=getFriends(me.user),users=getUsers();
-  if(!fr.length){list.innerHTML='<div class="friends-empty">У тебе поки немає друзів 👋</div>';return;}
-  list.innerHTML=fr.map(nick=>{
-    var u=users[nick]||{};
-    var name=u.nickname||((u.first||nick)+(u.last?' '+u.last:''));
-    var init=(name[0]||'?').toUpperCase()+(name.split(' ')[1]?(name.split(' ')[1][0]||'').toUpperCase():'');
-    return `<div class="friend-card"><div class="friend-av">${init}</div><div class="friend-info"><div class="friend-nick">${name}</div><div class="friend-login">@${nick} · 🪙 ${u.balance??'—'}</div></div><button class="friend-rm" onclick="removeFriend('${nick}')">✕</button></div>`;
+function removeFriend(nick) {
+  saveFriends(me.user, getFriends(me.user).filter(f => f !== nick));
+  renderFriends();
+  document.getElementById('st-friends').textContent = getFriends(me.user).length;
+}
+function renderFriends() {
+  const list = document.getElementById('friends-list');
+  const fr = getFriends(me.user), users = getUsers();
+  if (!fr.length) {
+    list.innerHTML = `<div class="friends-empty" data-i="prof_no_friends">${t('prof_no_friends')}</div>`;
+    return;
+  }
+  list.innerHTML = fr.map(nick => {
+    const u = users[nick] || {};
+    const name = u.nickname || ((u.first||nick) + (u.last ? ' '+u.last : ''));
+    const initials = (name[0]||'?').toUpperCase() + (name.split(' ')[1] ? (name.split(' ')[1][0]||'').toUpperCase() : '');
+    return `<div class="friend-card">
+      <div class="friend-av">${initials}</div>
+      <div class="friend-info">
+        <div class="friend-nick">${name}</div>
+        <div class="friend-login">@${nick} · 🪙 ${u.balance ?? '—'}</div>
+      </div>
+      <button class="friend-rm" onclick="removeFriend('${nick}')">✕</button>
+    </div>`;
   }).join('');
 }
-document.getElementById('friend-in').addEventListener('keydown',e=>{if(e.key==='Enter')addFriend();});
+document.getElementById('friend-in').addEventListener('keydown', e => { if (e.key==='Enter') addFriend(); });
 
-/* ── CODES ── */
-function activateCode(){
-  var code=document.getElementById('code-in').value;
-  var res=tryActivateCode(code);
-  showFb('code-fb',res.msg,res.ok?'ok':'err');
-  if(res.ok){me=getMe();loadProfile();buildNavbar('profile');}
+/* ══════════════════════════════════
+   CODES
+══════════════════════════════════ */
+function activateCode() {
+  const code = document.getElementById('code-in').value;
+  const res = tryActivateCode(code);
+  showFb('code-fb', res.msg, res.ok ? 'ok' : 'err');
+  if (res.ok) { me = getMe(); loadProfile(); buildNavbar('profile'); }
 }
-document.getElementById('code-in').addEventListener('keydown',e=>{if(e.key==='Enter')activateCode();});
-function renderPerks(){
-  var role=me?me.role||'user':'user';
-  document.getElementById('active-perks').innerHTML=role==='moderator'
-    ?'<span class="role-badge mod">🛡️ MODERATOR — необмежені монети</span>'
-    :'<span style="color:var(--dim);font-size:13px;">Немає активованих привілеїв</span>';
+document.getElementById('code-in').addEventListener('keydown', e => { if (e.key==='Enter') activateCode(); });
+
+function renderPerks() {
+  const role = me ? (me.role || 'user') : 'user';
+  document.getElementById('active-perks').innerHTML = role === 'moderator'
+    ? '<span class="role-badge mod">🛡️ MODERATOR — активовано</span>'
+    : `<span style="color:var(--dim);font-size:13px;">${t('prof_no_perks')}</span>`;
 }
 
-/* ── MOD ── */
-function modGiveCoins(){
-  var v=parseInt(document.getElementById('mod-amount').value,10);
-  if(!v||v<=0){showFb('mod-fb','❌ Введіть суму','err');return;}
-  setBalance(getBalance()+v);
-  document.getElementById('pcoins').textContent=getBalance();
+/* ══════════════════════════════════
+   MOD
+══════════════════════════════════ */
+function modGiveCoins() {
+  const v = parseInt(document.getElementById('mod-amount').value, 10);
+  if (!v || v <= 0) { showFb('mod-fb','❌ Введіть суму','err'); return; }
+  setBalance(getBalance() + v);
+  document.getElementById('prof-coins').textContent = getBalance();
+  document.getElementById('st-bal').textContent = getBalance();
   coinRain(15);
-  showFb('mod-fb','✅ +'+v+' монет видано!','ok');
-  me=getMe();loadProfile();
+  showFb('mod-fb','✅ +' + v + ' монет!','ok');
 }
 
-/* ── UTIL ── */
-function showFb(id,msg,cls){
-  var el=document.getElementById(id);if(!el)return;
-  el.textContent=msg;el.className='fb show '+cls;
-  setTimeout(()=>el.classList.remove('show'),3000);
+/* ══════════════════════════════════
+   DANGER — DELETE COINS
+══════════════════════════════════ */
+let _cdInterval = null;
+
+function confirmDeleteCoins() {
+  document.getElementById('confirm-overlay').style.display = 'flex';
+  const okBtn = document.getElementById('confirm-ok-btn');
+  const cd = document.getElementById('confirm-cd');
+  okBtn.disabled = true;
+  let sec = 10;
+  cd.textContent = sec;
+  clearInterval(_cdInterval);
+  _cdInterval = setInterval(() => {
+    sec--;
+    cd.textContent = sec;
+    if (sec <= 0) {
+      clearInterval(_cdInterval);
+      okBtn.disabled = false;
+    }
+  }, 1000);
+}
+function closeConfirm() {
+  clearInterval(_cdInterval);
+  document.getElementById('confirm-overlay').style.display = 'none';
+}
+function doDeleteCoins() {
+  clearInterval(_cdInterval);
+  document.getElementById('confirm-overlay').style.display = 'none';
+  setBalance(0);
+  document.getElementById('prof-coins').textContent = 0;
+  document.getElementById('st-bal').textContent = 0;
+  const w = document.getElementById('dz-warn');
+  w.textContent = t('prof_coins_deleted');
+  w.classList.add('show');
+  buildNavbar('profile');
+  setTimeout(() => w.classList.remove('show'), 4000);
 }
 
+/* ══════════════════════════════════
+   UTIL
+══════════════════════════════════ */
+function showFb(id, msg, cls) {
+  const el = document.getElementById(id); if (!el) return;
+  el.textContent = msg;
+  el.className = 'fb show ' + cls;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
 loadProfile();
 </script>
 </body>
