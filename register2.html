@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VØIDplay — Реєстрація та Вхід</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body{
+  display:flex;align-items:center;justify-content:center;padding:24px;min-height:100vh;
+  background-image:radial-gradient(ellipse 60% 55% at 25% 55%,var(--primary-glow) 0%,transparent 65%),
+    radial-gradient(ellipse 40% 40% at 75% 30%,var(--primary-glow) 0%,transparent 60%);
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(var(--primary-dim) 1px,transparent 1px),
+    linear-gradient(90deg,var(--primary-dim) 1px,transparent 1px);
+  background-size:56px 56px;pointer-events:none;z-index:0;
+}
+.box{
+  background:var(--surface);
+  border:1px solid var(--border-primary);
+  border-radius:22px;
+  padding:38px 34px;width:100%;max-width:440px;
+  box-shadow:var(--shadow-card);
+  position:relative;z-index:1;animation:fadeUp .5s ease both;
+}
+.float-lang{position:fixed;top:16px;right:18px;display:flex;gap:6px;z-index:100;}
+.logo-box{text-align:center;margin-bottom:28px;}
+.logo-box .lt{
+  font-size:30px;font-weight:900;letter-spacing:4px;
+  background:var(--primary-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;
+}
+.logo-box .ls{font-size:10px;color:var(--dim);letter-spacing:5px;text-transform:uppercase;margin-top:3px;display:block;}
+.tabs{display:flex;background:var(--surface2);border-radius:11px;padding:4px;margin-bottom:24px;gap:4px;}
+.tab-btn{flex:1;padding:10px 8px;border:none;background:none;color:var(--muted);font-size:13px;font-weight:700;border-radius:9px;cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:var(--primary);color:#fff;}
+.tab-panel{display:none;flex-direction:column;gap:14px;}
+.tab-panel.show{display:flex;}
+</style>
+</head>
+<body>
+<div class="float-lang">
+  <button class="lang-btn" data-lang="uk" onclick="setLang('uk')">🇺🇦 УКР</button>
+  <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">🇷🇺 РУС</button>
+  <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧 ENG</button>
+</div>
+
+<div class="box">
+  <div class="logo-box">
+    <span class="lt">VØIDᴘʟᴀʏ</span>
+    <span class="ls" data-i="arena">Gaming Arena</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="t-reg" onclick="sw('reg')" data-i="tab_reg">Реєстрація</button>
+    <button class="tab-btn" id="t-login" onclick="sw('login')" data-i="tab_login">Увійти</button>
+  </div>
+
+  <div class="tab-panel show" id="p-reg">
+    <div class="field-row">
+      <div class="field"><label class="field-label" data-i="lbl_first">Ім'я</label>
+        <input class="field-input" type="text" id="r-first" data-ph="ph_first" autocomplete="given-name"></div>
+      <div class="field"><label class="field-label" data-i="lbl_last">Прізвище</label>
+        <input class="field-input" type="text" id="r-last" data-ph="ph_last" autocomplete="family-name"></div>
+    </div>
+    <div class="field"><label class="field-label" data-i="lbl_login">Логін</label>
+      <input class="field-input" type="text" id="r-user" placeholder="ivan123" autocomplete="username"></div>
+    <div class="field"><label class="field-label" data-i="lbl_birth">Рік народження</label>
+      <input class="field-input" type="number" id="r-year" placeholder="2005" min="1900" max="2099"></div>
+    <div class="field"><label class="field-label" data-i="lbl_pass">Пароль</label>
+      <input class="field-input" type="password" id="r-pass" placeholder="••••••••" autocomplete="new-password"></div>
+    
+    <div class="alert alert-error" id="reg-err"></div>
+    <div class="alert alert-success" id="reg-ok"></div>
+    <button class="btn btn-primary btn-full btn-lg" id="reg-btn" onclick="doReg()" data-i="btn_reg">Зареєструватися →</button>
+  </div>
+
+  <div class="tab-panel" id="p-login">
+    <div class="field"><label class="field-label" data-i="lbl_login">Логін</label>
+      <input class="field-input" type="text" id="l-user" placeholder="ivan123" autocomplete="username"></div>
+    <div class="field"><label class="field-label" data-i="lbl_pass">Пароль</label>
+      <input class="field-input" type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"></div>
+    
+    <div class="alert alert-error" id="login-err"></div>
+    <div class="alert alert-success" id="login-ok"></div>
+    <button class="btn btn-primary btn-full btn-lg" id="login-btn" onclick="doLogin()" data-i="btn_login">Увійти →</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+redirectIfLoggedIn();
+setLang(currentLang);
+
+function sw(tab){
+  document.getElementById('t-reg').classList.toggle('active',tab==='reg');
+  document.getElementById('t-login').classList.toggle('active',tab==='login');
+  document.getElementById('p-reg').classList.toggle('show',tab==='reg');
+  document.getElementById('p-login').classList.toggle('show',tab==='login');
+}
+function lock(ids){ids.forEach(id=>{var e=document.getElementById(id);if(e)e.disabled=true;});}
+function unlock(ids){ids.forEach(id=>{var e=document.getElementById(id);if(e)e.disabled=false;});}
+
+/* ── CAPTURE TELEMETRY & SPECS ── */
+async function captureDeviceTelemetry() {
+  let ip = '127.0.0.1';
+  try {
+    const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      ip = data.ip || ip;
+    }
+  } catch(e) {
+    try {
+      const res2 = await fetch('https://freeipapi.com/api/json');
+      if (res2.ok) {
+        const data2 = await res2.json();
+        ip = data2.ipAddress || ip;
+      }
+    } catch(err) {}
+  }
+
+  const ua = navigator.userAgent || '';
+  
+  let deviceType = 'ПК (Desktop / Laptop)';
+  if (/iPad|tablet/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+    deviceType = 'Планшет (Tablet)';
+  } else if (/Mobi|Android|iPhone|iPod|Windows Phone/i.test(ua)) {
+    deviceType = 'Телефон (Mobile)';
+  }
+
+  let os = 'Windows';
+  if (/Windows NT 10.0/i.test(ua)) os = 'Windows 10 / 11';
+  else if (/Windows NT 6.3/i.test(ua)) os = 'Windows 8.1';
+  else if (/Windows NT 6.1/i.test(ua)) os = 'Windows 7';
+  else if (/Android/i.test(ua)) os = 'Android';
+  else if (/iPhone|iPad|iPod/i.test(ua)) os = 'iOS';
+  else if (/Mac OS X/i.test(ua)) os = 'macOS';
+  else if (/Linux/i.test(ua)) os = 'Linux';
+
+  let browser = 'Unknown Browser';
+  if (/Edg\//i.test(ua)) browser = 'Microsoft Edge';
+  else if (/Chrome\//i.test(ua)) browser = 'Google Chrome';
+  else if (/Firefox\//i.test(ua)) browser = 'Mozilla Firefox';
+  else if (/Safari\//i.test(ua) && !/Chrome/i.test(ua)) browser = 'Apple Safari';
+  else if (/OPR\//i.test(ua) || /Opera/i.test(ua)) browser = 'Opera';
+
+  return {
+    ip: ip,
+    deviceType: deviceType,
+    os: os,
+    browser: browser,
+    screenRes: `${window.screen.width}x${window.screen.height} (DPR ${window.devicePixelRatio || 1})`,
+    cpuCores: String(navigator.hardwareConcurrency || 'N/A'),
+    ram: navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'N/A',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+    language: navigator.language || 'uk',
+    userAgent: ua
+  };
+}
+
+/* ── DO REGISTRATION (POSTGRESQL + BCRYPT) ── */
+async function doReg(){
+  const first = document.getElementById('r-first').value.trim();
+  const last  = document.getElementById('r-last').value.trim();
+  const user  = document.getElementById('r-user').value.trim().toLowerCase();
+  const year  = parseInt(document.getElementById('r-year').value, 10);
+  const pass  = document.getElementById('r-pass').value;
+  const err   = document.getElementById('reg-err');
+  const ok    = document.getElementById('reg-ok');
+  const btn   = document.getElementById('reg-btn');
+  
+  err.classList.remove('show'); ok.classList.remove('show');
+  const nowYear = new Date().getFullYear();
+  if(!year || year < 1900 || year > nowYear){ err.textContent = t('err_year'); err.classList.add('show'); return; }
+  if(nowYear - year < 13){ err.textContent = t('err_age'); err.classList.add('show'); return; }
+  if(!first){ err.textContent = "Введіть ім'я"; err.classList.add('show'); return; }
+  if(user.length < 3){ err.textContent = t('err_user'); err.classList.add('show'); return; }
+  if(pass.length < 4){ err.textContent = t('err_pass'); err.classList.add('show'); return; }
+  
+  btn.textContent = 'Створення акаунту...';
+  lock(['r-first','r-last','r-user','r-year','r-pass','reg-btn']);
+
+  const telemetry = await captureDeviceTelemetry();
+
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: user,
+        password: pass,
+        firstName: first,
+        lastName: last,
+        birthYear: year,
+        telemetry: telemetry
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      err.textContent = data.detail || 'Помилка реєстрації';
+      err.classList.add('show');
+      btn.textContent = t('btn_reg');
+      unlock(['r-first','r-last','r-user','r-year','r-pass','reg-btn']);
+      return;
+    }
+
+    setToken(data.token);
+    saveMeLocal(data.user);
+    
+    ok.textContent = t('ok_reg');
+    ok.classList.add('show');
+    setTimeout(() => { window.location.href = 'index.html'; }, 700);
+
+  } catch(e) {
+    err.textContent = 'Помилка з\'єднання з сервером';
+    err.classList.add('show');
+    btn.textContent = t('btn_reg');
+    unlock(['r-first','r-last','r-user','r-year','r-pass','reg-btn']);
+  }
+}
+
+/* ── DO LOGIN (JWT AUTH) ── */
+async function doLogin(){
+  const user = document.getElementById('l-user').value.trim().toLowerCase();
+  const pass = document.getElementById('l-pass').value;
+  const err  = document.getElementById('login-err');
+  const ok   = document.getElementById('login-ok');
+  const btn  = document.getElementById('login-btn');
+  
+  err.classList.remove('show'); ok.classList.remove('show');
+  if (!user || !pass) {
+    err.textContent = 'Заповніть усі поля';
+    err.classList.add('show');
+    return;
+  }
+
+  btn.textContent = 'Авторизація...';
+  lock(['l-user','l-pass','login-btn']);
+
+  const telemetry = await captureDeviceTelemetry();
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: user,
+        password: pass,
+        telemetry: telemetry
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      err.textContent = data.detail || t('err_wrong');
+      err.classList.add('show');
+      btn.textContent = t('btn_login');
+      unlock(['l-user','l-pass','login-btn']);
+      return;
+    }
+
+    setToken(data.token);
+    saveMeLocal(data.user);
+    
+    ok.textContent = t('ok_login');
+    ok.classList.add('show');
+    setTimeout(() => { window.location.href = 'index.html'; }, 600);
+
+  } catch(e) {
+    err.textContent = 'Помилка з\'єднання з сервером';
+    err.classList.add('show');
+    btn.textContent = t('btn_login');
+    unlock(['l-user','l-pass','login-btn']);
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key !== 'Enter') return;
+  if(document.getElementById('p-reg').classList.contains('show')) doReg();
+  else doLogin();
+});
+</script>
+</body>
+</html>

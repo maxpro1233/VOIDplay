@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VØIDplay — Профіль</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.prof-page{
+  padding-top:calc(var(--header-h) + 24px);
+  padding-bottom:60px;
+  min-height:100vh;
+  background:var(--bg);
+}
+.prof-center{
+  max-width:540px;
+  margin:0 auto;
+  padding:0 14px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+/* ── AVATAR CARD ── */
+.av-card{
+  background:var(--surface);
+  border:1px solid var(--border-primary);
+  border-radius:20px;
+  padding:26px 20px 20px;
+  position:relative;
+  overflow:hidden;
+  text-align:center;
+  box-shadow:var(--shadow-card);
+}
+.av-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--primary-grad);
+}
+.av-circle-wrap{
+  position:relative;
+  display:inline-block;
+  margin-bottom:12px;
+  cursor:pointer;
+}
+.av-circle{
+  width:92px;height:92px;
+  border-radius:50%;
+  overflow:hidden;
+  border:3px solid var(--border-primary);
+  background:var(--primary-grad);
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:900;color:#fff;
+  margin:0 auto;
+  position:relative;
+  transition:border-color .2s;
+}
+.av-circle:hover{ border-color:var(--primary); }
+.av-circle img{width:100%;height:100%;object-fit:cover;display:none;}
+.av-circle-overlay{
+  position:absolute;inset:0;border-radius:50%;
+  background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  opacity:0;transition:opacity .2s;
+}
+.av-circle-wrap:hover .av-circle-overlay{opacity:1;}
+
+.av-panel{
+  background:var(--surface2);
+  border:1px solid var(--border-primary);
+  border-radius:14px;
+  padding:14px;
+  margin-top:12px;
+  display:none;
+  text-align:left;
+}
+.av-panel.open{display:block;animation:fadeUp .2s ease both;}
+.av-tabs{display:flex;gap:5px;margin-bottom:10px;}
+.av-tab{
+  flex:1;padding:7px 6px;border:1px solid var(--border);
+  border-radius:7px;background:none;color:var(--muted);
+  font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);
+  transition:all .2s;
+}
+.av-tab.active{background:var(--primary-dim);border-color:var(--primary);color:var(--primary-light);}
+.av-drop{border:2px dashed var(--border-primary);border-radius:10px;padding:12px;
+  text-align:center;cursor:pointer;transition:all .2s;}
+.av-drop:hover{border-color:var(--primary);background:var(--primary-dim);}
+.av-drop input{display:none;}
+.av-url-row{display:flex;gap:6px;margin-top:2px;}
+.av-url-row .field-input{flex:1;min-width:0;}
+#av-fb{margin-top:8px;font-size:12px;display:none;}
+#av-fb.show{display:block;}
+#av-fb.ok{color:var(--green);}
+#av-fb.err{color:var(--red);}
+
+.prof-name{font-size:20px;font-weight:900;letter-spacing:-.3px;margin-bottom:3px;word-break:break-word;}
+.prof-username{font-size:12.5px;color:var(--muted);margin-bottom:8px;}
+.prof-badges{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.role-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:8px;font-size:10.5px;font-weight:900;letter-spacing:.8px;}
+.role-badge.mod{background:rgba(255,50,50,.15);border:1px solid rgba(255,80,80,.35);color:#ff6060;}
+.role-badge.user{background:var(--primary-dim);border:1px solid var(--border-primary);color:var(--primary-light);}
+
+/* Coins Area with Deposit & Withdraw */
+.prof-coins-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+.prof-coins-big{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:6px 16px;
+  font-size:18px;font-weight:900;color:var(--gold);
+}
+.prof-coins-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── INFO CARDS ── */
+.pcard{
+  background:var(--surface);
+  border:1px solid var(--border-primary);
+  border-radius:16px;
+  padding:18px;
+  position:relative;overflow:hidden;
+  box-shadow:var(--shadow-card);
+}
+.pcard::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,var(--primary),transparent 70%);
+}
+.pcard-title{
+  font-size:11px;font-weight:700;color:var(--primary);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;
+}
+
+.nick-row{display:flex;gap:8px;align-items:stretch;}
+.nick-row .field-input{flex:1;min-width:0;}
+.fb{font-size:12px;margin-top:7px;display:none;}
+.fb.show{display:block;}.fb.ok{color:var(--green);}.fb.err{color:var(--red);}
+
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.stat-chip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 6px;text-align:center;}
+.stat-chip-key{font-size:9px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+.stat-chip-val{font-size:14px;font-weight:900;}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.info-chip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 10px;}
+.info-chip-key{font-size:9px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+.info-chip-val{font-size:12.5px;font-weight:700;word-break:break-word;}
+
+/* ── TELEMETRY / SPECS CARD ── */
+.specs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 8px;
+}
+.spec-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+.spec-item-key { color: var(--muted); font-weight: 600; }
+.spec-item-val { color: var(--text); font-weight: 800; }
+
+/* ── FRIENDS & SUB-TABS ── */
+.sub-tabs-nav {
+  display: flex;
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.sub-tab-btn {
+  flex: 1;
+  padding: 7px 4px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+}
+.sub-tab-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.req-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.req-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.req-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-grad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  flex-shrink: 0;
+}
+.req-text {
+  font-size: 12.5px;
+  line-height: 1.4;
+  flex: 1;
+}
+.req-time {
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.req-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.friend-card{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;}
+.friend-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:var(--primary-grad);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;}
+.friend-info{flex:1;min-width:0;}
+.friend-nick{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.friend-login{font-size:11px;color:var(--muted);}
+.friend-rm{background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;padding:4px;border-radius:5px;transition:color .2s;flex-shrink:0;}
+.friend-rm:hover{color:var(--red);}
+.friends-empty{font-size:12.5px;color:var(--muted);text-align:center;padding:14px 0;}
+
+.danger-zone{background:rgba(255,58,58,.05);border:1px solid rgba(255,58,58,.18);border-radius:14px;padding:16px;}
+.dz-title{font-size:11.5px;font-weight:900;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.dz-desc{font-size:11.5px;color:var(--muted);margin-bottom:12px;line-height:1.4;}
+.dz-warn{font-size:12px;color:var(--red);margin-top:8px;display:none;}
+.dz-warn.show{display:block;}
+
+.confirm-overlay{
+  position:fixed;inset:0;z-index:8000;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(5px);
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;
+}
+.confirm-box{
+  background:var(--surface);
+  border:1px solid rgba(255,58,58,.35);
+  border-radius:18px;
+  padding:26px 20px;
+  max-width:380px;width:100%;
+  animation:fadeUp .25s ease both;
+  text-align:center;
+}
+.countdown-circle{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(255,58,58,.15);border:1px solid rgba(255,58,58,.3);
+  font-size:12px;font-weight:900;color:var(--red);
+  margin-bottom:10px;
+}
+</style>
+</head>
+<body>
+<header class="navbar" id="navbar"></header>
+
+<div class="prof-page">
+  <div class="prof-center">
+
+    <!-- ══ AVATAR CARD ══ -->
+    <div class="av-card">
+      <div class="av-circle-wrap" onclick="toggleAvPanel()">
+        <div class="av-circle" id="av-circle">
+          <img id="av-img" alt="">
+          <span id="av-init">??</span>
+          <div class="av-circle-overlay">✏️</div>
+        </div>
+      </div>
+
+      <div class="prof-name" id="prof-name">—</div>
+      <div class="prof-username" id="prof-username">@—</div>
+      <div class="prof-badges" id="prof-badges"></div>
+
+      <!-- Coins + Deposit/Withdraw Buttons -->
+      <div class="prof-coins-area">
+        <div class="prof-coins-big">🪙 <span class="js-coins" id="prof-coins">0</span></div>
+        <div class="prof-coins-actions">
+          <button class="btn btn-primary btn-sm" onclick="openDevModal('topup')" data-i="btn_deposit">+ Поповнити</button>
+          <button class="btn btn-secondary btn-sm" onclick="openDevModal('withdraw')" data-i="btn_withdraw">Вивести</button>
+        </div>
+      </div>
+
+      <!-- Avatar panel (hidden by default) -->
+      <div class="av-panel" id="av-panel">
+        <div class="av-tabs">
+          <button class="av-tab active" id="av-tab-f" onclick="swAvTab('f')">📁 Файл</button>
+          <button class="av-tab" id="av-tab-u" onclick="swAvTab('u')">🔗 URL</button>
+        </div>
+        <div id="av-f-pane">
+          <label class="av-drop" for="av-file-in">
+            <div style="font-size:22px;margin-bottom:3px;">🖼️</div>
+            <div style="font-size:11.5px;color:var(--muted)">Натисни або перетягни зображення</div>
+            <input type="file" id="av-file-in" accept="image/*" onchange="handleAvFile(this)">
+          </label>
+        </div>
+        <div id="av-u-pane" style="display:none;">
+          <div class="av-url-row">
+            <input class="field-input" type="url" id="av-url-in" placeholder="https://...">
+            <button class="btn btn-ghost btn-sm" onclick="handleAvUrl()">OK</button>
+          </div>
+        </div>
+        <div id="av-fb"></div>
+        <button class="btn btn-danger btn-sm btn-full" style="margin-top:10px;" onclick="removeAvatar()" data-i="lbl_remove_av">Видалити аватар</button>
+      </div>
+    </div>
+
+    <!-- ══ NICKNAME EDIT ══ -->
+    <div class="pcard">
+      <div class="pcard-title" data-i="prof_nickname">Нікнейм</div>
+      <div class="nick-row">
+        <input class="field-input" type="text" id="nick-in" placeholder="Твій нікнейм..." maxlength="32">
+        <button class="btn btn-primary btn-sm" onclick="saveNick()" data-i="prof_save">Зберегти</button>
+      </div>
+      <div class="fb" id="nick-fb"></div>
+    </div>
+
+    <!-- ══ STATS ══ -->
+    <div class="pcard">
+      <div class="pcard-title">СТАТИСТИКА</div>
+      <div class="stats-row" id="stats-row">
+        <div class="stat-chip"><div class="stat-chip-key">Баланс</div><div class="stat-chip-val" id="st-bal">0</div></div>
+        <div class="stat-chip"><div class="stat-chip-key">Фішки</div><div class="stat-chip-val js-chips" id="st-chips">0</div></div>
+        <div class="stat-chip"><div class="stat-chip-key">Друзі</div><div class="stat-chip-val" id="st-friends">0</div></div>
+      </div>
+      <div class="info-grid" id="info-grid"></div>
+    </div>
+
+    <!-- ══ FRIENDS & REQUESTS SECTION ══ -->
+    <div class="pcard">
+      <div class="pcard-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>ДРУЗІ ТА ЗАПРОШЕННЯ</span>
+        <span class="badge-count" id="req-badge-top" style="display:none;">0</span>
+      </div>
+
+      <!-- Friends Sub-Tabs -->
+      <div class="sub-tabs-nav">
+        <button class="sub-tab-btn active" id="stb-my-friends" onclick="swFriendsSubTab('list')">
+          <span>👥 Ваші друзі</span>
+        </button>
+        <button class="sub-tab-btn" id="stb-requests" onclick="swFriendsSubTab('requests')">
+          <span>📬 Запити</span>
+          <span class="badge-count" id="req-badge-tab" style="display:none;">0</span>
+        </button>
+        <button class="sub-tab-btn" id="stb-send-req" onclick="swFriendsSubTab('send')">
+          <span>➕ Надіслати</span>
+        </button>
+      </div>
+
+      <!-- PANE 1: MY FRIENDS -->
+      <div id="sp-friends-list">
+        <div class="friends-list" id="friends-list"></div>
+      </div>
+
+      <!-- PANE 2: INCOMING REQUESTS -->
+      <div id="sp-friends-requests" style="display:none;">
+        <div id="requests-list"></div>
+      </div>
+
+      <!-- PANE 3: SEND REQUEST -->
+      <div id="sp-friends-send" style="display:none;">
+        <div class="field-label" style="margin-bottom:6px;">Введіть логін або нікнейм гравця:</div>
+        <div style="display:flex;gap:8px;">
+          <input class="field-input" type="text" id="friend-search-in" placeholder="Логін або ім'я гравця...">
+          <button class="btn btn-primary btn-sm" onclick="sendFriendRequest()">Додати</button>
+        </div>
+        <div class="fb" id="friend-send-fb"></div>
+      </div>
+
+    </div>
+
+    <!-- ══ PROMO CODES ══ -->
+    <div class="pcard">
+      <div class="pcard-title">АКТИВУВАТИ ПРОМОКОД</div>
+      <div style="display:flex;gap:8px;">
+        <input class="field-input" type="text" id="code-in" placeholder="Введіть код..." maxlength="16" style="letter-spacing:1.5px;text-transform:uppercase;">
+        <button class="btn btn-primary btn-sm" onclick="activateCode()">Активувати</button>
+      </div>
+      <div class="fb" id="code-fb"></div>
+      <div class="perks-area" id="active-perks" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- ══ DEVICE SPECS & AUDIT LOG ══ -->
+    <div class="pcard">
+      <div class="pcard-title">🖥️ Характеристики пристрою та аудит</div>
+      <p style="font-size:11.5px;color:var(--muted);margin-bottom:8px;">
+        Дані, зафіксовані під час створення акаунту та авторизацій.
+      </p>
+      <div class="specs-list" id="specs-list"></div>
+      <button class="btn btn-secondary btn-sm btn-full" style="margin-top:10px;" onclick="downloadSpecsLog()">
+        📄 Завантажити звіт (.txt)
+      </button>
+    </div>
+
+    <!-- ══ MOD PANEL ══ -->
+    <div class="pcard" id="mod-panel-wrap" style="display:none;">
+      <div style="background:rgba(255,50,50,.06);border:1px solid rgba(255,80,80,.22);border-radius:12px;padding:14px;">
+        <div style="font-size:11.5px;font-weight:900;color:#ff6060;letter-spacing:1px;margin-bottom:10px;">🛡️ ПАНЕЛЬ МОДЕРАТОРА</div>
+        <div style="display:flex;gap:8px;">
+          <input class="field-input" type="number" id="mod-amount" placeholder="Сума монет..." min="1">
+          <button class="btn btn-sm" style="background:rgba(255,50,50,.2);border:1px solid rgba(255,80,80,.35);color:#ff6060;" onclick="modGiveCoins()">Видати</button>
+        </div>
+        <div class="fb" id="mod-fb"></div>
+      </div>
+    </div>
+
+    <!-- ══ DANGER ZONE ══ -->
+    <div class="danger-zone">
+      <div class="dz-title" data-i="prof_danger">Небезпечна зона</div>
+      <div class="dz-desc" data-i="prof_del_warn">Ця дія видалить всі твої монети без можливості відновлення!</div>
+      <button class="btn btn-danger btn-full" id="del-coins-btn" onclick="confirmDeleteCoins()" data-i="prof_del_coins">Видалити всі монети</button>
+      <div class="dz-warn" id="dz-warn" data-i="prof_coins_deleted"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ CONFIRM MODAL ══ -->
+<div class="confirm-overlay" id="confirm-overlay" style="display:none;">
+  <div class="confirm-box">
+    <div class="countdown-circle" id="confirm-cd">10</div>
+    <div class="confirm-title" data-i="prof_del_confirm">⚠️ Підтвердити видалення монет</div>
+    <div class="confirm-desc" data-i="prof_del_warn">Ця дія видалить всі твої монети без можливості відновлення!</div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="closeConfirm()">Скасувати</button>
+      <button class="btn btn-danger btn-sm" style="flex:1;" id="confirm-ok-btn" onclick="doDeleteCoins()" disabled>Видалити</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+requireAuth();
+buildNavbar('profile');
+setLang(currentLang);
+initMusic();
+
+let currentUser = null;
+let telemetryHistory = [];
+
+/* ── PROFILE LOADER ── */
+async function loadProfile() {
+  const res = await apiFetch('/api/auth/me');
+  if (!res || !res.ok) return;
+  
+  currentUser = res.user;
+  saveMeLocal(currentUser);
+
+  // Avatar
+  applyAvUI(currentUser.avatar_url);
+
+  // Name & username
+  const nick = currentUser.nickname || ((currentUser.first_name||'') + ' ' + (currentUser.last_name||'')).trim();
+  document.getElementById('prof-name').textContent = nick || currentUser.username;
+  document.getElementById('prof-username').textContent = '@' + currentUser.username;
+  document.getElementById('nick-in').value = nick;
+
+  // Badges
+  const role = currentUser.role || 'user';
+  document.getElementById('prof-badges').innerHTML = role === 'moderator'
+    ? `<span class="role-badge mod">🛡️ MODERATOR</span>`
+    : `<span class="role-badge user">👤 USER</span>`;
+
+  // Coins & Chips
+  const bal = currentUser.balance ?? 500;
+  const chips = currentUser.chips ?? 0;
+  document.querySelectorAll('.js-coins').forEach(el => el.textContent = bal);
+  document.querySelectorAll('.js-chips').forEach(el => el.textContent = chips);
+  document.getElementById('prof-coins').textContent = bal;
+
+  // Stats
+  document.getElementById('st-bal').textContent = bal;
+  document.getElementById('st-chips').textContent = chips;
+
+  // Registration date & age
+  const regDate = currentUser.registered_at ? new Date(currentUser.registered_at).toLocaleDateString('uk-UA') : '—';
+  const yearAge = currentUser.birth_year ? (new Date().getFullYear() - currentUser.birth_year) + ' р.' : '—';
+  document.getElementById('info-grid').innerHTML = `
+    <div class="info-chip">
+      <div class="info-chip-key">Зареєстровано</div>
+      <div class="info-chip-val">${regDate}</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip-key">Вік</div>
+      <div class="info-chip-val">${yearAge}</div>
+    </div>`;
+
+  await loadFriends();
+  await loadFriendRequests();
+  await loadTelemetrySpecs();
+
+  document.getElementById('mod-panel-wrap').style.display = role === 'moderator' ? 'block' : 'none';
+  renderPerks();
+}
+
+/* ── FRIENDS & SUB-TABS ── */
+function swFriendsSubTab(tab) {
+  document.getElementById('stb-my-friends').classList.toggle('active', tab === 'list');
+  document.getElementById('stb-requests').classList.toggle('active', tab === 'requests');
+  document.getElementById('stb-send-req').classList.toggle('active', tab === 'send');
+
+  document.getElementById('sp-friends-list').style.display = tab === 'list' ? 'block' : 'none';
+  document.getElementById('sp-friends-requests').style.display = tab === 'requests' ? 'block' : 'none';
+  document.getElementById('sp-friends-send').style.display = tab === 'send' ? 'block' : 'none';
+}
+
+async function loadFriends() {
+  const res = await apiFetch('/api/user/friends');
+  const list = document.getElementById('friends-list');
+  if (res && res.ok && res.friends) {
+    const friends = res.friends;
+    document.getElementById('st-friends').textContent = friends.length;
+    if (!friends.length) {
+      list.innerHTML = `<div class="friends-empty">У тебе поки немає друзів 👋</div>`;
+      return;
+    }
+    list.innerHTML = friends.map(f => {
+      const name = f.nickname || ((f.first_name||f.username) + (f.last_name ? ' '+f.last_name : ''));
+      const initials = (name[0]||'?').toUpperCase();
+      return `
+        <div class="friend-card">
+          <div class="friend-av">${initials}</div>
+          <div class="friend-info">
+            <div class="friend-nick">${name}</div>
+            <div class="friend-login">@${f.username} · 🪙 ${f.balance ?? '—'}</div>
+          </div>
+          <button class="friend-rm" onclick="removeFriend('${f.username}')" title="Видалити">✕</button>
+        </div>`;
+    }).join('');
+  }
+}
+
+async function loadFriendRequests() {
+  const res = await apiFetch('/api/user/friends/requests');
+  const list = document.getElementById('requests-list');
+  const badgeTop = document.getElementById('req-badge-top');
+  const badgeTab = document.getElementById('req-badge-tab');
+
+  if (res && res.ok && res.requests) {
+    const reqs = res.requests;
+    if (reqs.length > 0) {
+      badgeTop.textContent = reqs.length;
+      badgeTop.style.display = 'inline-flex';
+      badgeTab.textContent = reqs.length;
+      badgeTab.style.display = 'inline-flex';
+
+      list.innerHTML = reqs.map(r => {
+        const senderName = r.sender_nickname || ((r.sender_first_name||r.sender_username) + (r.sender_last_name ? ' '+r.sender_last_name : ''));
+        const initials = (senderName[0]||'?').toUpperCase();
+        const dateStr = r.created_at ? new Date(r.created_at).toLocaleString('uk-UA') : '';
+        return `
+          <div class="req-card">
+            <div class="req-header">
+              <div class="req-avatar">${initials}</div>
+              <div class="req-text">
+                <strong>${senderName}</strong> (@${r.sender_username}) хоче з вами дружити!
+                <div class="req-time">${dateStr}</div>
+              </div>
+            </div>
+            <div class="req-actions">
+              <button class="btn btn-success btn-sm btn-full" onclick="acceptFriendReq(${r.request_id})">✅ Прийняти</button>
+              <button class="btn btn-danger btn-sm btn-full" onclick="rejectFriendReq(${r.request_id})">❌ Відхилити</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      badgeTop.style.display = 'none';
+      badgeTab.style.display = 'none';
+      list.innerHTML = `<div class="friends-empty">Немає нових запитів на дружбу</div>`;
+    }
+  }
+}
+
+async function sendFriendRequest() {
+  const query = document.getElementById('friend-search-in').value.trim();
+  if (!query) {
+    showFb('friend-send-fb', '❌ Введіть логін або нікнейм', 'err');
+    return;
+  }
+
+  const res = await apiFetch('/api/user/friends/request', {
+    method: 'POST',
+    body: JSON.stringify({ query })
+  });
+
+  if (res && res.ok) {
+    document.getElementById('friend-search-in').value = '';
+    showFb('friend-send-fb', `✅ ${res.msg}`, 'ok');
+  } else {
+    showFb('friend-send-fb', (res && res.detail) ? res.detail : '❌ Помилка надсилання запиту', 'err');
+  }
+}
+
+async function acceptFriendReq(reqId) {
+  const res = await apiFetch(`/api/user/friends/requests/${reqId}/accept`, { method: 'POST' });
+  if (res && res.ok) {
+    await loadFriends();
+    await loadFriendRequests();
+  }
+}
+
+async function rejectFriendReq(reqId) {
+  const res = await apiFetch(`/api/user/friends/requests/${reqId}/reject`, { method: 'POST' });
+  if (res && res.ok) {
+    await loadFriendRequests();
+  }
+}
+
+async function removeFriend(username) {
+  if (!confirm(`Ви дійсно хочете видалити @${username} з друзів?`)) return;
+  const res = await apiFetch(`/api/user/friends/${username}`, { method: 'DELETE' });
+  if (res && res.ok) {
+    await loadFriends();
+  }
+}
+
+/* ── NICKNAME ── */
+async function saveNick() {
+  const val = document.getElementById('nick-in').value.trim();
+  if (val.length < 2) { showFb('nick-fb','❌ Мінімум 2 символи','err'); return; }
+  
+  const res = await apiFetch('/api/user/nickname', {
+    method: 'POST',
+    body: JSON.stringify({ nickname: val })
+  });
+
+  if (res && res.ok) {
+    currentUser.nickname = val;
+    saveMeLocal(currentUser);
+    document.getElementById('prof-name').textContent = val;
+    buildNavbar('profile');
+    showFb('nick-fb',"✅ Нікнейм збережено!",'ok');
+  } else {
+    showFb('nick-fb',"❌ Помилка збереження",'err');
+  }
+}
+
+/* ── AVATAR ── */
+function applyAvUI(url) {
+  const img = document.getElementById('av-img');
+  const init = document.getElementById('av-init');
+  if (url) {
+    img.src = url; img.style.display = 'block'; init.style.display = 'none';
+  } else {
+    img.style.display = 'none'; init.style.display = 'block';
+    const nick = currentUser ? (currentUser.nickname || currentUser.first_name || currentUser.username) : '?';
+    const parts = nick.split(' ');
+    init.textContent = (parts[0][0] || '?').toUpperCase() + (parts[1] ? (parts[1][0]||'').toUpperCase() : '');
+  }
+}
+function toggleAvPanel() { document.getElementById('av-panel').classList.toggle('open'); }
+function swAvTab(t) {
+  ['f','u'].forEach(x => document.getElementById('av-tab-'+x).classList.toggle('active', x===t));
+  document.getElementById('av-f-pane').style.display = t==='f' ? 'block' : 'none';
+  document.getElementById('av-u-pane').style.display = t==='u' ? 'block' : 'none';
+}
+function handleAvFile(input) {
+  const file = input.files[0]; if (!file) return;
+  if (!file.type.startsWith('image/')) { showFb('av-fb','❌ Оберіть зображення','err'); return; }
+  if (file.size > 2*1024*1024) { showFb('av-fb','❌ Файл > 2MB','err'); return; }
+  const r = new FileReader();
+  r.onload = e => applyAndSaveAv(e.target.result);
+  r.readAsDataURL(file);
+}
+function handleAvUrl() {
+  const url = document.getElementById('av-url-in').value.trim();
+  if (!url) { showFb('av-fb','❌ Введіть URL','err'); return; }
+  const img = new Image();
+  img.onload = () => applyAndSaveAv(url);
+  img.onerror = () => showFb('av-fb','❌ Не вдалося завантажити','err');
+  img.src = url;
+}
+async function applyAndSaveAv(url) {
+  const res = await apiFetch('/api/user/avatar', {
+    method: 'POST',
+    body: JSON.stringify({ avatarUrl: url })
+  });
+  if (res && res.ok) {
+    currentUser.avatar_url = url;
+    saveMeLocal(currentUser);
+    applyAvUI(url);
+    showFb('av-fb','✅ Аватар оновлено!','ok');
+    buildNavbar('profile');
+    setTimeout(() => document.getElementById('av-panel').classList.remove('open'), 900);
+  }
+}
+async function removeAvatar() {
+  const res = await apiFetch('/api/user/avatar', {
+    method: 'POST',
+    body: JSON.stringify({ avatarUrl: null })
+  });
+  if (res && res.ok) {
+    currentUser.avatar_url = null;
+    saveMeLocal(currentUser);
+    applyAvUI(null);
+    buildNavbar('profile');
+    showFb('av-fb','✅ Видалено','ok');
+  }
+}
+
+/* ── SPECS & AUDIT ── */
+async function loadTelemetrySpecs() {
+  const res = await apiFetch('/api/user/telemetry');
+  const list = document.getElementById('specs-list');
+  if (res && res.ok && res.telemetry && res.telemetry.length > 0) {
+    telemetryHistory = res.telemetry;
+    const d = telemetryHistory[0];
+    list.innerHTML = `
+      <div class="spec-item"><span class="spec-item-key">IP-адреса</span><span class="spec-item-val">${d.ip_address || '—'}</span></div>
+      <div class="spec-item"><span class="spec-item-key">Пристрій</span><span class="spec-item-val">${d.device_type || 'ПК'}</span></div>
+      <div class="spec-item"><span class="spec-item-key">Операційна система</span><span class="spec-item-val">${d.os || '—'}</span></div>
+      <div class="spec-item"><span class="spec-item-key">Браузер</span><span class="spec-item-val">${d.browser || '—'}</span></div>
+      <div class="spec-item"><span class="spec-item-key">Екран</span><span class="spec-item-val">${d.screen_resolution || '—'}</span></div>
+      <div class="spec-item"><span class="spec-item-key">Дата фіксації</span><span class="spec-item-val">${new Date(d.created_at).toLocaleString('uk-UA')}</span></div>
+    `;
+  }
+}
+
+function downloadSpecsLog() {
+  if (!currentUser) return;
+  const d = (telemetryHistory && telemetryHistory[0]) || {};
+  const text = `========================================\n` +
+               `  VØIDplay — Device & Security Audit Log \n` +
+               `========================================\n\n` +
+               `User ID:         ${currentUser.id}\n` +
+               `Username:        @${currentUser.username}\n` +
+               `Full Name:       ${currentUser.first_name || ''} ${currentUser.last_name || ''}\n` +
+               `Birth Year:      ${currentUser.birth_year || 'N/A'}\n` +
+               `Balance:         ${currentUser.balance ?? 500} coins\n` +
+               `Chips:           ${currentUser.chips ?? 0} chips\n` +
+               `Role:            ${currentUser.role || 'user'}\n\n` +
+               `--- HARDWARE & NETWORK LOG ---\n` +
+               `IP Address:      ${d.ip_address || 'N/A'}\n` +
+               `Device Type:     ${d.device_type || 'PC'}\n` +
+               `Operating Sys:   ${d.os || 'N/A'}\n` +
+               `Browser:         ${d.browser || 'N/A'}\n` +
+               `Screen Res:      ${d.screen_resolution || 'N/A'}\n` +
+               `CPU Cores:       ${d.cpu_cores || 'N/A'}\n` +
+               `Timezone:        ${d.timezone || 'N/A'}\n` +
+               `Logged At:       ${d.created_at ? new Date(d.created_at).toISOString() : 'N/A'}\n\n` +
+               `Report Exported: ${new Date().toISOString()}\n`;
+
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `voidplay_user_${currentUser.username}_audit.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ── PROMO CODES & MOD ── */
+async function activateCode() {
+  const code = document.getElementById('code-in').value;
+  const res = await tryActivateCode(code);
+  showFb('code-fb', res.msg, res.ok ? 'ok' : 'err');
+  if (res.ok) { await loadProfile(); buildNavbar('profile'); }
+}
+function renderPerks() {
+  const role = currentUser ? (currentUser.role || 'user') : 'user';
+  document.getElementById('active-perks').innerHTML = role === 'moderator'
+    ? '<span class="role-badge mod">🛡️ MODERATOR — активовано</span>'
+    : `<span style="color:var(--dim);font-size:12px;">Немає активованих привілеїв</span>`;
+}
+async function modGiveCoins() {
+  const v = parseInt(document.getElementById('mod-amount').value, 10);
+  if (!v || v <= 0) { showFb('mod-fb','❌ Введіть суму','err'); return; }
+  
+  const res = await apiFetch('/api/user/mod-give-coins', {
+    method: 'POST',
+    body: JSON.stringify({ amount: v })
+  });
+
+  if (res && res.ok) {
+    currentUser.balance = res.balance;
+    saveMeLocal(currentUser);
+    document.getElementById('prof-coins').textContent = res.balance;
+    document.getElementById('st-bal').textContent = res.balance;
+    showFb('mod-fb','✅ +' + v + ' монет нараховано!','ok');
+  }
+}
+
+/* ── DANGER DELETE COINS ── */
+let _cdInterval = null;
+function confirmDeleteCoins() {
+  document.getElementById('confirm-overlay').style.display = 'flex';
+  const okBtn = document.getElementById('confirm-ok-btn');
+  const cd = document.getElementById('confirm-cd');
+  okBtn.disabled = true;
+  let sec = 10;
+  cd.textContent = sec;
+  clearInterval(_cdInterval);
+  _cdInterval = setInterval(() => {
+    sec--;
+    cd.textContent = sec;
+    if (sec <= 0) { clearInterval(_cdInterval); okBtn.disabled = false; }
+  }, 1000);
+}
+function closeConfirm() {
+  clearInterval(_cdInterval);
+  document.getElementById('confirm-overlay').style.display = 'none';
+}
+async function doDeleteCoins() {
+  clearInterval(_cdInterval);
+  document.getElementById('confirm-overlay').style.display = 'none';
+  const res = await apiFetch('/api/user/delete-coins', { method: 'POST' });
+  if (res && res.ok) {
+    currentUser.balance = 0; currentUser.chips = 0;
+    saveMeLocal(currentUser);
+    document.getElementById('prof-coins').textContent = 0;
+    document.getElementById('st-bal').textContent = 0;
+    document.getElementById('st-chips').textContent = 0;
+    const w = document.getElementById('dz-warn');
+    w.textContent = '✅ Монети видалено';
+    w.classList.add('show');
+    buildNavbar('profile');
+    setTimeout(() => w.classList.remove('show'), 4000);
+  }
+}
+
+function showFb(id, msg, cls) {
+  const el = document.getElementById(id); if (!el) return;
+  el.textContent = msg;
+  el.className = 'fb show ' + cls;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+loadProfile();
+</script>
+</body>
+</html>

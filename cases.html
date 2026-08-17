@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VØIDplay — Кейси (На переробці)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="navbar" id="navbar"></header>
+
+<div class="maintenance-page">
+  <div class="container" style="display:flex;justify-content:center;">
+    <div class="maintenance-box">
+      <div class="gears-wrap">
+        <span class="gear-icon">⚙️</span>
+        <span class="gear-icon-sm">🔧</span>
+      </div>
+      
+      <div class="maintenance-tag" data-i="maint_tag">🛠️ НА ПЕРЕРОБЦІ</div>
+      <h1 class="maintenance-title" data-i="maint_cases_title">🎁 Кейси тимчасово закриті</h1>
+      <p class="maintenance-desc" data-i="maint_desc">
+        Дана гра на переробці. Дякуємо за розуміння! Ми оновлюємо кейси, покращуємо анімації прокрутки та готуємо нові ексклюзивні нагороди.
+      </p>
+
+      <div class="maintenance-btns">
+        <a href="index.html" class="btn btn-secondary" data-i="btn_to_home">🏠 На головну</a>
+        <a href="cards.html" class="btn btn-primary" data-i="btn_to_cards">🃏 Карткові ігри →</a>
+        <a href="crash.html" class="btn btn-ghost" data-i="btn_to_crash">💥 Грати в Crash</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+requireAuth();
+buildNavbar('cases');
+setLang(currentLang);
+initMusic();
+</script>
+</body>
+</html>
