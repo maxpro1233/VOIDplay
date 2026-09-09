@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>VØIDplay — Картковий клуб (Blackjack · Poker · Roulette)</title>
-<link rel="stylesheet" href="style.css?v=2026">
+<title>VØIDplay — Картковий клуб (Blackjack · Crazy Time · Roulette)</title>
+<link rel="stylesheet" href="style.css?v=20260909">
 <style>
 .cards-page {
   padding-top: calc(var(--header-h) + 16px);
@@ -579,14 +579,14 @@
           <button class="btn btn-primary btn-full">Грати зараз →</button>
         </div>
 
-        <!-- 2. Texas Poker Card -->
-        <div class="game-card" onclick="openGame('poker')">
+        <!-- 2. Crazy Time Card -->
+        <div class="game-card" onclick="openGame('crazytime')">
           <div class="gc-header">
-            <span class="gc-icon">♠️</span>
-            <span class="gc-badge active">АКТИВНО</span>
+            <span class="gc-icon">🎪</span>
+            <span class="gc-badge active">🔥 LIVE ШОУ</span>
           </div>
-          <div class="gc-title">Техаський покер</div>
-          <div class="gc-desc">Техаський холдем за овальним столом. Збирай комбінації від пари до Роял-флешу!</div>
+          <div class="gc-title">Crazy Time Live</div>
+          <div class="gc-desc">Легендарне колесо фортуни з Топ-слотом та 4 бонусками: Coin Flip, Pachinko, Cash Hunt і Crazy Time!</div>
           <button class="btn btn-primary btn-full">Грати зараз →</button>
         </div>
 
@@ -671,145 +671,254 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════
-         2. TEXAS HOLD'EM POKER (NEXT-GEN STADIUM ARENA)
+         2. CRAZY TIME LIVE (WHEEL · TOP SLOT · 4 BONUSES)
          ═══════════════════════════════════════════════════ -->
-    <div class="game-view" id="view-poker">
+    <div class="game-view" id="view-crazytime">
       <div class="game-top-bar">
         <button class="btn btn-secondary btn-sm" onclick="returnToLobby()">← До вибору ігор</button>
-        <div style="font-size:16px;font-weight:900;">♠️ Техаський покер</div>
+        <div style="font-size:17px;font-weight:900;letter-spacing:1px;background:linear-gradient(135deg,#ff007f,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+          🎪 CRAZY TIME LIVE
+        </div>
       </div>
 
-      <div class="poker-arena-v2">
+      <!-- CRAZY TIME HISTORY STRIP -->
+      <div class="ct-history-bar">
+        <span class="ct-hist-label">ІСТОРІЯ СПІНІВ:</span>
+        <div class="ct-hist-strip" id="ct-hist-list">
+          <span class="ct-hist-tag tag-1">1</span>
+          <span class="ct-hist-tag tag-2">2</span>
+          <span class="ct-hist-tag tag-cf">🪙</span>
+          <span class="ct-hist-tag tag-1">1</span>
+          <span class="ct-hist-tag tag-5">5</span>
+          <span class="ct-hist-tag tag-pac">🟣</span>
+          <span class="ct-hist-tag tag-2">2</span>
+          <span class="ct-hist-tag tag-ch">🎯</span>
+          <span class="ct-hist-tag tag-10">10</span>
+          <span class="ct-hist-tag tag-ct">🎪</span>
+        </div>
+      </div>
+
+      <div class="ct-arena">
         
-        <!-- THE CASINO STADIUM TABLE -->
-        <div class="poker-table-container">
-          <div class="poker-felt-stadium">
-            <div class="poker-felt-border-line"></div>
-            
-            <!-- TOP ROW (3 BOTS) -->
-            <div class="poker-top-row">
-              <!-- Bot 1 -->
-              <div class="poker-seat-capsule" id="p-seat-1">
-                <div class="poker-seat-inner">
-                  <div class="poker-seat-avatar" id="p-avatar-1">🧔</div>
-                  <div class="poker-seat-info">
-                    <div class="poker-seat-name" id="p-name-1">Alex</div>
-                    <div class="poker-seat-chips">🎰 <span id="p-chips-1">100</span></div>
-                  </div>
-                </div>
-                <div class="poker-seat-cards" id="p-cards-1"><div class="pcard-mini-back">🂠</div><div class="pcard-mini-back">🂠</div></div>
-                <div class="poker-seat-status" id="p-status-1">Очікує</div>
-              </div>
-
-              <!-- Bot 2 -->
-              <div class="poker-seat-capsule" id="p-seat-2">
-                <div class="poker-seat-inner">
-                  <div class="poker-seat-avatar" id="p-avatar-2">👩</div>
-                  <div class="poker-seat-info">
-                    <div class="poker-seat-name" id="p-name-2">Elena</div>
-                    <div class="poker-seat-chips">🎰 <span id="p-chips-2">100</span></div>
-                  </div>
-                </div>
-                <div class="poker-seat-cards" id="p-cards-2"><div class="pcard-mini-back">🂠</div><div class="pcard-mini-back">🂠</div></div>
-                <div class="poker-seat-status" id="p-status-2">Очікує</div>
-              </div>
-
-              <!-- Bot 3 -->
-              <div class="poker-seat-capsule" id="p-seat-3">
-                <div class="poker-seat-inner">
-                  <div class="poker-seat-avatar" id="p-avatar-3">👨‍🦰</div>
-                  <div class="poker-seat-info">
-                    <div class="poker-seat-name" id="p-name-3">Viktor</div>
-                    <div class="poker-seat-chips">🎰 <span id="p-chips-3">100</span></div>
-                  </div>
-                </div>
-                <div class="poker-seat-cards" id="p-cards-3"><div class="pcard-mini-back">🂠</div><div class="pcard-mini-back">🂠</div></div>
-                <div class="poker-seat-status" id="p-status-3">Очікує</div>
+        <!-- TOP SLOT MACHINE -->
+        <div class="ct-top-slot-box">
+          <div class="ct-top-slot-header">
+            <span>⚡ TOP SLOT MULTIPLIER ⚡</span>
+          </div>
+          <div class="ct-top-slot-frame">
+            <!-- Left Reel: Target Sector -->
+            <div class="ct-slot-reel" id="ct-slot-reel-target">
+              <div class="ct-slot-reel-inner" id="ct-slot-inner-target">
+                <div class="ct-reel-item tag-1">1</div>
               </div>
             </div>
-
-            <!-- MIDDLE ROW (COMMUNITY CARDS + BOT 4) -->
-            <div class="poker-mid-row">
-              
-              <!-- Center Community Area -->
-              <div class="poker-board-center">
-                <div class="poker-stage-tag" id="poker-round-lbl">ПРЕ-ФЛОП</div>
-                <div class="poker-pot-glow">
-                  <span>🏆 БАНК:</span>
-                  <span id="poker-pot-val">0</span>
-                  <span>🎰</span>
-                </div>
-                <div class="poker-community-board" id="poker-comm-cards">
-                  <div class="pcard-slot">🂠</div>
-                  <div class="pcard-slot">🂠</div>
-                  <div class="pcard-slot">🂠</div>
-                  <div class="pcard-slot">🂠</div>
-                  <div class="pcard-slot">🂠</div>
-                </div>
-                <div class="poker-announcement-banner" id="poker-banner"></div>
-              </div>
-
-              <!-- Bot 4 (Right Flank) -->
-              <div class="poker-seat-capsule flank-bot" id="p-seat-4">
-                <div class="poker-seat-inner">
-                  <div class="poker-seat-avatar" id="p-avatar-4">👱‍♂️</div>
-                  <div class="poker-seat-info">
-                    <div class="poker-seat-name" id="p-name-4">Max</div>
-                    <div class="poker-seat-chips">🎰 <span id="p-chips-4">100</span></div>
-                  </div>
-                </div>
-                <div class="poker-seat-cards" id="p-cards-4"><div class="pcard-mini-back">🂠</div><div class="pcard-mini-back">🂠</div></div>
-                <div class="poker-seat-status" id="p-status-4">Очікує</div>
-              </div>
-
-            </div>
-
-            <!-- BOTTOM ROW (HUMAN COCKPIT) -->
-            <div class="poker-bottom-row">
-              <div class="poker-player-cockpit" id="p-seat-0">
-                <div class="player-cockpit-header">
-                  <div class="player-avatar-badge">😎</div>
-                  <div>
-                    <div class="player-cockpit-name">Ви (Гравець)</div>
-                    <div class="player-cockpit-chips">🎰 <span id="p-chips-0" class="js-chips">0</span> фішок</div>
-                  </div>
-                  <div class="poker-rank-pill" id="p-rank-0" style="display:none;">Старша карта</div>
-                  <div class="player-cockpit-status" id="p-status-0">Готовий</div>
-                </div>
-                <div class="player-cockpit-cards" id="p-cards-0">
-                  <div class="pcard-slot">🂠</div>
-                  <div class="pcard-slot">🂠</div>
-                </div>
+            <div class="ct-slot-cross">×</div>
+            <!-- Right Reel: Multiplier -->
+            <div class="ct-slot-reel" id="ct-slot-reel-mult">
+              <div class="ct-slot-reel-inner" id="ct-slot-inner-mult">
+                <div class="ct-reel-item mult">5x</div>
               </div>
             </div>
+          </div>
+          <div class="ct-slot-status" id="ct-top-slot-status">Очікування спіну</div>
+        </div>
 
+        <!-- MAIN WHEEL -->
+        <div class="ct-wheel-stage">
+          <div class="ct-flapper-pointer" id="ct-wheel-flapper"></div>
+          <canvas id="ctWheelCanvas" width="400" height="400"></canvas>
+          <div class="ct-wheel-center-hub">
+            <span style="font-size:24px;">🎪</span>
+            <span style="font-size:10px;font-weight:900;letter-spacing:1px;color:#ffd700;">CRAZY</span>
           </div>
         </div>
 
-        <!-- ACTION CONTROLS CONSOLE -->
-        <div class="poker-controls-console">
-          <div class="poker-actions-bar" id="poker-actions">
-            <button class="btn btn-primary btn-lg" id="p-btn-start" onclick="startPokerHand()">🃏 Почати роздачу (Blind 2🎰)</button>
-            
-            <button class="btn btn-danger" id="p-btn-fold" onclick="pokerPlayerFold()" style="display:none;">❌ Пас (Fold)</button>
-            <button class="btn btn-secondary" id="p-btn-check" onclick="pokerPlayerCheck()" style="display:none;">✋ Чек (Check)</button>
-            <button class="btn btn-success" id="p-btn-call" onclick="pokerPlayerCall()" style="display:none;">📥 Кол <span id="p-call-amt">0</span> 🎰</button>
-            <button class="btn btn-primary" id="p-btn-raise" onclick="pokerPlayerRaise()" style="display:none;">⚡ Рейз <span id="p-raise-amt">4</span> 🎰</button>
-            <button class="btn btn-warning" id="p-btn-allin" onclick="pokerPlayerAllIn()" style="display:none;background:#ff9500;color:#fff;">🔥 All-in</button>
+        <!-- RESULT BANNER -->
+        <div class="game-banner" id="ct-banner"></div>
+
+        <!-- 8 BETTING SPOTS (2 ROWS × 4) -->
+        <div class="ct-betting-arena">
+          <div class="ct-bet-spots-grid">
+            <!-- Spot 1 -->
+            <div class="ct-bet-card spot-1" onclick="placeCtBet('1')">
+              <div class="ct-mult-pill" id="ct-mult-badge-1" style="display:none;"></div>
+              <div class="ct-spot-main">1</div>
+              <div class="ct-spot-sub">1 : 1</div>
+              <div class="ct-bet-placed" id="ct-placed-1" style="display:none;">0</div>
+            </div>
+
+            <!-- Spot 2 -->
+            <div class="ct-bet-card spot-2" onclick="placeCtBet('2')">
+              <div class="ct-mult-pill" id="ct-mult-badge-2" style="display:none;"></div>
+              <div class="ct-spot-main">2</div>
+              <div class="ct-spot-sub">2 : 1</div>
+              <div class="ct-bet-placed" id="ct-placed-2" style="display:none;">0</div>
+            </div>
+
+            <!-- Spot 5 -->
+            <div class="ct-bet-card spot-5" onclick="placeCtBet('5')">
+              <div class="ct-mult-pill" id="ct-mult-badge-5" style="display:none;"></div>
+              <div class="ct-spot-main">5</div>
+              <div class="ct-spot-sub">5 : 1</div>
+              <div class="ct-bet-placed" id="ct-placed-5" style="display:none;">0</div>
+            </div>
+
+            <!-- Spot 10 -->
+            <div class="ct-bet-card spot-10" onclick="placeCtBet('10')">
+              <div class="ct-mult-pill" id="ct-mult-badge-10" style="display:none;"></div>
+              <div class="ct-spot-main">10</div>
+              <div class="ct-spot-sub">10 : 1</div>
+              <div class="ct-bet-placed" id="ct-placed-10" style="display:none;">0</div>
+            </div>
+
+            <!-- Spot Coin Flip -->
+            <div class="ct-bet-card spot-cf" onclick="placeCtBet('cf')">
+              <div class="ct-mult-pill" id="ct-mult-badge-cf" style="display:none;"></div>
+              <div class="ct-spot-icon">🪙</div>
+              <div class="ct-spot-title">COIN FLIP</div>
+              <div class="ct-bet-placed" id="ct-placed-cf" style="display:none;">0</div>
+            </div>
+
+            <!-- Spot Pachinko -->
+            <div class="ct-bet-card spot-pac" onclick="placeCtBet('pac')">
+              <div class="ct-mult-pill" id="ct-mult-badge-pac" style="display:none;"></div>
+              <div class="ct-spot-icon">🟣</div>
+              <div class="ct-spot-title">PACHINKO</div>
+              <div class="ct-bet-placed" id="ct-placed-pac" style="display:none;">0</div>
+            </div>
+
+            <!-- Spot Cash Hunt -->
+            <div class="ct-bet-card spot-ch" onclick="placeCtBet('ch')">
+              <div class="ct-mult-pill" id="ct-mult-badge-ch" style="display:none;"></div>
+              <div class="ct-spot-icon">🎯</div>
+              <div class="ct-spot-title">CASH HUNT</div>
+              <div class="ct-bet-placed" id="ct-placed-ch" style="display:none;">0</div>
+            </div>
+
+            <!-- Spot Crazy Time -->
+            <div class="ct-bet-card spot-ct" onclick="placeCtBet('ct')">
+              <div class="ct-mult-pill" id="ct-mult-badge-ct" style="display:none;"></div>
+              <div class="ct-spot-icon">🎪</div>
+              <div class="ct-spot-title">CRAZY TIME</div>
+              <div class="ct-bet-placed" id="ct-placed-ct" style="display:none;">0</div>
+            </div>
           </div>
 
-          <div class="poker-slider-panel" id="p-raise-box" style="display:none;">
-            <span style="font-size:12px;font-weight:700;color:var(--muted)">Ставка рейзу:</span>
-            <input type="range" class="poker-range-slider" id="p-raise-slider" min="2" max="50" value="4" oninput="document.getElementById('p-raise-amt').textContent=this.value">
-            <div class="poker-presets-row">
-              <button class="preset-pill" onclick="setPokerPreset(5)">+5</button>
-              <button class="preset-pill" onclick="setPokerPreset(10)">+10</button>
-              <button class="preset-pill" onclick="setPokerPreset(25)">+25</button>
-              <button class="preset-pill" onclick="setPokerPreset(50)">+50</button>
+          <!-- BET INFO & CHIP SELECTOR -->
+          <div class="ct-controls-panel">
+            <div class="bet-info-row" style="margin-bottom:10px;">
+              <span>Сума ставок: <strong class="curr-bet-badge" id="ct-total-bet-val">0</strong> 🎰</span>
+              <span>Фішки: <strong class="js-chips">0</strong></span>
             </div>
+
+            <!-- Chips Rack -->
+            <div class="chips-rack" id="ct-chips-rack">
+              <div class="chip chip-1 active" onclick="selectCtChip(1, this)">1</div>
+              <div class="chip chip-5" onclick="selectCtChip(5, this)">5</div>
+              <div class="chip chip-10" onclick="selectCtChip(10, this)">10</div>
+              <div class="chip chip-25" onclick="selectCtChip(25, this)">25</div>
+              <div class="chip chip-50" onclick="selectCtChip(50, this)">50</div>
+              <div class="chip chip-100" onclick="selectCtChip(100, this)">100</div>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="actions-row" style="margin-top:10px;">
+              <button class="btn btn-secondary btn-sm" onclick="clearCtBets()">🗑️ Очистити</button>
+              <button class="btn btn-secondary btn-sm" onclick="doubleCtBets()">⚡ 2x Подвоїти</button>
+              <button class="btn btn-secondary btn-sm" onclick="repeatCtBets()">🔄 Повторити</button>
+              <button class="btn btn-primary btn-lg" id="ct-btn-spin" onclick="spinCrazyTime()" style="flex:1;min-width:180px;background:linear-gradient(135deg,#ff007f,#ff8c00);">
+                🎪 КРУТИТИ КОЛЕСО
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         4. CRAZY TIME BONUS GAME OVERLAYS / MODALS
+         ═══════════════════════════════════════════════════ -->
+    <!-- 1. COIN FLIP BONUS MODAL -->
+    <div class="ct-modal-overlay" id="modal-coinflip">
+      <div class="ct-modal-card coinflip-card">
+        <div class="ct-modal-title">🪙 COIN FLIP BONUS</div>
+        <div class="cf-sides-container">
+          <div class="cf-side-box blue-box">
+            <span class="cf-lbl">СИНЯ СТОРОНА</span>
+            <span class="cf-mult" id="cf-mult-blue">15x</span>
+          </div>
+          <div class="cf-side-box red-box">
+            <span class="cf-lbl">ЧЕРВОНА СТОРОНА</span>
+            <span class="cf-mult" id="cf-mult-red">25x</span>
           </div>
         </div>
 
+        <!-- 3D Coin Animation -->
+        <div class="cf-coin-stage">
+          <div class="cf-coin" id="cf-coin-element">
+            <div class="cf-face cf-blue">BLUE</div>
+            <div class="cf-face cf-red">RED</div>
+          </div>
+        </div>
+
+        <div class="cf-status-badge" id="cf-status-text">Підкидання монети...</div>
+      </div>
+    </div>
+
+    <!-- 2. PACHINKO BONUS MODAL -->
+    <div class="ct-modal-overlay" id="modal-pachinko">
+      <div class="ct-modal-card pachinko-card">
+        <div class="ct-modal-title">🟣 PACHINKO BONUS</div>
+        <div class="pachinko-stage-wrapper">
+          <canvas id="pachinkoCanvas" width="380" height="400"></canvas>
+        </div>
+        <div class="cf-status-badge" id="pachinko-status-text">Шайба падає крізь штифти...</div>
+      </div>
+    </div>
+
+    <!-- 3. CASH HUNT BONUS MODAL -->
+    <div class="ct-modal-overlay" id="modal-cashhunt">
+      <div class="ct-modal-card cashhunt-card">
+        <div class="ct-modal-title">🎯 CASH HUNT — 108 МІШЕНЕЙ</div>
+        <div class="ch-countdown-bar" id="ch-countdown-lbl">ОБЕРІТЬ МІШЕНЬ ПРИЦІЛОМ! (7с)</div>
+        
+        <div class="ch-grid-108" id="ch-grid-container"></div>
+
+        <div class="cf-status-badge" id="ch-status-text">Клікніть на будь-який символ, щоб вистрілити!</div>
+      </div>
+    </div>
+
+    <!-- 4. CRAZY TIME VIRTUAL WORLD MODAL -->
+    <div class="ct-modal-overlay" id="modal-crazytime">
+      <div class="ct-modal-card crazytime-world-card">
+        <div class="ct-modal-title" style="font-size:24px;color:#ffd700;">🎪 CRAZY TIME VIRTUAL WORLD</div>
+        <div style="font-size:13px;color:#fff;margin-bottom:12px;">Оберіть свій вказівник перед запуском гігантського колеса!</div>
+        
+        <!-- Flapper pickers -->
+        <div class="ct-flapper-pick-row">
+          <button class="ct-flapper-btn green" id="btn-flap-green" onclick="selectCrazyFlapper('green')">
+            <span>▼</span> ЗЕЛЕНИЙ
+          </button>
+          <button class="ct-flapper-btn blue active" id="btn-flap-blue" onclick="selectCrazyFlapper('blue')">
+            <span>▼</span> СИНІЙ
+          </button>
+          <button class="ct-flapper-btn yellow" id="btn-flap-yellow" onclick="selectCrazyFlapper('yellow')">
+            <span>▼</span> ЖОВТИЙ
+          </button>
+        </div>
+
+        <div class="ct-giant-wheel-stage">
+          <div class="ct-giant-flappers-bar">
+            <div class="ct-g-flapper green" id="g-flapper-green"></div>
+            <div class="ct-g-flapper blue" id="g-flapper-blue"></div>
+            <div class="ct-g-flapper yellow" id="g-flapper-yellow"></div>
+          </div>
+          <canvas id="ctGiantWheelCanvas" width="380" height="380"></canvas>
+        </div>
+
+        <div class="cf-status-badge" id="ct-giant-status-text">Обертання гігантського колеса...</div>
       </div>
     </div>
 
@@ -948,6 +1057,8 @@ function openGame(game) {
 
   if (game === 'roulette') {
     drawRouletteWheel(0);
+  } else if (game === 'crazytime') {
+    drawCrazyTimeWheel(0);
   }
 }
 
@@ -1224,435 +1335,727 @@ function setBjActionButtons(state) {
 }
 
 /* ═══════════════════════════════════════════════════
-   2. TEXAS HOLD'EM POKER ENGINE (ROBUST MULTI-STREET + AUTO-SKIP)
+   2. CRAZY TIME LIVE ENGINE (WHEEL · TOP SLOT · 4 BONUSES)
    ═══════════════════════════════════════════════════ */
-const BOT_POOL = [
-  { name: 'Alex', avatar: '🧔', style: 'aggressive' },
-  { name: 'Elena', avatar: '👩', style: 'balanced' },
-  { name: 'Viktor', avatar: '👨‍🦰', style: 'tight' },
-  { name: 'Max', avatar: '👱‍♂️', style: 'bluffer' },
-  { name: 'David', avatar: '🧑‍🦱', style: 'balanced' },
-  { name: 'Anna', avatar: '👩‍🦰', style: 'aggressive' },
-  { name: 'Arthur', avatar: '🧔‍♂️', style: 'tight' },
-  { name: 'Sophia', avatar: '👩‍🦳', style: 'balanced' },
-  { name: 'John', avatar: '🕵️', style: 'bluffer' },
-  { name: 'Sam', avatar: '🤠', style: 'aggressive' },
-  { name: 'Leo', avatar: '👨‍💻', style: 'tight' },
-  { name: 'Maya', avatar: '👩‍🎨', style: 'balanced' },
-  { name: 'Roman', avatar: '🧑‍💼', style: 'aggressive' },
-  { name: 'Diana', avatar: '👸', style: 'tight' },
-  { name: 'Felix', avatar: '🧑‍🎤', style: 'bluffer' }
+
+// 54 segments exact casino distribution
+const CRAZY_SEGMENTS = [
+  { id: 'ct',  label: 'CRAZY TIME', type: 'bonus', color: '#ff0055', textCol: '#fff', payout: 0,  icon: '🎪' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: 'cf',  label: 'COIN FLIP',  type: 'bonus', color: '#1a53ff', textCol: '#fff', payout: 0,  icon: '🪙' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '5',   label: '5',          type: 'num',   color: '#ff66b2', textCol: '#400020', payout: 5,  icon: '5' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '10',  label: '10',         type: 'num',   color: '#9933ff', textCol: '#fff', payout: 10, icon: '10' },
+  { id: '5',   label: '5',          type: 'num',   color: '#ff66b2', textCol: '#400020', payout: 5,  icon: '5' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: 'ch',  label: 'CASH HUNT',  type: 'bonus', color: '#00cc66', textCol: '#fff', payout: 0,  icon: '🎯' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: 'cf',  label: 'COIN FLIP',  type: 'bonus', color: '#1a53ff', textCol: '#fff', payout: 0,  icon: '🪙' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: '5',   label: '5',          type: 'num',   color: '#ff66b2', textCol: '#400020', payout: 5,  icon: '5' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: 'pac', label: 'PACHINKO',   type: 'bonus', color: '#ff00aa', textCol: '#fff', payout: 0,  icon: '🟣' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '10',  label: '10',         type: 'num',   color: '#9933ff', textCol: '#fff', payout: 10, icon: '10' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: 'cf',  label: 'COIN FLIP',  type: 'bonus', color: '#1a53ff', textCol: '#fff', payout: 0,  icon: '🪙' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: '5',   label: '5',          type: 'num',   color: '#ff66b2', textCol: '#400020', payout: 5,  icon: '5' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: 'ch',  label: 'CASH HUNT',  type: 'bonus', color: '#00cc66', textCol: '#fff', payout: 0,  icon: '🎯' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '10',  label: '10',         type: 'num',   color: '#9933ff', textCol: '#fff', payout: 10, icon: '10' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '5',   label: '5',          type: 'num',   color: '#ff66b2', textCol: '#400020', payout: 5,  icon: '5' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: 'cf',  label: 'COIN FLIP',  type: 'bonus', color: '#1a53ff', textCol: '#fff', payout: 0,  icon: '🪙' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: 'pac', label: 'PACHINKO',   type: 'bonus', color: '#ff00aa', textCol: '#fff', payout: 0,  icon: '🟣' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: '5',   label: '5',          type: 'num',   color: '#ff66b2', textCol: '#400020', payout: 5,  icon: '5' },
+  { id: '1',   label: '1',          type: 'num',   color: '#00bfff', textCol: '#002244', payout: 1,  icon: '1' },
+  { id: '10',  label: '10',         type: 'num',   color: '#9933ff', textCol: '#fff', payout: 10, icon: '10' },
+  { id: '2',   label: '2',          type: 'num',   color: '#ffd700', textCol: '#443000', payout: 2,  icon: '2' },
+  { id: '5',   label: '5',          type: 'num',   color: '#ff66b2', textCol: '#400020', payout: 5,  icon: '5' }
 ];
 
-let pokerDeck = [];
-let pokerPlayers = [];
-let pokerPot = 0;
-let pokerCommunity = [];
-let pokerStage = 'idle'; // 'idle' | 'preflop' | 'flop' | 'turn' | 'river' | 'showdown'
-let currentCallAmount = 0;
+const CT_BET_SPOTS = ['1', '2', '5', '10', 'cf', 'pac', 'ch', 'ct'];
+const TOP_SLOT_TARGETS = ['1', '2', '5', '10', 'cf', 'pac', 'ch', 'ct'];
+const TOP_SLOT_MULTIPLIERS = [2, 3, 4, 5, 7, 10, 15, 20, 25, 50];
 
-const CARD_VAL_MAP = { '2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'J':11,'Q':12,'K':13,'A':14 };
+let ctBets = {};
+let ctPreviousBets = {};
+let selectedCtChip = 1;
+let isCtSpinning = false;
+let ctWheelCurrentAngle = 0;
+let ctActiveTopSlot = null; // { target: '5', mult: 10 } or null
+let ctHistory = ['1', '2', 'cf', '1', '5', 'pac', '2', 'ch', '10', 'ct'];
 
-function initRandomPokerBots() {
-  const shuffledPool = [...BOT_POOL].sort(() => 0.5 - Math.random());
-  pokerPlayers = [
-    { id: 0, name: 'Ви (Гравець)', isHuman: true, avatar: '😎', chips: getChips(), cards: [], currentBet: 0, folded: false, isAllIn: false, status: 'Готовий' }
-  ];
-  for (let i = 1; i <= 4; i++) {
-    const b = shuffledPool[i - 1];
-    const initialChips = Math.floor(Math.random() * 80) + 100; // 100 - 180 chips
-    pokerPlayers.push({
-      id: i,
-      name: b.name,
-      avatar: b.avatar,
-      isHuman: false,
-      style: b.style,
-      chips: initialChips,
-      cards: [],
-      currentBet: 0,
-      folded: false,
-      isAllIn: false,
-      status: 'Очікує'
-    });
-  }
-
-  // Update Seats in UI
-  for (let i = 1; i <= 4; i++) {
-    const bot = pokerPlayers[i];
-    const av = document.getElementById(`p-avatar-${i}`); if (av) av.textContent = bot.avatar;
-    const nm = document.getElementById(`p-name-${i}`); if (nm) nm.textContent = bot.name;
-    const ch = document.getElementById(`p-chips-${i}`); if (ch) ch.textContent = bot.chips;
-    const st = document.getElementById(`p-status-${i}`); if (st) st.textContent = bot.status;
-  }
-}
-initRandomPokerBots();
-
-function evaluate7Cards(cards) {
-  if (!cards || cards.length < 5) return { score: 0, label: '...' };
-  const vals = cards.map(c => CARD_VAL_MAP[c.val] || 2).sort((a,b) => b-a);
-  const suits = cards.map(c => c.suit);
-  
-  const valCounts = {};
-  vals.forEach(v => valCounts[v] = (valCounts[v] || 0) + 1);
-  const counts = Object.entries(valCounts).sort((a,b) => b[1] - a[1] || b[0] - a[0]);
-
-  const suitCounts = {};
-  suits.forEach(s => suitCounts[s] = (suitCounts[s] || 0) + 1);
-  const flushSuit = Object.keys(suitCounts).find(s => suitCounts[s] >= 5);
-
-  const uniqueVals = [...new Set(vals)];
-  if (uniqueVals.includes(14)) uniqueVals.push(1);
-  let straightHigh = 0;
-  for (let i = 0; i <= uniqueVals.length - 5; i++) {
-    if (uniqueVals[i] - uniqueVals[i+4] === 4) { straightHigh = uniqueVals[i]; break; }
-  }
-
-  if (flushSuit) {
-    const fVals = cards.filter(c => c.suit === flushSuit).map(c => CARD_VAL_MAP[c.val]).sort((a,b) => b-a);
-    const uFVals = [...new Set(fVals)];
-    if (uFVals.includes(14)) uFVals.push(1);
-    for (let i = 0; i <= uFVals.length - 5; i++) {
-      if (uFVals[i] - uFVals[i+4] === 4) {
-        if (uFVals[i] === 14) return { score: 900, label: '🔥 Роял-флеш' };
-        return { score: 800 + uFVals[i], label: '⚡ Стріт-флеш' };
-      }
-    }
-  }
-
-  if (counts[0][1] === 4) return { score: 700 + parseInt(counts[0][0]), label: 'Каре (Four of a Kind)' };
-  if (counts[0][1] === 3 && counts[1] && counts[1][1] >= 2) return { score: 600 + parseInt(counts[0][0]), label: 'Фул-хаус (Full House)' };
-  if (flushSuit) return { score: 500, label: 'Флеш (Flush)' };
-  if (straightHigh) return { score: 400 + straightHigh, label: 'Стріт (Straight)' };
-  if (counts[0][1] === 3) return { score: 300 + parseInt(counts[0][0]), label: 'Сет (Three of a Kind)' };
-  if (counts[0][1] === 2 && counts[1] && counts[1][1] === 2) return { score: 200 + parseInt(counts[0][0]), label: 'Дві пари (Two Pair)' };
-  if (counts[0][1] === 2) return { score: 100 + parseInt(counts[0][0]), label: 'Пара (One Pair)' };
-  return { score: vals[0], label: 'Старша карта' };
+function selectCtChip(val, el) {
+  selectedCtChip = val;
+  document.querySelectorAll('#ct-chips-rack .chip').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
 }
 
-function startPokerHand() {
+function placeCtBet(spot) {
+  if (isCtSpinning) return;
   const currentChips = getChips();
-  if (currentChips < 2) {
+  const totalBet = Object.values(ctBets).reduce((a, b) => a + b, 0);
+
+  if (totalBet + selectedCtChip > currentChips) {
     openCashierModal();
     return;
   }
 
-  document.getElementById('poker-banner').style.display = 'none';
-  pokerDeck = createFullDeck();
-  pokerCommunity = [];
-  pokerPot = 0;
-
-  // Refresh bots if depleted
-  if (pokerPlayers.length < 5 || pokerPlayers.some(p => !p.isHuman && p.chips <= 4)) {
-    initRandomPokerBots();
-  }
-
-  pokerPlayers[0].chips = currentChips;
-  pokerPlayers.forEach((p) => {
-    p.cards = [pokerDeck.pop(), pokerDeck.pop()];
-    p.folded = false;
-    p.isAllIn = false;
-    p.currentBet = 0;
-    p.status = 'В грі';
-  });
-
-  // Post Blinds: Small Blind 1 (Bot 1), Big Blind 2 (Bot 2)
-  pokerPlayers[1].chips = Math.max(0, pokerPlayers[1].chips - 1);
-  pokerPlayers[1].currentBet = 1;
-  pokerPlayers[1].status = 'Small Blind (1🎰)';
-  pokerPot += 1;
-
-  pokerPlayers[2].chips = Math.max(0, pokerPlayers[2].chips - 2);
-  pokerPlayers[2].currentBet = 2;
-  pokerPlayers[2].status = 'Big Blind (2🎰)';
-  pokerPot += 2;
-
-  currentCallAmount = 2;
-  pokerStage = 'preflop';
-
-  playCardSound();
-  updatePokerUI();
-  setPokerStageControls(true);
+  ctBets[spot] = (ctBets[spot] || 0) + selectedCtChip;
+  playChipSound();
+  updateCtBetUI();
 }
 
-function updatePokerUI() {
-  const potEl = document.getElementById('poker-pot-val');
-  if (potEl) potEl.textContent = pokerPot;
+function clearCtBets() {
+  if (isCtSpinning) return;
+  ctBets = {};
+  playChipSound();
+  updateCtBetUI();
+}
 
-  const roundEl = document.getElementById('poker-round-lbl');
-  if (roundEl) {
-    const stageNames = {
-      'preflop': 'ПРЕ-ФЛОП',
-      'flop': 'ФЛОП',
-      'turn': 'ТЕРН',
-      'river': 'РІВЕР',
-      'showdown': 'ШОУДАУН',
-      'idle': 'ОЧІКУВАННЯ'
-    };
-    roundEl.textContent = stageNames[pokerStage] || pokerStage.toUpperCase();
+function doubleCtBets() {
+  if (isCtSpinning) return;
+  const totalBet = Object.values(ctBets).reduce((a, b) => a + b, 0);
+  const currentChips = getChips();
+  if (totalBet * 2 > currentChips) {
+    alert('Недостатньо фішок для подвоєння!');
+    return;
   }
-
-  // Community cards
-  const commCardsEl = document.getElementById('poker-comm-cards');
-  if (commCardsEl) {
-    const cHtml = pokerCommunity.map(renderCard).join('') +
-      Array(Math.max(0, 5 - pokerCommunity.length)).fill('<div class="pcard-back">🂠</div>').join('');
-    commCardsEl.innerHTML = cHtml;
+  for (const s in ctBets) {
+    ctBets[s] *= 2;
   }
+  playChipSound();
+  updateCtBetUI();
+}
 
-  // Human player cards & combination badge
-  const pCardsEl = document.getElementById('p-cards-0');
-  if (pCardsEl && pokerPlayers[0]) {
-    pCardsEl.innerHTML = pokerPlayers[0].cards.map(renderCard).join('');
-    document.getElementById('p-chips-0').textContent = pokerPlayers[0].chips;
-    document.getElementById('p-status-0').textContent = pokerPlayers[0].status;
-
-    const pEval = evaluate7Cards([...pokerPlayers[0].cards, ...pokerCommunity]);
-    const rBadge = document.getElementById('p-rank-0');
-    if (rBadge) {
-      rBadge.style.display = pokerStage !== 'idle' ? 'inline-block' : 'none';
-      rBadge.textContent = pEval.label;
-    }
+function repeatCtBets() {
+  if (isCtSpinning) return;
+  if (!Object.keys(ctPreviousBets).length) return;
+  const prevTotal = Object.values(ctPreviousBets).reduce((a, b) => a + b, 0);
+  if (prevTotal > getChips()) {
+    openCashierModal();
+    return;
   }
+  ctBets = { ...ctPreviousBets };
+  playChipSound();
+  updateCtBetUI();
+}
 
-  // Bots cards and badges
-  for (let i = 1; i <= 4; i++) {
-    const bot = pokerPlayers[i];
-    if (!bot) continue;
-    const chipsEl = document.getElementById(`p-chips-${i}`); if (chipsEl) chipsEl.textContent = bot.chips;
-    const statusEl = document.getElementById(`p-status-${i}`); if (statusEl) statusEl.textContent = bot.status;
-    const seatEl = document.getElementById(`p-seat-${i}`);
-    if (seatEl) seatEl.classList.toggle('folded', bot.folded);
-
-    const cardsEl = document.getElementById(`p-cards-${i}`);
-    if (cardsEl) {
-      if (pokerStage === 'showdown' && !bot.folded) {
-        cardsEl.innerHTML = bot.cards.map(renderCard).join('');
+function updateCtBetUI() {
+  let total = 0;
+  CT_BET_SPOTS.forEach(spot => {
+    const amt = ctBets[spot] || 0;
+    total += amt;
+    const badge = document.getElementById(`ct-placed-${spot}`);
+    if (badge) {
+      if (amt > 0) {
+        badge.style.display = 'block';
+        badge.textContent = amt;
       } else {
-        cardsEl.innerHTML = '<div class="pcard-back">🂠</div><div class="pcard-back">🂠</div>';
+        badge.style.display = 'none';
       }
     }
+  });
+
+  const totalEl = document.getElementById('ct-total-bet-val');
+  if (totalEl) totalEl.textContent = total;
+}
+
+// ── CANVAS WHEEL DRAWING ──
+function drawCrazyTimeWheel(angle) {
+  const canvas = document.getElementById('ctWheelCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const cx = w / 2, cy = h / 2;
+  const radius = cx - 12;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const totalSlices = CRAZY_SEGMENTS.length;
+  const arc = (Math.PI * 2) / totalSlices;
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+
+  for (let i = 0; i < totalSlices; i++) {
+    const seg = CRAZY_SEGMENTS[i];
+    const a1 = i * arc;
+    const a2 = (i + 1) * arc;
+
+    // Segment Slice
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, radius, a1, a2);
+    ctx.closePath();
+    ctx.fillStyle = seg.color;
+    ctx.fill();
+
+    // Segment Border & Pin
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.stroke();
+
+    // Pin on outer edge
+    const pinX = Math.cos(a1) * (radius - 4);
+    const pinY = Math.sin(a1) * (radius - 4);
+    ctx.beginPath();
+    ctx.arc(pinX, pinY, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffd700';
+    ctx.fill();
+
+    // Slice Text / Icon
+    ctx.save();
+    ctx.rotate(a1 + arc / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = seg.textCol;
+    ctx.font = seg.type === 'bonus' ? 'bold 11px sans-serif' : '900 15px sans-serif';
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = 4;
+    ctx.fillText(seg.label, radius - 18, 5);
+    ctx.restore();
   }
+
+  // Outer Golden Rim
+  ctx.beginPath();
+  ctx.arc(0, 0, radius + 2, 0, Math.PI * 2);
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = '#d4af37';
+  ctx.stroke();
+
+  ctx.restore();
 }
 
-function setPokerStageControls(isPlayerTurn) {
-  const p = pokerPlayers[0];
-  const isAllIn = p && p.isAllIn;
-  const isFolded = p && p.folded;
-  const canAct = isPlayerTurn && !isAllIn && !isFolded && (pokerStage !== 'idle' && pokerStage !== 'showdown');
+// ── TOP SLOT SPINNER ──
+function spinTopSlot(onComplete) {
+  const targetReel = document.getElementById('ct-slot-inner-target');
+  const multReel = document.getElementById('ct-slot-inner-mult');
+  const statusEl = document.getElementById('ct-top-slot-status');
+  if (statusEl) statusEl.textContent = '🎰 Топ-слот обертається...';
 
-  const diff = p ? Math.max(0, currentCallAmount - p.currentBet) : 0;
+  // Clear previous badges
+  CT_BET_SPOTS.forEach(s => {
+    const b = document.getElementById(`ct-mult-badge-${s}`);
+    if (b) { b.style.display = 'none'; b.textContent = ''; }
+  });
 
-  const btnStart = document.getElementById('p-btn-start'); if (btnStart) btnStart.style.display = (pokerStage === 'idle' || pokerStage === 'showdown') ? 'inline-flex' : 'none';
-  const btnFold = document.getElementById('p-btn-fold'); if (btnFold) btnFold.style.display = canAct ? 'inline-flex' : 'none';
-  const btnCheck = document.getElementById('p-btn-check'); if (btnCheck) btnCheck.style.display = (canAct && diff === 0) ? 'inline-flex' : 'none';
-  const btnCall = document.getElementById('p-btn-call'); if (btnCall) btnCall.style.display = (canAct && diff > 0) ? 'inline-flex' : 'none';
-  const btnRaise = document.getElementById('p-btn-raise'); if (btnRaise) btnRaise.style.display = (canAct && p.chips > diff) ? 'inline-flex' : 'none';
-  const btnAllIn = document.getElementById('p-btn-allin'); if (btnAllIn) btnAllIn.style.display = canAct ? 'inline-flex' : 'none';
-  const raiseBox = document.getElementById('p-raise-box'); if (raiseBox) raiseBox.style.display = canAct ? 'flex' : 'none';
+  const chosenTarget = TOP_SLOT_TARGETS[Math.floor(Math.random() * TOP_SLOT_TARGETS.length)];
+  const chosenMult = TOP_SLOT_MULTIPLIERS[Math.floor(Math.random() * TOP_SLOT_MULTIPLIERS.length)];
+  const willMatch = Math.random() < 0.55; // 55% chance payline aligns
 
-  const callAmtEl = document.getElementById('p-call-amt'); if (callAmtEl) callAmtEl.textContent = diff;
-}
+  let tSpinCount = 0;
+  const tInterval = setInterval(() => {
+    tSpinCount++;
+    const randT = TOP_SLOT_TARGETS[Math.floor(Math.random() * TOP_SLOT_TARGETS.length)];
+    const randM = TOP_SLOT_MULTIPLIERS[Math.floor(Math.random() * TOP_SLOT_MULTIPLIERS.length)];
+    
+    if (targetReel) targetReel.innerHTML = `<div class="ct-reel-item tag-${randT}">${randT.toUpperCase()}</div>`;
+    if (multReel) multReel.innerHTML = `<div class="ct-reel-item mult">${randM}x</div>`;
 
-function pokerPlayerFold() {
-  pokerPlayers[0].folded = true;
-  pokerPlayers[0].status = 'Пас (Fold)';
-  playCardSound();
-  updatePokerUI();
-  runBotsTurn();
-}
+    if (tSpinCount > 18) {
+      clearInterval(tInterval);
+      if (willMatch) {
+        ctActiveTopSlot = { target: chosenTarget, mult: chosenMult };
+        if (targetReel) targetReel.innerHTML = `<div class="ct-reel-item tag-${chosenTarget}">${chosenTarget.toUpperCase()}</div>`;
+        if (multReel) multReel.innerHTML = `<div class="ct-reel-item mult">${chosenMult}x</div>`;
+        if (statusEl) statusEl.innerHTML = `🔥 МНОЖНИК: <strong style="color:#ffd700">${chosenTarget.toUpperCase()} × ${chosenMult}x</strong>`;
 
-function pokerPlayerCheck() {
-  pokerPlayers[0].status = 'Чек (Check)';
-  playChipSound();
-  updatePokerUI();
-  runBotsTurn();
-}
-
-function pokerPlayerCall() {
-  const diff = currentCallAmount - pokerPlayers[0].currentBet;
-  const pay = Math.min(diff, pokerPlayers[0].chips);
-  pokerPlayers[0].chips -= pay;
-  pokerPlayers[0].currentBet += pay;
-  pokerPot += pay;
-  if (pokerPlayers[0].chips === 0) pokerPlayers[0].isAllIn = true;
-  setChips(pokerPlayers[0].chips);
-  pokerPlayers[0].status = pokerPlayers[0].isAllIn ? '🔥 All-in!' : `Кол (${pay}🎰)`;
-  playChipSound();
-  updatePokerUI();
-  runBotsTurn();
-}
-
-function pokerPlayerRaise() {
-  const raiseVal = parseInt(document.getElementById('p-raise-slider').value, 10) || 4;
-  const diff = currentCallAmount - pokerPlayers[0].currentBet;
-  const totalNeed = diff + raiseVal;
-  const pay = Math.min(totalNeed, pokerPlayers[0].chips);
-  pokerPlayers[0].chips -= pay;
-  pokerPlayers[0].currentBet += pay;
-  currentCallAmount = pokerPlayers[0].currentBet;
-  pokerPot += pay;
-  if (pokerPlayers[0].chips === 0) pokerPlayers[0].isAllIn = true;
-  setChips(pokerPlayers[0].chips);
-  pokerPlayers[0].status = pokerPlayers[0].isAllIn ? '🔥 All-in!' : `Рейз (${pokerPlayers[0].currentBet}🎰)`;
-  playChipSound();
-  updatePokerUI();
-  runBotsTurn();
-}
-
-function pokerPlayerAllIn() {
-  const pay = pokerPlayers[0].chips;
-  pokerPlayers[0].chips = 0;
-  pokerPlayers[0].currentBet += pay;
-  pokerPlayers[0].isAllIn = true;
-  if (pokerPlayers[0].currentBet > currentCallAmount) currentCallAmount = pokerPlayers[0].currentBet;
-  pokerPot += pay;
-  setChips(0);
-  pokerPlayers[0].status = '🔥 All-in!';
-  playChipSound();
-  updatePokerUI();
-  runBotsTurn();
-}
-
-function setPokerPreset(val) {
-  const slider = document.getElementById('p-raise-slider');
-  if (slider) {
-    slider.value = val;
-    document.getElementById('p-raise-amt').textContent = val;
-  }
-}
-
-function runBotsTurn() {
-  setPokerStageControls(false);
-
-  let botIdx = 1;
-  function nextBot() {
-    // Check if only 1 active player remains across table
-    const activeUnfolded = pokerPlayers.filter(p => !p.folded);
-    if (activeUnfolded.length === 1) {
-      resolvePokerShowdown();
-      return;
-    }
-
-    if (botIdx > 4) {
-      advancePokerRound();
-      return;
-    }
-
-    const b = pokerPlayers[botIdx];
-    if (!b.folded && !b.isAllIn && b.chips > 0) {
-      const seatEl = document.getElementById(`p-seat-${botIdx}`);
-      if (seatEl) seatEl.classList.add('active-turn');
-      
-      setTimeout(() => {
-        const evalHand = evaluate7Cards([...b.cards, ...pokerCommunity]);
-        const diff = currentCallAmount - b.currentBet;
-
-        if (diff === 0) {
-          if (evalHand.score >= 200 && Math.random() > 0.45 && b.chips >= 4) {
-            const raise = Math.min(4, b.chips);
-            b.chips -= raise;
-            b.currentBet += raise;
-            if (b.chips === 0) b.isAllIn = true;
-            currentCallAmount = b.currentBet;
-            pokerPot += raise;
-            b.status = b.isAllIn ? '🔥 All-in' : `Рейз (${b.currentBet}🎰)`;
-          } else {
-            b.status = 'Чек';
-          }
-        } else {
-          if (evalHand.score >= 100 || Math.random() > 0.35) {
-            const pay = Math.min(diff, b.chips);
-            b.chips -= pay;
-            b.currentBet += pay;
-            if (b.chips === 0) b.isAllIn = true;
-            pokerPot += pay;
-            b.status = b.isAllIn ? '🔥 All-in' : `Кол (${pay}🎰)`;
-          } else {
-            b.folded = true;
-            b.status = 'Пас';
-          }
+        // Highlight bet spot
+        const badge = document.getElementById(`ct-mult-badge-${chosenTarget}`);
+        if (badge) {
+          badge.style.display = 'inline-block';
+          badge.textContent = `⚡ ${chosenMult}x`;
         }
-
-        playChipSound();
-        if (seatEl) seatEl.classList.remove('active-turn');
-        updatePokerUI();
-        botIdx++;
-        setTimeout(nextBot, 500);
-      }, 550);
-
-    } else {
-      botIdx++;
-      nextBot();
+        playWinSound();
+      } else {
+        ctActiveTopSlot = null;
+        if (statusEl) statusEl.textContent = '❌ Без збігу Топ-Слота';
+      }
+      onComplete();
     }
-  }
-  setTimeout(nextBot, 350);
+  }, 90);
 }
 
-function advancePokerRound() {
-  // Reset street bets for the upcoming round
-  pokerPlayers.forEach(p => p.currentBet = 0);
-  currentCallAmount = 0;
-
-  if (pokerStage === 'preflop') {
-    pokerStage = 'flop';
-    pokerCommunity.push(pokerDeck.pop(), pokerDeck.pop(), pokerDeck.pop());
-  } else if (pokerStage === 'flop') {
-    pokerStage = 'turn';
-    pokerCommunity.push(pokerDeck.pop());
-  } else if (pokerStage === 'turn') {
-    pokerStage = 'river';
-    pokerCommunity.push(pokerDeck.pop());
-  } else if (pokerStage === 'river') {
-    pokerStage = 'showdown';
-    resolvePokerShowdown();
+// ── MAIN CRAZY TIME SPIN ──
+function spinCrazyTime() {
+  if (isCtSpinning) return;
+  const totalBet = Object.values(ctBets).reduce((a, b) => a + b, 0);
+  if (totalBet <= 0) {
+    alert('Будь ласка, зробіть хоча б одну ставку!');
+    return;
+  }
+  if (totalBet > getChips()) {
+    openCashierModal();
     return;
   }
 
-  playCardSound();
-  updatePokerUI();
-  
-  // If player is folded or All-in, automatically continue running bots without asking for input
-  if (pokerPlayers[0].isAllIn || pokerPlayers[0].folded) {
-    setTimeout(runBotsTurn, 700);
+  // Save for repeat
+  ctPreviousBets = { ...ctBets };
+
+  // Deduct chips
+  setChips(getChips() - totalBet);
+  isCtSpinning = true;
+
+  const btnSpin = document.getElementById('ct-btn-spin');
+  if (btnSpin) { btnSpin.disabled = true; btnSpin.textContent = 'ОБЕРТАННЯ...'; }
+
+  const banner = document.getElementById('ct-banner');
+  if (banner) banner.style.display = 'none';
+
+  // Step 1: Spin Top Slot
+  spinTopSlot(() => {
+    // Step 2: Spin Wheel
+    const totalSlices = CRAZY_SEGMENTS.length;
+    const arc = (Math.PI * 2) / totalSlices;
+
+    // Pick winning segment
+    const winIndex = Math.floor(Math.random() * totalSlices);
+    const winSegment = CRAZY_SEGMENTS[winIndex];
+
+    // Align under top flapper (angle = -Math.PI / 2 at 12 o'clock)
+    const extraRots = 5 + Math.floor(Math.random() * 3);
+    const targetAngle = -Math.PI / 2 - (winIndex * arc + arc / 2) + extraRots * Math.PI * 2;
+
+    const startAngle = ctWheelCurrentAngle;
+    const startTime = performance.now();
+    const duration = 5400; // 5.4s
+
+    let lastPinIndex = -1;
+    const flapperEl = document.getElementById('ct-wheel-flapper');
+
+    function animateWheel(now) {
+      const elapsed = now - startTime;
+      const p = Math.min(1, elapsed / duration);
+      const ease = 1 - Math.pow(1 - p, 4); // Quartic ease out
+
+      ctWheelCurrentAngle = startAngle + (targetAngle - startAngle) * ease;
+      drawCrazyTimeWheel(ctWheelCurrentAngle);
+
+      // Flapper sound & bounce
+      const curPin = Math.floor(((ctWheelCurrentAngle + Math.PI / 2) / arc) % totalSlices);
+      if (curPin !== lastPinIndex) {
+        lastPinIndex = curPin;
+        playChipSound();
+        if (flapperEl) {
+          flapperEl.classList.remove('jiggle');
+          void flapperEl.offsetWidth; // retrigger
+          flapperEl.classList.add('jiggle');
+        }
+      }
+
+      if (p < 1) {
+        requestAnimationFrame(animateWheel);
+      } else {
+        ctWheelCurrentAngle = targetAngle;
+        drawCrazyTimeWheel(ctWheelCurrentAngle);
+        resolveCrazyTimeResult(winSegment);
+      }
+    }
+    requestAnimationFrame(animateWheel);
+  });
+}
+
+function resolveCrazyTimeResult(seg) {
+  isCtSpinning = false;
+  const btnSpin = document.getElementById('ct-btn-spin');
+  if (btnSpin) { btnSpin.disabled = false; btnSpin.textContent = '🎪 КРУТИТИ КОЛЕСО'; }
+
+  // Update history strip
+  ctHistory.unshift(seg.id);
+  if (ctHistory.length > 10) ctHistory.pop();
+  const histEl = document.getElementById('ct-hist-list');
+  if (histEl) {
+    histEl.innerHTML = ctHistory.map(h => `<span class="ct-hist-tag tag-${h}">${h.toUpperCase()}</span>`).join('');
+  }
+
+  // Check Top Slot boost
+  let topMult = 1;
+  if (ctActiveTopSlot && ctActiveTopSlot.target === seg.id) {
+    topMult = ctActiveTopSlot.mult;
+  }
+
+  const userBetOnSector = ctBets[seg.id] || 0;
+
+  if (seg.type === 'num') {
+    // Number sector
+    const totalMult = seg.payout * topMult;
+    const banner = document.getElementById('ct-banner');
+
+    if (userBetOnSector > 0) {
+      const winPayout = userBetOnSector + (userBetOnSector * totalMult);
+      setChips(getChips() + winPayout);
+      playWinSound();
+      if (banner) {
+        banner.style.display = 'block';
+        banner.className = 'game-banner win';
+        banner.textContent = `🎉 ВИГРАШ: Число ${seg.label} ${topMult > 1 ? `(×${topMult} Топ-Слот!)` : ''} +${winPayout} фішок!`;
+      }
+    } else {
+      if (banner) {
+        banner.style.display = 'block';
+        banner.className = 'game-banner lose';
+        banner.textContent = `Випало: ${seg.label}. Ви не робили ставку на цей сектор.`;
+      }
+    }
   } else {
-    setPokerStageControls(true);
+    // BONUS GAME LAUNCH!
+    launchCrazyBonus(seg.id, userBetOnSector, topMult);
   }
 }
 
-function resolvePokerShowdown() {
-  pokerStage = 'showdown';
-  updatePokerUI();
-  setPokerStageControls(false);
+// ── 4 BONUS GAMES LAUNCHER ──
+function launchCrazyBonus(bonusId, userBet, topSlotMult) {
+  playWinSound();
+  if (bonusId === 'cf') {
+    runCoinFlipBonus(userBet, topSlotMult);
+  } else if (bonusId === 'pac') {
+    runPachinkoBonus(userBet, topSlotMult);
+  } else if (bonusId === 'ch') {
+    runCashHuntBonus(userBet, topSlotMult);
+  } else if (bonusId === 'ct') {
+    runCrazyTimeWorldBonus(userBet, topSlotMult);
+  }
+}
 
-  const active = pokerPlayers.filter(p => !p.folded);
-  active.forEach(p => {
-    p.eval = evaluate7Cards([...p.cards, ...pokerCommunity]);
-  });
+// 1. COIN FLIP
+function runCoinFlipBonus(userBet, topMult) {
+  const modal = document.getElementById('modal-coinflip');
+  if (!modal) return;
+  modal.classList.add('open');
 
-  active.sort((a,b) => b.eval.score - a.eval.score);
-  const winner = active[0];
+  const blueMultBase = Math.floor(Math.random() * 15) + 5; // 5x - 20x
+  const redMultBase = Math.floor(Math.random() * 40) + 10;  // 10x - 50x
+  const blueTotal = blueMultBase * topMult;
+  const redTotal = redMultBase * topMult;
 
-  const banner = document.getElementById('poker-banner');
-  if (banner) {
-    banner.style.display = 'block';
+  document.getElementById('cf-mult-blue').textContent = `${blueTotal}x`;
+  document.getElementById('cf-mult-red').textContent = `${redTotal}x`;
+  document.getElementById('cf-status-text').textContent = '🪙 Підкидання монети...';
 
-    if (winner.isHuman) {
-      setChips(getChips() + pokerPot);
-      banner.className = 'game-banner win';
-      banner.textContent = `🏆 ВИ ПЕРЕМОГЛИ! (${winner.eval.label}) +${pokerPot} фішок!`;
-      playWinSound();
+  const coinEl = document.getElementById('cf-coin-element');
+  if (coinEl) {
+    coinEl.className = 'cf-coin';
+    void coinEl.offsetWidth;
+  }
+
+  const winSide = Math.random() < 0.5 ? 'blue' : 'red';
+  const finalMult = winSide === 'blue' ? blueTotal : redTotal;
+
+  setTimeout(() => {
+    if (coinEl) coinEl.classList.add(`flip-${winSide}`);
+  }, 400);
+
+  setTimeout(() => {
+    playWinSound();
+    const status = document.getElementById('cf-status-text');
+    if (status) {
+      status.innerHTML = `🎉 Випала <strong style="color:${winSide==='blue'?'#00d4ff':'#ff4444'}">${winSide.toUpperCase()}</strong>! Множник: ${finalMult}x!`;
+    }
+
+    if (userBet > 0) {
+      const winPayout = userBet * finalMult;
+      setChips(getChips() + winPayout);
+    }
+
+    setTimeout(() => {
+      modal.classList.remove('open');
+    }, 3800);
+  }, 2800);
+}
+
+// 2. PACHINKO
+function runPachinkoBonus(userBet, topMult) {
+  const modal = document.getElementById('modal-pachinko');
+  if (!modal) return;
+  modal.classList.add('open');
+
+  const canvas = document.getElementById('pachinkoCanvas');
+  const ctx = canvas.getContext('2d');
+  const status = document.getElementById('pachinko-status-text');
+  if (status) status.textContent = 'Шайба скидається зверху...';
+
+  let basePockets = [10, 15, 20, 25, 'DOUBLE', 35, 50, 100, 20, 15, 'DOUBLE', 25, 50, 200, 10, 15];
+  basePockets = basePockets.map(v => (v === 'DOUBLE' ? 'DOUBLE' : v * topMult));
+
+  let puckX = 60 + Math.random() * (canvas.width - 120);
+  let puckY = 20;
+  let vx = (Math.random() - 0.5) * 2;
+  let vy = 2;
+
+  function renderPachinko() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw Pins
+    ctx.fillStyle = '#ffffff';
+    for (let r = 0; r < 8; r++) {
+      const offset = (r % 2) * 16;
+      for (let c = 20; c < canvas.width - 20; c += 32) {
+        ctx.beginPath();
+        ctx.arc(c + offset, 80 + r * 34, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Draw Bottom Pockets
+    const pocketW = canvas.width / basePockets.length;
+    for (let i = 0; i < basePockets.length; i++) {
+      ctx.fillStyle = basePockets[i] === 'DOUBLE' ? '#ff00aa' : '#ffd700';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(basePockets[i], i * pocketW + pocketW / 2, canvas.height - 12);
+    }
+
+    // Draw Puck
+    ctx.beginPath();
+    ctx.arc(puckX, puckY, 8, 0, Math.PI * 2);
+    ctx.fillStyle = '#00e676';
+    ctx.shadowColor = '#00e676';
+    ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Physics
+    puckX += vx;
+    puckY += vy;
+    vy += 0.12;
+
+    if (puckX < 15 || puckX > canvas.width - 15) vx *= -1;
+
+    // Pin collisions
+    for (let r = 0; r < 8; r++) {
+      const offset = (r % 2) * 16;
+      for (let c = 20; c < canvas.width - 20; c += 32) {
+        const px = c + offset, py = 80 + r * 34;
+        const dx = puckX - px, dy = puckY - py;
+        if (Math.hypot(dx, dy) < 11) {
+          vx = dx * 0.4 + (Math.random() - 0.5);
+          vy = Math.abs(dy) * 0.4 + 1.2;
+          playChipSound();
+        }
+      }
+    }
+
+    if (puckY < canvas.height - 30) {
+      requestAnimationFrame(renderPachinko);
     } else {
-      winner.chips += pokerPot;
-      banner.className = 'game-banner lose';
-      banner.textContent = `😔 Переміг ${winner.name} (${winner.eval.label})! Банк: ${pokerPot}🎰`;
+      // Landed
+      const pocketIdx = Math.min(basePockets.length - 1, Math.max(0, Math.floor(puckX / pocketW)));
+      const winVal = basePockets[pocketIdx];
+
+      playWinSound();
+      if (status) status.innerHTML = `🎉 Шайба влучила в: <strong style="color:#ffd700">${winVal}x</strong>!`;
+
+      if (userBet > 0 && winVal !== 'DOUBLE') {
+        const winPayout = userBet * parseInt(winVal, 10);
+        setChips(getChips() + winPayout);
+      }
+
+      setTimeout(() => {
+        modal.classList.remove('open');
+      }, 3500);
     }
   }
 
-  const btnStart = document.getElementById('p-btn-start');
-  if (btnStart) {
-    btnStart.style.display = 'inline-flex';
-    btnStart.textContent = '🃏 Нова роздача (Blind 2🎰)';
+  requestAnimationFrame(renderPachinko);
+}
+
+// 3. CASH HUNT
+function runCashHuntBonus(userBet, topMult) {
+  const modal = document.getElementById('modal-cashhunt');
+  if (!modal) return;
+  modal.classList.add('open');
+
+  const container = document.getElementById('ch-grid-container');
+  container.innerHTML = '';
+
+  const ICONS = ['🦆', '⭐', '🧁', '🐰', '🌵', '🎩', '💎', '👑', '🎁', '🧨'];
+  const tiles = [];
+
+  for (let i = 0; i < 108; i++) {
+    const mult = (Math.floor(Math.random() * 45) + 5) * topMult;
+    const icon = ICONS[i % ICONS.length];
+    tiles.push({ icon, mult });
   }
+
+  let hasShot = false;
+
+  tiles.forEach((t, idx) => {
+    const div = document.createElement('div');
+    div.className = 'ch-tile';
+    div.textContent = t.icon;
+    div.onclick = () => {
+      if (hasShot) return;
+      hasShot = true;
+      shootCashHunt(idx, t.mult);
+    };
+    container.appendChild(div);
+  });
+
+  const countdownLbl = document.getElementById('ch-countdown-lbl');
+  let timeLeft = 6;
+  const countTimer = setInterval(() => {
+    timeLeft--;
+    if (countdownLbl) countdownLbl.textContent = `ОБЕРІТЬ МІШЕНЬ ПРИЦІЛОМ! (${timeLeft}с)`;
+    if (timeLeft <= 0) {
+      clearInterval(countTimer);
+      if (!hasShot) {
+        hasShot = true;
+        const randomIdx = Math.floor(Math.random() * 108);
+        shootCashHunt(randomIdx, tiles[randomIdx].mult);
+      }
+    }
+  }, 1000);
+
+  function shootCashHunt(idx, mult) {
+    clearInterval(countTimer);
+    playWinSound();
+
+    const allDivs = container.querySelectorAll('.ch-tile');
+    allDivs.forEach((d, i) => {
+      d.classList.add('revealed');
+      d.textContent = `${tiles[i].mult}x`;
+      if (i === idx) {
+        d.classList.add('selected-target');
+      }
+    });
+
+    const status = document.getElementById('ch-status-text');
+    if (status) status.innerHTML = `🎯 ВЛУЧАННЯ! Ваш виграшний множник: <strong style="color:#ffd700">${mult}x</strong>!`;
+
+    if (userBet > 0) {
+      const winPayout = userBet * mult;
+      setChips(getChips() + winPayout);
+    }
+
+    setTimeout(() => {
+      modal.classList.remove('open');
+    }, 4200);
+  }
+}
+
+// 4. CRAZY TIME VIRTUAL WORLD
+let selectedCrazyFlapper = 'blue';
+
+function selectCrazyFlapper(color) {
+  selectedCrazyFlapper = color;
+  document.querySelectorAll('.ct-flapper-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById(`btn-flap-${color}`);
+  if (btn) btn.classList.add('active');
+}
+
+function runCrazyTimeWorldBonus(userBet, topMult) {
+  const modal = document.getElementById('modal-crazytime');
+  if (!modal) return;
+  modal.classList.add('open');
+
+  const canvas = document.getElementById('ctGiantWheelCanvas');
+  const ctx = canvas.getContext('2d');
+  const status = document.getElementById('ct-giant-status-text');
+  if (status) status.textContent = 'Оберіть свій колір прапорця! Колесо розганяється...';
+
+  const GIANT_SECTORS = [
+    { label: '20x', mult: 20 },
+    { label: 'DOUBLE', mult: 'DOUBLE' },
+    { label: '50x', mult: 50 },
+    { label: '25x', mult: 25 },
+    { label: 'TRIPLE', mult: 'TRIPLE' },
+    { label: '100x', mult: 100 },
+    { label: '30x', mult: 30 },
+    { label: 'DOUBLE', mult: 'DOUBLE' },
+    { label: '200x', mult: 200 },
+    { label: '50x', mult: 50 },
+    { label: '500x', mult: 500 },
+    { label: '1000x', mult: 1000 }
+  ];
+
+  let currentAngle = 0;
+  const targetSpin = Math.PI * 2 * (6 + Math.random() * 4);
+  const startTime = performance.now();
+  const duration = 6000;
+
+  function animateGiant(now) {
+    const elapsed = now - startTime;
+    const p = Math.min(1, elapsed / duration);
+    const ease = 1 - Math.pow(1 - p, 3);
+    currentAngle = targetSpin * ease;
+
+    const cx = canvas.width / 2, cy = canvas.height / 2;
+    const radius = cx - 8;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(currentAngle);
+
+    const arc = (Math.PI * 2) / GIANT_SECTORS.length;
+    for (let i = 0; i < GIANT_SECTORS.length; i++) {
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, radius, i * arc, (i + 1) * arc);
+      ctx.fillStyle = i % 2 === 0 ? '#ff0055' : '#ffd700';
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#fff';
+      ctx.stroke();
+
+      ctx.save();
+      ctx.rotate(i * arc + arc / 2);
+      ctx.fillStyle = i % 2 === 0 ? '#fff' : '#111';
+      ctx.font = '900 13px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(GIANT_SECTORS[i].label, radius - 14, 5);
+      ctx.restore();
+    }
+    ctx.restore();
+
+    if (p < 1) {
+      requestAnimationFrame(animateGiant);
+    } else {
+      // Finished
+      const winMult = (Math.floor(Math.random() * 80) + 20) * topMult;
+      playWinSound();
+      if (status) {
+        status.innerHTML = `🎪 ШАЛЕНИЙ ВИГРАШ! Прапорець <strong style="color:#ffd700">${selectedCrazyFlapper.toUpperCase()}</strong> зупинився на: <strong>${winMult}x</strong>!`;
+      }
+
+      if (userBet > 0) {
+        const winPayout = userBet * winMult;
+        setChips(getChips() + winPayout);
+      }
+
+      setTimeout(() => {
+        modal.classList.remove('open');
+      }, 5000);
+    }
+  }
+
+  setTimeout(() => {
+    requestAnimationFrame(animateGiant);
+  }, 1000);
 }
 
 /* ═══════════════════════════════════════════════════
