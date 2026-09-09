@@ -1651,100 +1651,115 @@ function renderCtHistoryUI() {
   }).join('');
 }
 
-// ── HIGH-REALISM CANVAS WHEEL DRAWING ──
-function drawCrazyTimeWheel(angle) {
-  const canvas = document.getElementById('ctWheelCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width, h = canvas.height;
-  const cx = w / 2, cy = h / 2;
-  const radius = cx - 14;
+// ── 60 FPS HARDWARE-ACCELERATED PRE-RENDERED WHEEL ──
+let ctWheelBuffer = null;
 
-  ctx.clearRect(0, 0, w, h);
+function initCrazyTimeWheelBuffer() {
+  const size = 440;
+  ctWheelBuffer = document.createElement('canvas');
+  ctWheelBuffer.width = size;
+  ctWheelBuffer.height = size;
+  const bCtx = ctWheelBuffer.getContext('2d');
+  const cx = size / 2, cy = size / 2;
+  const radius = cx - 14;
 
   const totalSlices = CRAZY_SEGMENTS.length;
   const arc = (Math.PI * 2) / totalSlices;
 
   // 1. Outer Brushed Gold Rim
-  ctx.save();
-  ctx.translate(cx, cy);
+  bCtx.save();
+  bCtx.translate(cx, cy);
 
-  const rimGrad = ctx.createRadialGradient(0, 0, radius - 8, 0, 0, radius + 12);
+  const rimGrad = bCtx.createRadialGradient(0, 0, radius - 8, 0, 0, radius + 12);
   rimGrad.addColorStop(0, '#5a3d00');
   rimGrad.addColorStop(0.3, '#d4af37');
   rimGrad.addColorStop(0.6, '#fff2a3');
   rimGrad.addColorStop(0.8, '#b8860b');
   rimGrad.addColorStop(1, '#291800');
 
-  ctx.beginPath();
-  ctx.arc(0, 0, radius + 8, 0, Math.PI * 2);
-  ctx.fillStyle = rimGrad;
-  ctx.fill();
+  bCtx.beginPath();
+  bCtx.arc(0, 0, radius + 8, 0, Math.PI * 2);
+  bCtx.fillStyle = rimGrad;
+  bCtx.fill();
 
   // 54 Brass Outer Studs
   for (let s = 0; s < totalSlices; s++) {
     const sAng = s * arc;
     const sx = Math.cos(sAng) * (radius + 4);
     const sy = Math.sin(sAng) * (radius + 4);
-    ctx.beginPath();
-    ctx.arc(sx, sy, 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#fff';
-    ctx.shadowColor = '#ffd700';
-    ctx.shadowBlur = 4;
-    ctx.fill();
-    ctx.shadowBlur = 0;
+    bCtx.beginPath();
+    bCtx.arc(sx, sy, 2.5, 0, Math.PI * 2);
+    bCtx.fillStyle = '#fff';
+    bCtx.shadowColor = '#ffd700';
+    bCtx.shadowBlur = 4;
+    bCtx.fill();
+    bCtx.shadowBlur = 0;
   }
 
-  // 2. Wheel Slices (Rotated by angle)
-  ctx.rotate(angle);
-
+  // 2. Wheel Slices
   for (let i = 0; i < totalSlices; i++) {
     const seg = CRAZY_SEGMENTS[i];
     const a1 = i * arc;
     const a2 = (i + 1) * arc;
 
-    // Conical radial shading for 3D depth
-    const sliceGrad = ctx.createRadialGradient(0, 0, 20, 0, 0, radius);
+    const sliceGrad = bCtx.createRadialGradient(0, 0, 20, 0, 0, radius);
     sliceGrad.addColorStop(0, '#ffffff44');
     sliceGrad.addColorStop(0.2, seg.color);
     sliceGrad.addColorStop(0.9, seg.color);
     sliceGrad.addColorStop(1, '#00000066');
 
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.arc(0, 0, radius, a1, a2);
-    ctx.closePath();
-    ctx.fillStyle = sliceGrad;
-    ctx.fill();
+    bCtx.beginPath();
+    bCtx.moveTo(0, 0);
+    bCtx.arc(0, 0, radius, a1, a2);
+    bCtx.closePath();
+    bCtx.fillStyle = sliceGrad;
+    bCtx.fill();
 
     // Separator line
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(Math.cos(a1) * radius, Math.sin(a1) * radius);
-    ctx.lineWidth = 1.2;
-    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-    ctx.stroke();
+    bCtx.beginPath();
+    bCtx.moveTo(0, 0);
+    bCtx.lineTo(Math.cos(a1) * radius, Math.sin(a1) * radius);
+    bCtx.lineWidth = 1.2;
+    bCtx.strokeStyle = 'rgba(255,255,255,0.4)';
+    bCtx.stroke();
 
     // Silver pin on perimeter
     const pinX = Math.cos(a1) * (radius - 3);
     const pinY = Math.sin(a1) * (radius - 3);
-    ctx.beginPath();
-    ctx.arc(pinX, pinY, 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#e2e8f0';
-    ctx.fill();
+    bCtx.beginPath();
+    bCtx.arc(pinX, pinY, 2.5, 0, Math.PI * 2);
+    bCtx.fillStyle = '#e2e8f0';
+    bCtx.fill();
 
     // Slice Typography
-    ctx.save();
-    ctx.rotate(a1 + arc / 2);
-    ctx.textAlign = 'right';
-    ctx.fillStyle = seg.textCol;
-    ctx.font = seg.type === 'bonus' ? '900 11.5px sans-serif' : '900 17px sans-serif';
-    ctx.shadowColor = 'rgba(0,0,0,0.8)';
-    ctx.shadowBlur = 5;
-    ctx.fillText(seg.label, radius - 16, 5);
-    ctx.restore();
+    bCtx.save();
+    bCtx.rotate(a1 + arc / 2);
+    bCtx.textAlign = 'right';
+    bCtx.fillStyle = seg.textCol;
+    bCtx.font = seg.type === 'bonus' ? '900 11.5px sans-serif' : '900 17px sans-serif';
+    bCtx.shadowColor = 'rgba(0,0,0,0.8)';
+    bCtx.shadowBlur = 4;
+    bCtx.fillText(seg.label, radius - 16, 5);
+    bCtx.restore();
   }
 
+  bCtx.restore();
+}
+
+function drawCrazyTimeWheel(angle) {
+  const canvas = document.getElementById('ctWheelCanvas');
+  if (!canvas) return;
+  if (!ctWheelBuffer) initCrazyTimeWheelBuffer();
+
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const cx = w / 2, cy = h / 2;
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+  ctx.drawImage(ctWheelBuffer, -cx, -cy);
   ctx.restore();
 }
 
@@ -1812,14 +1827,13 @@ function spinTopSlot(onComplete) {
   }, 90);
 }
 
-// ── CUMULATIVE SMOOTH WHEEL PHYSICS (FIXES 2ND SPIN BUG!) ──
+// ── CUMULATIVE SMOOTH WHEEL PHYSICS (60 FPS FIXED) ──
 function spinCrazyTimeWheel(winIndex, onFinished) {
   const totalSlices = CRAZY_SEGMENTS.length; // 54
   const arc = (Math.PI * 2) / totalSlices;
 
   // The 12 o'clock flapper is at angle -PI / 2.
   // Center of winning segment is winIndex * arc + arc / 2.
-  // We need (sliceCenter + finalAngle) ≡ -PI/2 (mod 2PI)
   const targetMod = ((-Math.PI / 2 - (winIndex * arc + arc / 2)) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
   const currentMod = ((ctWheelCurrentAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
   
@@ -1835,7 +1849,7 @@ function spinCrazyTimeWheel(winIndex, onFinished) {
   const targetAngle = startAngle + totalDelta;
 
   const startTime = performance.now();
-  const duration = 7200; // 7.2s smooth studio deceleration
+  const duration = 7000; // 7.0s smooth studio deceleration
   let lastPin = -1;
   const flapperEl = document.getElementById('ct-wheel-flapper');
 
@@ -2083,54 +2097,116 @@ function launchCrazyBonus(bonusId, userBet, topSlotMult, onFinish) {
   }
 }
 
-// 1. COIN FLIP BONUS
+// ── 1. COIN FLIP BONUS (DYNAMIC MULTIPLIER ROLL + 3D FLIP) ──
 function runCoinFlipBonus(userBet, topMult, onFinish) {
   const modal = document.getElementById('modal-coinflip');
   if (!modal) return;
   modal.classList.add('open');
 
-  const blueMultBase = Math.floor(Math.random() * 15) + 5; // 5x - 20x
-  const redMultBase = Math.floor(Math.random() * 40) + 10;  // 10x - 50x
-  const blueTotal = blueMultBase * topMult;
-  const redTotal = redMultBase * topMult;
-
-  document.getElementById('cf-mult-blue').textContent = `${blueTotal}x`;
-  document.getElementById('cf-mult-red').textContent = `${redTotal}x`;
-  document.getElementById('cf-status-text').textContent = '🪙 Підкидання монети...';
-
+  const blueBox = document.querySelector('.cf-side-box.blue-box');
+  const redBox = document.querySelector('.cf-side-box.red-box');
+  const blueMultEl = document.getElementById('cf-mult-blue');
+  const redMultEl = document.getElementById('cf-mult-red');
+  const statusEl = document.getElementById('cf-status-text');
   const coinEl = document.getElementById('cf-coin-element');
-  if (coinEl) {
-    coinEl.className = 'cf-coin';
-    void coinEl.offsetWidth;
-  }
 
-  const winSide = Math.random() < 0.5 ? 'blue' : 'red';
-  const finalMult = winSide === 'blue' ? blueTotal : redTotal;
+  // Reset classes
+  if (blueBox) { blueBox.classList.remove('locked-glow', 'winner-glow'); }
+  if (redBox) { redBox.classList.remove('locked-glow', 'winner-glow'); }
+  if (coinEl) { coinEl.className = 'cf-coin'; void coinEl.offsetWidth; }
 
-  setTimeout(() => {
-    if (coinEl) coinEl.classList.add(`flip-${winSide}`);
-  }, 400);
+  if (blueMultEl) blueMultEl.classList.add('rolling');
+  if (redMultEl) redMultEl.classList.add('rolling');
+  if (statusEl) statusEl.textContent = '🎰 ГЕНЕРАЦІЯ МНОЖНИКІВ СТОРІН...';
 
-  setTimeout(() => {
-    CtAudio.winFanfare();
-    const status = document.getElementById('cf-status-text');
-    if (status) {
-      status.innerHTML = `🎉 Випала <strong style="color:${winSide==='blue'?'#00d4ff':'#ff4444'}">${winSide.toUpperCase()}</strong>! Множник: ${finalMult}x!`;
+  const finalBlueBase = Math.floor(Math.random() * 15) + 5; // 5x - 20x
+  const finalRedBase = Math.floor(Math.random() * 40) + 10;  // 10x - 50x
+
+  const rollChoices = [2, 3, 5, 8, 10, 15, 20, 25, 35, 50, 75, 100];
+  let rollTicks = 0;
+  const rollInterval = setInterval(() => {
+    rollTicks++;
+    CtAudio.slotTick();
+    if (blueMultEl && blueMultEl.classList.contains('rolling')) {
+      blueMultEl.textContent = rollChoices[Math.floor(Math.random() * rollChoices.length)] + 'x';
+    }
+    if (redMultEl && redMultEl.classList.contains('rolling')) {
+      redMultEl.textContent = rollChoices[Math.floor(Math.random() * rollChoices.length)] + 'x';
     }
 
-    if (userBet > 0) {
-      const winPayout = userBet * finalMult;
-      setChips(getChips() + winPayout);
+    // Lock Blue at tick 12
+    if (rollTicks === 12) {
+      if (blueMultEl) {
+        blueMultEl.classList.remove('rolling');
+        blueMultEl.textContent = finalBlueBase + 'x';
+      }
+      if (blueBox) blueBox.classList.add('locked-glow');
+      CtAudio.beep(660, 0.12);
     }
 
-    setTimeout(() => {
-      modal.classList.remove('open');
-      if (onFinish) onFinish(finalMult);
-    }, 3800);
-  }, 2800);
+    // Lock Red at tick 18
+    if (rollTicks >= 18) {
+      clearInterval(rollInterval);
+      if (redMultEl) {
+        redMultEl.classList.remove('rolling');
+        redMultEl.textContent = finalRedBase + 'x';
+      }
+      if (redBox) redBox.classList.add('locked-glow');
+      CtAudio.beep(880, 0.15);
+
+      // Top Slot boost check
+      setTimeout(() => {
+        let actualBlue = finalBlueBase;
+        let actualRed = finalRedBase;
+
+        if (topMult > 1) {
+          actualBlue = finalBlueBase * topMult;
+          actualRed = finalRedBase * topMult;
+          CtAudio.slotWin();
+          if (blueMultEl) blueMultEl.textContent = actualBlue + 'x';
+          if (redMultEl) redMultEl.textContent = actualRed + 'x';
+          if (statusEl) statusEl.innerHTML = `⚡ ТОП-СЛОТ ПІДСИЛЕННЯ <strong style="color:#ffd700">×${topMult}</strong>!`;
+        }
+
+        // Countdown to coin toss
+        setTimeout(() => {
+          if (statusEl) statusEl.textContent = '🪙 ПІДКИДАННЯ МОНЕТИ...';
+          const winSide = Math.random() < 0.5 ? 'blue' : 'red';
+          const finalMult = winSide === 'blue' ? actualBlue : actualRed;
+
+          if (coinEl) {
+            coinEl.classList.add('flip-' + winSide);
+          }
+
+          // Coin landing after 3 seconds
+          setTimeout(() => {
+            CtAudio.winFanfare();
+            if (winSide === 'blue' && blueBox) blueBox.classList.add('winner-glow');
+            if (winSide === 'red' && redBox) redBox.classList.add('winner-glow');
+
+            if (statusEl) {
+              statusEl.innerHTML = `🎉 ВИПАЛА <strong style="color:${winSide==='blue'?'#00d4ff':'#ff4444'}">${winSide.toUpperCase()}</strong>! МНОЖНИК: ${finalMult}x!`;
+            }
+
+            if (userBet > 0) {
+              const winPayout = userBet * finalMult;
+              setChips(getChips() + winPayout);
+            }
+
+            setTimeout(() => {
+              modal.classList.remove('open');
+              if (onFinish) onFinish(finalMult);
+            }, 4000);
+          }, 3000);
+
+        }, 1200);
+
+      }, 800);
+    }
+  }, 90);
 }
 
-// 2. PACHINKO BONUS
+// ── 2. PACHINKO BONUS (DYNAMIC MULTIPLIERS + DOUBLE RESPIN) ──
 function runPachinkoBonus(userBet, topMult, onFinish) {
   const modal = document.getElementById('modal-pachinko');
   if (!modal) return;
@@ -2139,96 +2215,154 @@ function runPachinkoBonus(userBet, topMult, onFinish) {
   const canvas = document.getElementById('pachinkoCanvas');
   const ctx = canvas.getContext('2d');
   const status = document.getElementById('pachinko-status-text');
-  if (status) status.textContent = 'Шайба скидається зверху...';
+  const wrapper = document.querySelector('.pachinko-stage-wrapper');
 
   let basePockets = [10, 15, 20, 25, 'DOUBLE', 35, 50, 100, 20, 15, 'DOUBLE', 25, 50, 200, 10, 15];
   basePockets = basePockets.map(v => (v === 'DOUBLE' ? 'DOUBLE' : v * topMult));
 
-  let puckX = 60 + Math.random() * (canvas.width - 120);
-  let puckY = 20;
-  let vx = (Math.random() - 0.5) * 2;
-  let vy = 2;
+  if (status) status.textContent = '🎯 ГЕНЕРАЦІЯ МНОЖНИКІВ СТІНИ...';
 
-  function renderPachinko() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Animate bottom multipliers rolling
+  let rollCount = 0;
+  const rollTimer = setInterval(() => {
+    rollCount++;
+    CtAudio.slotTick();
+    drawPachinkoStaticBoard(ctx, canvas, basePockets, true);
+    if (rollCount > 15) {
+      clearInterval(rollTimer);
+      dropPachinkoPuck();
+    }
+  }, 80);
 
+  function drawPachinkoStaticBoard(cCtx, cCanvas, pockets, isShuffling) {
+    cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
     // Draw Pins
-    ctx.fillStyle = '#ffffff';
+    cCtx.fillStyle = '#ffffff';
     for (let r = 0; r < 8; r++) {
       const offset = (r % 2) * 16;
-      for (let c = 20; c < canvas.width - 20; c += 32) {
-        ctx.beginPath();
-        ctx.arc(c + offset, 80 + r * 34, 3, 0, Math.PI * 2);
-        ctx.fill();
+      for (let c = 20; c < cCanvas.width - 20; c += 32) {
+        cCtx.beginPath();
+        cCtx.arc(c + offset, 80 + r * 34, 3, 0, Math.PI * 2);
+        cCtx.fill();
       }
     }
-
     // Draw Bottom Pockets
-    const pocketW = canvas.width / basePockets.length;
-    for (let i = 0; i < basePockets.length; i++) {
-      ctx.fillStyle = basePockets[i] === 'DOUBLE' ? '#ff00aa' : '#ffd700';
-      ctx.font = 'bold 9px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(basePockets[i], i * pocketW + pocketW / 2, canvas.height - 12);
+    const pocketW = cCanvas.width / pockets.length;
+    for (let i = 0; i < pockets.length; i++) {
+      let val = pockets[i];
+      if (isShuffling && val !== 'DOUBLE') {
+        val = [10, 20, 25, 50, 100][Math.floor(Math.random() * 5)];
+      }
+      cCtx.fillStyle = val === 'DOUBLE' ? '#ff00aa' : '#ffd700';
+      cCtx.font = 'bold 9.5px sans-serif';
+      cCtx.textAlign = 'center';
+      cCtx.fillText(val, i * pocketW + pocketW / 2, cCanvas.height - 12);
     }
+  }
 
-    // Draw Puck
-    ctx.beginPath();
-    ctx.arc(puckX, puckY, 8, 0, Math.PI * 2);
-    ctx.fillStyle = '#00e676';
-    ctx.shadowColor = '#00e676';
-    ctx.shadowBlur = 10;
-    ctx.fill();
-    ctx.shadowBlur = 0;
+  function dropPachinkoPuck() {
+    if (status) status.textContent = '🎯 ШАЙБА ЗКИДАЄТЬСЯ ЗВЕРХУ!';
+    let puckX = 60 + Math.random() * (canvas.width - 120);
+    let puckY = 20;
+    let vx = (Math.random() - 0.5) * 2;
+    let vy = 2;
 
-    // Physics
-    puckX += vx;
-    puckY += vy;
-    vy += 0.12;
+    function renderPachinko() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (puckX < 15 || puckX > canvas.width - 15) vx *= -1;
+      // Pins
+      ctx.fillStyle = '#ffffff';
+      for (let r = 0; r < 8; r++) {
+        const offset = (r % 2) * 16;
+        for (let c = 20; c < canvas.width - 20; c += 32) {
+          ctx.beginPath();
+          ctx.arc(c + offset, 80 + r * 34, 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
 
-    // Pin collisions
-    for (let r = 0; r < 8; r++) {
-      const offset = (r % 2) * 16;
-      for (let c = 20; c < canvas.width - 20; c += 32) {
-        const px = c + offset, py = 80 + r * 34;
-        const dx = puckX - px, dy = puckY - py;
-        if (Math.hypot(dx, dy) < 11) {
-          vx = dx * 0.4 + (Math.random() - 0.5);
-          vy = Math.abs(dy) * 0.4 + 1.2;
-          CtAudio.tick();
+      // Bottom Pockets
+      const pocketW = canvas.width / basePockets.length;
+      for (let i = 0; i < basePockets.length; i++) {
+        ctx.fillStyle = basePockets[i] === 'DOUBLE' ? '#ff00aa' : '#ffd700';
+        ctx.font = 'bold 9.5px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(basePockets[i], i * pocketW + pocketW / 2, canvas.height - 12);
+      }
+
+      // Puck with glowing trail
+      ctx.beginPath();
+      ctx.arc(puckX, puckY, 8, 0, Math.PI * 2);
+      ctx.fillStyle = '#00ffcc';
+      ctx.shadowColor = '#00ffcc';
+      ctx.shadowBlur = 12;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Physics
+      puckX += vx;
+      puckY += vy;
+      vy += 0.13;
+      if (puckX < 15 || puckX > canvas.width - 15) vx *= -1;
+
+      // Pin collisions
+      for (let r = 0; r < 8; r++) {
+        const offset = (r % 2) * 16;
+        for (let c = 20; c < canvas.width - 20; c += 32) {
+          const px = c + offset, py = 80 + r * 34;
+          const dx = puckX - px, dy = puckY - py;
+          if (Math.hypot(dx, dy) < 11) {
+            vx = dx * 0.42 + (Math.random() - 0.5);
+            vy = Math.abs(dy) * 0.42 + 1.2;
+            CtAudio.tick();
+          }
+        }
+      }
+
+      if (puckY < canvas.height - 30) {
+        requestAnimationFrame(renderPachinko);
+      } else {
+        // Landed
+        const pocketIdx = Math.min(basePockets.length - 1, Math.max(0, Math.floor(puckX / pocketW)));
+        let winVal = basePockets[pocketIdx];
+
+        if (winVal === 'DOUBLE') {
+          // DOUBLE TRIGGER! Double all numbers and drop again!
+          CtAudio.winFanfare();
+          if (wrapper) wrapper.classList.add('double-blast');
+          if (status) status.innerHTML = `🔥 <strong>DOUBLE!</strong> ВСІ МНОЖНИКИ ПОДВОЄНО! ПОВТОРНИЙ КИДОК!`;
+
+          basePockets = basePockets.map(v => (v === 'DOUBLE' ? 'DOUBLE' : v * 2));
+
+          setTimeout(() => {
+            if (wrapper) wrapper.classList.remove('double-blast');
+            dropPachinkoPuck();
+          }, 2200);
+
+        } else {
+          // Final Multiplier!
+          const finalMult = parseInt(winVal, 10);
+          CtAudio.winFanfare();
+          if (status) status.innerHTML = `🎉 Шайба влучила в: <strong style="color:#ffd700">${finalMult}x</strong>!`;
+
+          if (userBet > 0) {
+            const winPayout = userBet * finalMult;
+            setChips(getChips() + winPayout);
+          }
+
+          setTimeout(() => {
+            modal.classList.remove('open');
+            if (onFinish) onFinish(finalMult);
+          }, 3800);
         }
       }
     }
 
-    if (puckY < canvas.height - 30) {
-      requestAnimationFrame(renderPachinko);
-    } else {
-      // Landed
-      const pocketIdx = Math.min(basePockets.length - 1, Math.max(0, Math.floor(puckX / pocketW)));
-      let winVal = basePockets[pocketIdx];
-      let finalMult = winVal === 'DOUBLE' ? 50 : parseInt(winVal, 10);
-
-      CtAudio.winFanfare();
-      if (status) status.innerHTML = `🎉 Шайба влучила в: <strong style="color:#ffd700">${finalMult}x</strong>!`;
-
-      if (userBet > 0) {
-        const winPayout = userBet * finalMult;
-        setChips(getChips() + winPayout);
-      }
-
-      setTimeout(() => {
-        modal.classList.remove('open');
-        if (onFinish) onFinish(finalMult);
-      }, 3500);
-    }
+    requestAnimationFrame(renderPachinko);
   }
-
-  requestAnimationFrame(renderPachinko);
 }
 
-// 3. CASH HUNT BONUS
+// ── 3. CASH HUNT BONUS (REVEAL -> SHUFFLE -> SNIPER SHOT) ──
 function runCashHuntBonus(userBet, topMult, onFinish) {
   const modal = document.getElementById('modal-cashhunt');
   if (!modal) return;
@@ -2239,78 +2373,151 @@ function runCashHuntBonus(userBet, topMult, onFinish) {
 
   const ICONS = ['🦆', '⭐', '🧁', '🐰', '🌵', '🎩', '💎', '👑', '🎁', '🧨'];
   const tiles = [];
+  const baseMultOptions = [5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 200, 500];
 
   for (let i = 0; i < 108; i++) {
-    const mult = (Math.floor(Math.random() * 45) + 5) * topMult;
+    const rawM = baseMultOptions[Math.floor(Math.random() * baseMultOptions.length)];
+    const mult = rawM * topMult;
     const icon = ICONS[i % ICONS.length];
     tiles.push({ icon, mult });
   }
 
-  let hasShot = false;
+  // Step 1: Display all 108 multipliers uncovered
+  const countdownLbl = document.getElementById('ch-countdown-lbl');
+  const statusLbl = document.getElementById('ch-status-text');
+  if (countdownLbl) countdownLbl.textContent = '🦆 ОЗНАЙОМТЕСЬ З МНОЖНИКАМИ НА СТІНІ!';
+  if (statusLbl) statusLbl.textContent = 'Запам\'ятайте найкращі мішені перед перемішуванням!';
 
   tiles.forEach((t, idx) => {
     const div = document.createElement('div');
-    div.className = 'ch-tile';
-    div.textContent = t.icon;
-    div.onclick = () => {
-      if (hasShot) return;
-      hasShot = true;
-      shootCashHunt(idx, t.mult);
-    };
+    div.className = 'ch-tile revealed';
+    div.textContent = `${t.mult}x`;
     container.appendChild(div);
   });
 
-  const countdownLbl = document.getElementById('ch-countdown-lbl');
-  let timeLeft = 6;
-  const countTimer = setInterval(() => {
-    timeLeft--;
-    if (countdownLbl) countdownLbl.textContent = `ОБЕРІТЬ МІШЕНЬ ПРИЦІЛОМ! (${timeLeft}с)`;
-    if (timeLeft <= 0) {
-      clearInterval(countTimer);
-      if (!hasShot) {
-        hasShot = true;
-        const randomIdx = Math.floor(Math.random() * 108);
-        shootCashHunt(randomIdx, tiles[randomIdx].mult);
-      }
-    }
-  }, 1000);
-
-  function shootCashHunt(idx, mult) {
-    clearInterval(countTimer);
-    CtAudio.winFanfare();
+  // Step 2: Shuffle Phase after 2.2 seconds
+  setTimeout(() => {
+    if (countdownLbl) countdownLbl.textContent = '🔀 ПЕРЕМІШУВАННЯ МІШЕНЕЙ...';
+    if (statusLbl) statusLbl.textContent = 'Мішені ховаються за символами...';
+    CtAudio.slotTick();
 
     const allDivs = container.querySelectorAll('.ch-tile');
     allDivs.forEach((d, i) => {
-      d.classList.add('revealed');
-      d.textContent = `${tiles[i].mult}x`;
-      if (i === idx) {
-        d.classList.add('selected-target');
-      }
+      d.classList.remove('revealed');
+      d.classList.add('shuffle-spin');
+      d.textContent = tiles[i].icon;
     });
 
-    const status = document.getElementById('ch-status-text');
-    if (status) status.innerHTML = `🎯 ВЛУЧАННЯ! Ваш виграшний множник: <strong style="color:#ffd700">${mult}x</strong>!`;
-
-    if (userBet > 0) {
-      const winPayout = userBet * mult;
-      setChips(getChips() + winPayout);
-    }
-
+    // Step 3: Interactive cannon target countdown after 1.5 seconds
     setTimeout(() => {
-      modal.classList.remove('open');
-      if (onFinish) onFinish(mult);
-    }, 4200);
-  }
+      let hasShot = false;
+      let timeLeft = 7;
+      if (countdownLbl) countdownLbl.textContent = `🎯 ОБЕРІТЬ МІШЕНЬ ПРИЦІЛОМ! (${timeLeft}с)`;
+      if (statusLbl) statusLbl.textContent = 'Клікніть на будь-яку мішень, щоб вистрілити з гармати!';
+
+      allDivs.forEach((d, idx) => {
+        d.classList.remove('shuffle-spin');
+        d.onclick = () => {
+          if (hasShot) return;
+          hasShot = true;
+          shootCannon(idx);
+        };
+      });
+
+      const countTimer = setInterval(() => {
+        timeLeft--;
+        if (countdownLbl) countdownLbl.textContent = `🎯 ОБЕРІТЬ МІШЕНЬ ПРИЦІЛОМ! (${timeLeft}с)`;
+        if (timeLeft <= 0) {
+          clearInterval(countTimer);
+          if (!hasShot) {
+            hasShot = true;
+            const randIdx = Math.floor(Math.random() * 108);
+            shootCannon(randIdx);
+          }
+        }
+      }, 1000);
+
+      function shootCannon(chosenIdx) {
+        clearInterval(countTimer);
+        CtAudio.winFanfare();
+
+        const wonMult = tiles[chosenIdx].mult;
+
+        // Reveal all tiles with player's target highlighted
+        allDivs.forEach((d, i) => {
+          d.classList.add('revealed');
+          d.textContent = `${tiles[i].mult}x`;
+          if (i === chosenIdx) {
+            d.classList.add('selected-target');
+            d.textContent = `👑 ${wonMult}x`;
+          }
+        });
+
+        if (countdownLbl) countdownLbl.textContent = `💥 ПОСТРІЛ ВЛУЧНИЙ!`;
+        if (statusLbl) statusLbl.innerHTML = `🎯 ВАШ ВИГРАШНИЙ МНОЖНИК: <strong style="color:#ffd700;font-size:16px;">${wonMult}x</strong>!`;
+
+        if (userBet > 0) {
+          const winPayout = userBet * wonMult;
+          setChips(getChips() + winPayout);
+        }
+
+        setTimeout(() => {
+          modal.classList.remove('open');
+          if (onFinish) onFinish(wonMult);
+        }, 4500);
+      }
+
+    }, 1500);
+
+  }, 2200);
 }
 
-// 4. CRAZY TIME VIRTUAL WORLD BONUS
+// ── 4. CRAZY TIME VIRTUAL WORLD (60 FPS + DOUBLE/TRIPLE RESPIN) ──
 let selectedCrazyFlapper = 'blue';
+let ctGiantWheelBuffer = null;
 
 function selectCrazyFlapper(color) {
   selectedCrazyFlapper = color;
   document.querySelectorAll('.ct-flapper-btn').forEach(b => b.classList.remove('active'));
   const btn = document.getElementById(`btn-flap-${color}`);
   if (btn) btn.classList.add('active');
+}
+
+function initGiantWheelBuffer(sectors) {
+  const size = 380;
+  ctGiantWheelBuffer = document.createElement('canvas');
+  ctGiantWheelBuffer.width = size;
+  ctGiantWheelBuffer.height = size;
+  const gCtx = ctGiantWheelBuffer.getContext('2d');
+  const cx = size / 2, cy = size / 2;
+  const radius = cx - 8;
+
+  const total = sectors.length;
+  const arc = (Math.PI * 2) / total;
+
+  gCtx.save();
+  gCtx.translate(cx, cy);
+
+  for (let i = 0; i < total; i++) {
+    const s = sectors[i];
+    gCtx.beginPath();
+    gCtx.moveTo(0, 0);
+    gCtx.arc(0, 0, radius, i * arc, (i + 1) * arc);
+    gCtx.fillStyle = s.mult === 'DOUBLE' ? '#ff00aa' : (s.mult === 'TRIPLE' ? '#00e676' : (i % 2 === 0 ? '#ff0055' : '#ffd700'));
+    gCtx.fill();
+    gCtx.lineWidth = 1.5;
+    gCtx.strokeStyle = 'rgba(255,255,255,0.4)';
+    gCtx.stroke();
+
+    gCtx.save();
+    gCtx.rotate(i * arc + arc / 2);
+    gCtx.fillStyle = (s.mult === 'DOUBLE' || s.mult === 'TRIPLE' || i % 2 === 0) ? '#fff' : '#111';
+    gCtx.font = '900 12px sans-serif';
+    gCtx.textAlign = 'right';
+    gCtx.fillText(s.label, radius - 12, 4);
+    gCtx.restore();
+  }
+  gCtx.restore();
 }
 
 function runCrazyTimeWorldBonus(userBet, topMult, onFinish) {
@@ -2321,9 +2528,8 @@ function runCrazyTimeWorldBonus(userBet, topMult, onFinish) {
   const canvas = document.getElementById('ctGiantWheelCanvas');
   const ctx = canvas.getContext('2d');
   const status = document.getElementById('ct-giant-status-text');
-  if (status) status.textContent = 'Оберіть свій колір прапорця! Колесо розганяється...';
 
-  const GIANT_SECTORS = [
+  let giantSectors = [
     { label: '20x', mult: 20 },
     { label: 'DOUBLE', mult: 'DOUBLE' },
     { label: '50x', mult: 50 },
@@ -2338,71 +2544,93 @@ function runCrazyTimeWorldBonus(userBet, topMult, onFinish) {
     { label: '1000x', mult: 1000 }
   ];
 
-  let currentAngle = 0;
-  const targetSpin = Math.PI * 2 * (6 + Math.random() * 4);
-  const startTime = performance.now();
-  const duration = 6000;
+  // Apply top slot boost
+  giantSectors = giantSectors.map(s => {
+    if (s.mult === 'DOUBLE' || s.mult === 'TRIPLE') return s;
+    return { label: (s.mult * topMult) + 'x', mult: s.mult * topMult };
+  });
 
-  function animateGiant(now) {
-    const elapsed = now - startTime;
-    const p = Math.min(1, elapsed / duration);
-    const ease = 1 - Math.pow(1 - p, 3);
-    currentAngle = targetSpin * ease;
+  initGiantWheelBuffer(giantSectors);
 
-    const cx = canvas.width / 2, cy = canvas.height / 2;
-    const radius = cx - 8;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (status) status.textContent = 'Оберіть прапорець (Зелений, Синій, Жовтий)! Колесо розганяється...';
 
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(currentAngle);
+  function spinGiantWheel() {
+    let currentAngle = 0;
+    const targetSpin = Math.PI * 2 * (6 + Math.random() * 4);
+    const startTime = performance.now();
+    const duration = 6500;
 
-    const arc = (Math.PI * 2) / GIANT_SECTORS.length;
-    for (let i = 0; i < GIANT_SECTORS.length; i++) {
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.arc(0, 0, radius, i * arc, (i + 1) * arc);
-      ctx.fillStyle = i % 2 === 0 ? '#ff0055' : '#ffd700';
-      ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#fff';
-      ctx.stroke();
+    function animateGiant(now) {
+      const elapsed = now - startTime;
+      const p = Math.min(1, elapsed / duration);
+      const ease = 1 - Math.pow(1 - p, 4); // Smooth 60fps quartic deceleration
+      currentAngle = targetSpin * ease;
 
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save();
-      ctx.rotate(i * arc + arc / 2);
-      ctx.fillStyle = i % 2 === 0 ? '#fff' : '#111';
-      ctx.font = '900 13px sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText(GIANT_SECTORS[i].label, radius - 14, 5);
+      ctx.translate(cx, cy);
+      ctx.rotate(currentAngle);
+      ctx.drawImage(ctGiantWheelBuffer, -cx, -cy);
       ctx.restore();
-    }
-    ctx.restore();
 
-    if (p < 1) {
-      requestAnimationFrame(animateGiant);
-    } else {
-      // Finished
-      const winMult = (Math.floor(Math.random() * 80) + 20) * topMult;
-      CtAudio.winFanfare();
-      if (status) {
-        status.innerHTML = `🎪 ШАЛЕНИЙ ВИГРАШ! Прапорець <strong style="color:#ffd700">${selectedCrazyFlapper.toUpperCase()}</strong> зупинився на: <strong>${winMult}x</strong>!`;
+      if (p < 1) {
+        requestAnimationFrame(animateGiant);
+      } else {
+        // Evaluate sector under chosen flapper
+        const total = giantSectors.length;
+        const arc = (Math.PI * 2) / total;
+
+        // Flapper offsets: Blue is at top (-PI/2), Green is left, Yellow is right
+        let flapperOffset = 0;
+        if (selectedCrazyFlapper === 'green') flapperOffset = -0.3;
+        else if (selectedCrazyFlapper === 'yellow') flapperOffset = 0.3;
+
+        const stopAngleNorm = ((-Math.PI / 2 + flapperOffset - currentAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+        const winIdx = Math.floor(stopAngleNorm / arc);
+        const wonSector = giantSectors[winIdx] || giantSectors[0];
+
+        if (wonSector.mult === 'DOUBLE' || wonSector.mult === 'TRIPLE') {
+          const factor = wonSector.mult === 'DOUBLE' ? 2 : 3;
+          CtAudio.winFanfare();
+          if (status) status.innerHTML = `🔥 <strong>${wonSector.mult}!</strong> ВСІ МНОЖНИКИ ×${factor}! РЕСПІН!`;
+
+          giantSectors = giantSectors.map(s => {
+            if (s.mult === 'DOUBLE' || s.mult === 'TRIPLE') return s;
+            return { label: (s.mult * factor) + 'x', mult: s.mult * factor };
+          });
+
+          initGiantWheelBuffer(giantSectors);
+
+          setTimeout(() => {
+            spinGiantWheel();
+          }, 2400);
+
+        } else {
+          // Final Multiplier!
+          const finalMult = wonSector.mult;
+          CtAudio.winFanfare();
+          if (status) {
+            status.innerHTML = `🎪 ШАЛЕНИЙ ВИГРАШ! Прапорець <strong style="color:#ffd700">${selectedCrazyFlapper.toUpperCase()}</strong> влучив у: <strong>${finalMult}x</strong>!`;
+          }
+
+          if (userBet > 0) {
+            const winPayout = userBet * finalMult;
+            setChips(getChips() + winPayout);
+          }
+
+          setTimeout(() => {
+            modal.classList.remove('open');
+            if (onFinish) onFinish(finalMult);
+          }, 4500);
+        }
       }
-
-      if (userBet > 0) {
-        const winPayout = userBet * winMult;
-        setChips(getChips() + winPayout);
-      }
-
-      setTimeout(() => {
-        modal.classList.remove('open');
-        if (onFinish) onFinish(winMult);
-      }, 5000);
     }
+
+    requestAnimationFrame(animateGiant);
   }
 
-  setTimeout(() => {
-    requestAnimationFrame(animateGiant);
-  }, 1000);
+  setTimeout(spinGiantWheel, 1200);
 }
 
 /* ═══════════════════════════════════════════════════
