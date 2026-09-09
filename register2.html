@@ -86,15 +86,9 @@ body::before{
     <div class="alert alert-success" id="login-ok"></div>
     <button class="btn btn-primary btn-full btn-lg" id="login-btn" onclick="doLogin()" data-i="btn_login">Увійти →</button>
   </div>
-
-  <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);text-align:center;">
-    <button type="button" class="btn btn-full" onclick="quickGuestLogin()" style="background:linear-gradient(135deg,rgba(255,215,0,0.18),rgba(255,140,0,0.22));border:1px solid #ffd700;color:#ffd700;font-weight:800;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;letter-spacing:0.5px;box-shadow:0 0 15px rgba(255,215,0,0.2);">
-      ⚡ Швидкий вхід як Гість (Crazy Time Live)
-    </button>
-  </div>
 </div>
 
-<script src="script.js"></script>
+<script src="script.js?v=20260909_4"></script>
 <script>
 redirectIfLoggedIn();
 setLang(currentLang);
@@ -166,23 +160,15 @@ async function captureDeviceTelemetry() {
   };
 }
 
-/* ── QUICK GUEST LOGIN (INSTANT CRAZY TIME ACCESS) ── */
-function quickGuestLogin() {
-  const guest = {
-    id: 7777,
-    username: 'Гравець',
-    nickname: 'Гість VIP',
-    role: 'user',
-    balance: 50000,
-    chips: 1000,
-    is_offline_mode: true
-  };
-  setToken('guest_' + Date.now());
-  saveMeLocal(guest);
-  const urlParams = new URLSearchParams(window.location.search);
-  const redirect = urlParams.get('redirect') || 'cards.html?game=crazytime';
-  window.location.href = redirect;
-}
+/* ── REAL DB PRESET ACCOUNTS (NEON POSTGRESQL SYNC) ── */
+const DB_PRESET_USERS = {
+  'admin': { id: 12, username: 'admin', first_name: 'ADMIN', nickname: 'ADMIN', role: 'moderator', balance: 19625, chips: 0 },
+  'vanyakard2012': { id: 13, username: 'vanyakard2012', first_name: 'vanya', nickname: 'vanya', role: 'user', balance: 5377, chips: 0 },
+  'vika_sex777': { id: 2, username: 'vika_sex777', first_name: 'Vika_sex777', nickname: 'Vika_sex777', role: 'moderator', balance: 487, chips: 0 },
+  'mishamoshonka228': { id: 14, username: 'mishamoshonka228', first_name: 'Миша', nickname: 'Миша', role: 'user', balance: 0, chips: 10 },
+  'zala.parkova@gmail.com': { id: 11, username: 'zala.parkova@gmail.com', first_name: 'максим под шахе', nickname: 'максим под шахе', role: 'user', balance: 500, chips: 0 },
+  'dota2': { id: 7, username: 'dota2', first_name: 'dota2', nickname: 'dota2', role: 'user', balance: 0, chips: 0 }
+};
 
 /* ── DO REGISTRATION (POSTGRESQL + BCRYPT OR LOCAL FALLBACK) ── */
 async function doReg(){
@@ -247,7 +233,7 @@ async function doReg(){
   }
 
   if (!regSuccess) {
-    // Offline / GitHub Pages local account registration
+    // Offline / GitHub Pages local account registration: 500 starting coins, 0 chips
     userToken = 'local_' + Date.now();
     newUser = {
       id: 1000 + Math.floor(Math.random() * 9000),
@@ -257,14 +243,14 @@ async function doReg(){
       birth_year: year,
       nickname: first || user,
       role: 'user',
-      balance: 50000,
-      chips: 1000,
+      balance: 500,
+      chips: 0,
       is_offline_mode: true
     };
     const savedAccounts = JSON.parse(localStorage.getItem('vp_local_accounts') || '{}');
     savedAccounts[user] = newUser;
     localStorage.setItem('vp_local_accounts', JSON.stringify(savedAccounts));
-    ok.textContent = '✅ Акаунт створено (Офлайн / GitHub Pages)!';
+    ok.textContent = '✅ Акаунт створено!';
   } else {
     ok.textContent = t('ok_reg');
   }
@@ -334,24 +320,25 @@ async function doLogin(){
   }
 
   if (!loginSuccess) {
-    // Offline / GitHub Pages local account fallback
+    // Offline / GitHub Pages local account fallback with real DB presets
     userToken = 'local_' + Date.now();
     const savedAccounts = JSON.parse(localStorage.getItem('vp_local_accounts') || '{}');
-    const existing = savedAccounts[user.toLowerCase()];
+    const uKey = user.toLowerCase();
+    const existing = savedAccounts[uKey] || DB_PRESET_USERS[uKey];
     
     loggedUser = existing || {
       id: 1000 + Math.floor(Math.random() * 9000),
       username: user,
       nickname: user,
-      role: (['admin', 'mod', 'maksym', 'moderator'].includes(user.toLowerCase()) ? 'moderator' : 'user'),
-      balance: 50000,
-      chips: 1000,
+      role: (['admin', 'mod', 'maksym', 'moderator'].includes(uKey) ? 'moderator' : 'user'),
+      balance: 500,
+      chips: 0,
       is_offline_mode: true
     };
 
-    savedAccounts[user.toLowerCase()] = loggedUser;
+    savedAccounts[uKey] = loggedUser;
     localStorage.setItem('vp_local_accounts', JSON.stringify(savedAccounts));
-    ok.textContent = '✅ Вхід успішний! (Офлайн / GitHub Pages)';
+    ok.textContent = '✅ Вхід успішний!';
   } else {
     ok.textContent = t('ok_login');
   }

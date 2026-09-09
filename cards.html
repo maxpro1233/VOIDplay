@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>VØIDplay — Картковий клуб (Blackjack · Crazy Time · Roulette)</title>
-<link rel="stylesheet" href="style.css?v=20260909_3">
+<link rel="stylesheet" href="style.css?v=20260909_4">
 <style>
 .cards-page {
   padding-top: calc(var(--header-h) + 16px);
@@ -1071,25 +1071,9 @@
   </div>
 </div>
 
-<script src="script.js?v=20260909_3"></script>
+<script src="script.js?v=20260909_4"></script>
 <script>
-// Auto-initialize VIP guest session if not logged in so the player can play immediately without redirects
-if (!getToken() || !getMe()) {
-  const guestUser = {
-    id: 7777,
-    username: 'Гравець',
-    nickname: 'Гість VIP',
-    role: 'user',
-    balance: 50000,
-    chips: 1000,
-    is_offline_mode: true
-  };
-  setToken('guest_' + Date.now());
-  saveMeLocal(guestUser);
-} else {
-  refreshMe();
-}
-
+requireAuth();
 buildNavbar('cards');
 setLang(currentLang);
 initMusic();

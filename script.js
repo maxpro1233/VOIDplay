@@ -523,22 +523,6 @@ function syncUIBalance() {
 
 function requireAuth() {
   if (!getToken() || !getMe()) {
-    const isStatic = window.location.hostname.includes('github.io') || window.location.protocol === 'file:';
-    if (isStatic) {
-      const guest = {
-        id: 7777,
-        username: 'Гравець',
-        nickname: 'Гість VIP',
-        role: 'user',
-        balance: 50000,
-        chips: 1000,
-        is_offline_mode: true
-      };
-      setToken('guest_' + Date.now());
-      saveMeLocal(guest);
-      syncUIBalance();
-      return;
-    }
     const curr = encodeURIComponent(window.location.pathname.split('/').pop() + window.location.search + window.location.hash);
     window.location.replace('register2.html?redirect=' + curr);
   } else {
