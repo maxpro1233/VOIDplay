@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>VØIDplay — Картковий клуб (Blackjack · Crazy Time · Roulette)</title>
-<link rel="stylesheet" href="style.css?v=20260909_2">
+<link rel="stylesheet" href="style.css?v=20260909_3">
 <style>
 .cards-page {
   padding-top: calc(var(--header-h) + 16px);
@@ -1071,17 +1071,28 @@
   </div>
 </div>
 
-<script src="script.js?v=20260909_2"></script>
+<script src="script.js?v=20260909_3"></script>
 <script>
-requireAuth();
+// Auto-initialize VIP guest session if not logged in so the player can play immediately without redirects
+if (!getToken() || !getMe()) {
+  const guestUser = {
+    id: 7777,
+    username: 'Гравець',
+    nickname: 'Гість VIP',
+    role: 'user',
+    balance: 50000,
+    chips: 1000,
+    is_offline_mode: true
+  };
+  setToken('guest_' + Date.now());
+  saveMeLocal(guestUser);
+} else {
+  refreshMe();
+}
+
 buildNavbar('cards');
 setLang(currentLang);
 initMusic();
-
-// Automatically pop up Cashier modal when visiting Card Games
-setTimeout(() => {
-  openCashierModal();
-}, 250);
 
 /* ── VIEW SWITCHER ── */
 function openGame(game) {
@@ -1096,6 +1107,20 @@ function openGame(game) {
     startCrazyTimeLiveLoop();
   }
 }
+
+// Auto-open game if query param or hash specified (default to crazytime if requested)
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('game') === 'crazytime' || window.location.hash === '#crazytime') {
+  openGame('crazytime');
+}
+
+// Only show cashier modal if user has 0 chips and hasn't seen it this session
+setTimeout(() => {
+  if (getChips() === 0 && !sessionStorage.getItem('cashier_seen')) {
+    openCashierModal();
+    sessionStorage.setItem('cashier_seen', '1');
+  }
+}, 350);
 
 function returnToLobby() {
   stopCrazyTimeLiveLoop();

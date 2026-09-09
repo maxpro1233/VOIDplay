@@ -474,10 +474,13 @@ let telemetryHistory = [];
 /* ── PROFILE LOADER ── */
 async function loadProfile() {
   const res = await apiFetch('/api/auth/me');
-  if (!res || !res.ok) return;
-  
-  currentUser = res.user;
-  saveMeLocal(currentUser);
+  if (res && res.ok && res.user) {
+    currentUser = res.user;
+    saveMeLocal(currentUser);
+  } else {
+    currentUser = getMe();
+    if (!currentUser) return;
+  }
 
   // Avatar
   applyAvUI(currentUser.avatar_url);

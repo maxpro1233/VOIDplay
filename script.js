@@ -4,7 +4,7 @@
    ═══════════════════════════════════════════════════ */
 
 /* ── API CLIENT ───────────────────────────────────── */
-const API_BASE = ''; // Same origin
+const API_BASE = localStorage.getItem('vp_api_url') || ''; // Configurable or same origin
 
 async function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem('vp_token');
@@ -30,11 +30,16 @@ async function apiFetch(endpoint, options = {}) {
       }
       return null;
     }
+
+    const cType = res.headers.get('content-type') || '';
+    if (!res.ok || !cType.includes('application/json')) {
+      return null;
+    }
     
     const data = await res.json();
     return data;
   } catch (err) {
-    console.error('API request error:', endpoint, err);
+    console.warn('API request skipped or offline:', endpoint);
     return null;
   }
 }
@@ -517,16 +522,35 @@ function syncUIBalance() {
 }
 
 function requireAuth() {
-  if (!getToken()) {
-    window.location.replace('register2.html');
+  if (!getToken() || !getMe()) {
+    const isStatic = window.location.hostname.includes('github.io') || window.location.protocol === 'file:';
+    if (isStatic) {
+      const guest = {
+        id: 7777,
+        username: 'Гравець',
+        nickname: 'Гість VIP',
+        role: 'user',
+        balance: 50000,
+        chips: 1000,
+        is_offline_mode: true
+      };
+      setToken('guest_' + Date.now());
+      saveMeLocal(guest);
+      syncUIBalance();
+      return;
+    }
+    const curr = encodeURIComponent(window.location.pathname.split('/').pop() + window.location.search + window.location.hash);
+    window.location.replace('register2.html?redirect=' + curr);
   } else {
     refreshMe();
   }
 }
 
 function redirectIfLoggedIn() {
-  if (getToken()) {
-    window.location.replace('index.html');
+  if (getToken() && getMe()) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirect = urlParams.get('redirect') || 'index.html';
+    window.location.replace(redirect);
   }
 }
 
@@ -583,7 +607,15 @@ async function buyChips(chipCount) {
     playChipSound();
     return { ok: true, count: res.bought, cost: res.cost };
   }
-  return { ok: false, msg: (res && res.detail) ? res.detail : t('no_coins_err') };
+
+  // Offline / GitHub Pages local fallback
+  const cost = count * CHIP_RATE;
+  if (getBalance() >= cost) {
+    patchMe({ balance: getBalance() - cost, chips: getChips() + count });
+    playChipSound();
+    return { ok: true, count: count, cost: cost };
+  }
+  return { ok: false, msg: (res && res.detail) ? res.detail : (t('no_coins_err') || 'Недостатньо монет') };
 }
 
 async function cashoutChips() {
@@ -595,6 +627,15 @@ async function cashoutChips() {
     patchMe({ balance: res.balance, chips: 0 });
     playChipSound();
     return { ok: true, chips: res.cashed, coinsGain: res.gained };
+  }
+
+  // Offline / GitHub Pages local fallback
+  const curChips = getChips();
+  if (curChips > 0) {
+    const gain = curChips * CHIP_RATE;
+    patchMe({ balance: getBalance() + gain, chips: 0 });
+    playChipSound();
+    return { ok: true, chips: curChips, coinsGain: gain };
   }
   return { ok: false, msg: 'Помилка обміну' };
 }

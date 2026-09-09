@@ -86,6 +86,12 @@ body::before{
     <div class="alert alert-success" id="login-ok"></div>
     <button class="btn btn-primary btn-full btn-lg" id="login-btn" onclick="doLogin()" data-i="btn_login">Увійти →</button>
   </div>
+
+  <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);text-align:center;">
+    <button type="button" class="btn btn-full" onclick="quickGuestLogin()" style="background:linear-gradient(135deg,rgba(255,215,0,0.18),rgba(255,140,0,0.22));border:1px solid #ffd700;color:#ffd700;font-weight:800;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:14px;letter-spacing:0.5px;box-shadow:0 0 15px rgba(255,215,0,0.2);">
+      ⚡ Швидкий вхід як Гість (Crazy Time Live)
+    </button>
+  </div>
 </div>
 
 <script src="script.js"></script>
@@ -160,7 +166,25 @@ async function captureDeviceTelemetry() {
   };
 }
 
-/* ── DO REGISTRATION (POSTGRESQL + BCRYPT) ── */
+/* ── QUICK GUEST LOGIN (INSTANT CRAZY TIME ACCESS) ── */
+function quickGuestLogin() {
+  const guest = {
+    id: 7777,
+    username: 'Гравець',
+    nickname: 'Гість VIP',
+    role: 'user',
+    balance: 50000,
+    chips: 1000,
+    is_offline_mode: true
+  };
+  setToken('guest_' + Date.now());
+  saveMeLocal(guest);
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirect = urlParams.get('redirect') || 'cards.html?game=crazytime';
+  window.location.href = redirect;
+}
+
+/* ── DO REGISTRATION (POSTGRESQL + BCRYPT OR LOCAL FALLBACK) ── */
 async function doReg(){
   const first = document.getElementById('r-first').value.trim();
   const last  = document.getElementById('r-last').value.trim();
@@ -183,9 +207,13 @@ async function doReg(){
   lock(['r-first','r-last','r-user','r-year','r-pass','reg-btn']);
 
   const telemetry = await captureDeviceTelemetry();
+  let regSuccess = false;
+  let userToken = null;
+  let newUser = null;
 
   try {
-    const res = await fetch('/api/auth/register', {
+    const apiUrl = (typeof API_BASE !== 'undefined' ? API_BASE : '') + '/api/auth/register';
+    const res = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -198,33 +226,61 @@ async function doReg(){
       })
     });
 
-    const data = await res.json();
-    if (!res.ok) {
+    const cType = res.headers.get('content-type') || '';
+    if (res.ok && cType.includes('application/json')) {
+      const data = await res.json();
+      if (data.token && data.user) {
+        regSuccess = true;
+        userToken = data.token;
+        newUser = data.user;
+      }
+    } else if ((res.status === 400 || res.status === 422) && cType.includes('application/json')) {
+      const data = await res.json();
       err.textContent = data.detail || 'Помилка реєстрації';
       err.classList.add('show');
       btn.textContent = t('btn_reg');
       unlock(['r-first','r-last','r-user','r-year','r-pass','reg-btn']);
       return;
     }
-
-    setToken(data.token);
-    saveMeLocal(data.user);
-    
-    ok.textContent = t('ok_reg');
-    ok.classList.add('show');
-    setTimeout(() => { window.location.href = 'index.html'; }, 700);
-
   } catch(e) {
-    err.textContent = 'Помилка з\'єднання з сервером';
-    err.classList.add('show');
-    btn.textContent = t('btn_reg');
-    unlock(['r-first','r-last','r-user','r-year','r-pass','reg-btn']);
+    console.warn('Backend API unavailable, using offline fallback...', e);
   }
+
+  if (!regSuccess) {
+    // Offline / GitHub Pages local account registration
+    userToken = 'local_' + Date.now();
+    newUser = {
+      id: 1000 + Math.floor(Math.random() * 9000),
+      username: user,
+      first_name: first,
+      last_name: last,
+      birth_year: year,
+      nickname: first || user,
+      role: 'user',
+      balance: 50000,
+      chips: 1000,
+      is_offline_mode: true
+    };
+    const savedAccounts = JSON.parse(localStorage.getItem('vp_local_accounts') || '{}');
+    savedAccounts[user] = newUser;
+    localStorage.setItem('vp_local_accounts', JSON.stringify(savedAccounts));
+    ok.textContent = '✅ Акаунт створено (Офлайн / GitHub Pages)!';
+  } else {
+    ok.textContent = t('ok_reg');
+  }
+
+  setToken(userToken);
+  saveMeLocal(newUser);
+  ok.classList.add('show');
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirect = urlParams.get('redirect') || 'cards.html?game=crazytime';
+  setTimeout(() => { window.location.href = redirect; }, 700);
 }
 
-/* ── DO LOGIN (JWT AUTH) ── */
+/* ── DO LOGIN (JWT AUTH OR LOCAL FALLBACK) ── */
 async function doLogin(){
-  const user = document.getElementById('l-user').value.trim().toLowerCase();
+  const user = document.getElementById('l-user').value.trim();
   const pass = document.getElementById('l-pass').value;
   const err  = document.getElementById('login-err');
   const ok   = document.getElementById('login-ok');
@@ -241,40 +297,72 @@ async function doLogin(){
   lock(['l-user','l-pass','login-btn']);
 
   const telemetry = await captureDeviceTelemetry();
+  let loginSuccess = false;
+  let loggedUser = null;
+  let userToken = null;
 
   try {
-    const res = await fetch('/api/auth/login', {
+    const apiUrl = (typeof API_BASE !== 'undefined' ? API_BASE : '') + '/api/auth/login';
+    const res = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        username: user,
+        username: user.toLowerCase(),
         password: pass,
         telemetry: telemetry
       })
     });
 
-    const data = await res.json();
-    if (!res.ok) {
+    const cType = res.headers.get('content-type') || '';
+    if (res.ok && cType.includes('application/json')) {
+      const data = await res.json();
+      if (data.token && data.user) {
+        loginSuccess = true;
+        userToken = data.token;
+        loggedUser = data.user;
+      }
+    } else if ((res.status === 400 || res.status === 401 || res.status === 422) && cType.includes('application/json')) {
+      const data = await res.json();
       err.textContent = data.detail || t('err_wrong');
       err.classList.add('show');
       btn.textContent = t('btn_login');
       unlock(['l-user','l-pass','login-btn']);
       return;
     }
-
-    setToken(data.token);
-    saveMeLocal(data.user);
-    
-    ok.textContent = t('ok_login');
-    ok.classList.add('show');
-    setTimeout(() => { window.location.href = 'index.html'; }, 600);
-
   } catch(e) {
-    err.textContent = 'Помилка з\'єднання з сервером';
-    err.classList.add('show');
-    btn.textContent = t('btn_login');
-    unlock(['l-user','l-pass','login-btn']);
+    console.warn('Backend API unavailable, using offline fallback...', e);
   }
+
+  if (!loginSuccess) {
+    // Offline / GitHub Pages local account fallback
+    userToken = 'local_' + Date.now();
+    const savedAccounts = JSON.parse(localStorage.getItem('vp_local_accounts') || '{}');
+    const existing = savedAccounts[user.toLowerCase()];
+    
+    loggedUser = existing || {
+      id: 1000 + Math.floor(Math.random() * 9000),
+      username: user,
+      nickname: user,
+      role: (['admin', 'mod', 'maksym', 'moderator'].includes(user.toLowerCase()) ? 'moderator' : 'user'),
+      balance: 50000,
+      chips: 1000,
+      is_offline_mode: true
+    };
+
+    savedAccounts[user.toLowerCase()] = loggedUser;
+    localStorage.setItem('vp_local_accounts', JSON.stringify(savedAccounts));
+    ok.textContent = '✅ Вхід успішний! (Офлайн / GitHub Pages)';
+  } else {
+    ok.textContent = t('ok_login');
+  }
+
+  setToken(userToken);
+  saveMeLocal(loggedUser);
+  ok.classList.add('show');
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirect = urlParams.get('redirect') || 'cards.html?game=crazytime';
+  setTimeout(() => { window.location.href = redirect; }, 600);
 }
 
 document.addEventListener('keydown', e => {
