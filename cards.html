@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>VØIDplay — Картковий клуб (Blackjack · Crazy Time · Roulette)</title>
-<link rel="stylesheet" href="style.css?v=20260909_4">
+<link rel="stylesheet" href="style.css?v=20260910_1">
 <style>
 .cards-page {
   padding-top: calc(var(--header-h) + 16px);
@@ -917,7 +917,7 @@
         <div class="ct-modal-title">🎯 CASH HUNT — 108 МІШЕНЕЙ</div>
         <div class="ch-countdown-bar" id="ch-countdown-lbl">ОБЕРІТЬ МІШЕНЬ ПРИЦІЛОМ! (7с)</div>
         
-        <div class="ch-grid-108" id="ch-grid-container"></div>
+        <div class="ch-board-wrapper" id="ch-grid-container"></div>
 
         <div class="cf-status-badge" id="ch-status-text">Клікніть на будь-який символ, щоб вистрілити!</div>
       </div>
@@ -1071,7 +1071,7 @@
   </div>
 </div>
 
-<script src="script.js?v=20260909_4"></script>
+<script src="script.js?v=20260910_1"></script>
 <script>
 requireAuth();
 buildNavbar('cards');
@@ -1476,6 +1476,42 @@ const CtAudio = {
     [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
       setTimeout(() => this.beep(freq, 0.2), i * 90);
     });
+  },
+  trainChug() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(115 + Math.random() * 35, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(45, this.ctx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.05);
+    } catch(e) {}
+  },
+  cannonShot() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(190, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(32, this.ctx.currentTime + 0.35);
+      gain.gain.setValueAtTime(0.28, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.35);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.35);
+    } catch(e) {}
   }
 };
 
@@ -2371,7 +2407,7 @@ function runPachinkoBonus(userBet, topMult, onFinish) {
   }
 }
 
-// ── 3. CASH HUNT BONUS (REVEAL -> SHUFFLE -> SNIPER SHOT) ──
+// ── 3. CASH HUNT BONUS (1WIN VIP TRAIN / ПАРОВОЗИК SHUFFLE) ──
 function runCashHuntBonus(userBet, topMult, onFinish) {
   const modal = document.getElementById('modal-cashhunt');
   if (!modal) return;
@@ -2380,103 +2416,195 @@ function runCashHuntBonus(userBet, topMult, onFinish) {
   const container = document.getElementById('ch-grid-container');
   container.innerHTML = '';
 
-  const ICONS = ['🦆', '⭐', '🧁', '🐰', '🌵', '🎩', '💎', '👑', '🎁', '🧨'];
-  const tiles = [];
+  const ICONS = ['🦆', '⭐', '🧁', '🐰', '🌵', '🎩', '💎', '👑', '🎁', '🧨', '🍒', '🍕'];
   const baseMultOptions = [5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 200, 500];
 
-  for (let i = 0; i < 108; i++) {
+  const ROWS = 9;
+  const COLS = 12;
+  const TOTAL = ROWS * COLS; // 108
+
+  // Generate 108 multipliers
+  const tilesData = [];
+  for (let i = 0; i < TOTAL; i++) {
     const rawM = baseMultOptions[Math.floor(Math.random() * baseMultOptions.length)];
     const mult = rawM * topMult;
     const icon = ICONS[i % ICONS.length];
-    tiles.push({ icon, mult });
+    tilesData.push({ icon, mult, originalIndex: i });
   }
 
-  // Step 1: Display all 108 multipliers uncovered
+  // DOM elements
   const countdownLbl = document.getElementById('ch-countdown-lbl');
   const statusLbl = document.getElementById('ch-status-text');
+
   if (countdownLbl) countdownLbl.textContent = '🦆 ОЗНАЙОМТЕСЬ З МНОЖНИКАМИ НА СТІНІ!';
   if (statusLbl) statusLbl.textContent = 'Запам\'ятайте найкращі мішені перед перемішуванням!';
 
-  tiles.forEach((t, idx) => {
-    const div = document.createElement('div');
-    div.className = 'ch-tile revealed';
-    div.textContent = `${t.mult}x`;
-    container.appendChild(div);
-  });
+  // Build 9 rows with independent tracks for the train shuffle
+  const rowElements = [];
+  const tileElements = [];
 
-  // Step 2: Shuffle Phase after 2.2 seconds
+  for (let r = 0; r < ROWS; r++) {
+    const rowDiv = document.createElement('div');
+    rowDiv.className = `ch-row ch-row-${r % 2 === 0 ? 'even' : 'odd'}`;
+
+    const trackDiv = document.createElement('div');
+    trackDiv.className = 'ch-row-track';
+
+    for (let c = 0; c < COLS; c++) {
+      const idx = r * COLS + c;
+      const tileDiv = document.createElement('div');
+      tileDiv.className = 'ch-tile revealed';
+      tileDiv.textContent = `${tilesData[idx].mult}x`;
+      tileDiv.dataset.index = idx;
+      trackDiv.appendChild(tileDiv);
+      tileElements.push(tileDiv);
+    }
+
+    rowDiv.appendChild(trackDiv);
+    container.appendChild(rowDiv);
+    rowElements.push(rowDiv);
+  }
+
+  // Step 2: Flip Multipliers into Casino Icons after 2.2 seconds
   setTimeout(() => {
-    if (countdownLbl) countdownLbl.textContent = '🔀 ПЕРЕМІШУВАННЯ МІШЕНЕЙ...';
-    if (statusLbl) statusLbl.textContent = 'Мішені ховаються за символами...';
-    CtAudio.slotTick();
+    CtAudio.gong();
+    if (countdownLbl) countdownLbl.textContent = '🔀 МІШЕНІ ХОВАЮТЬСЯ ЗА СИМВОЛАМИ...';
+    if (statusLbl) statusLbl.textContent = 'Символи шикуються в ряди для перемішування паровозиком!';
 
-    const allDivs = container.querySelectorAll('.ch-tile');
-    allDivs.forEach((d, i) => {
-      d.classList.remove('revealed');
-      d.classList.add('shuffle-spin');
-      d.textContent = tiles[i].icon;
+    tileElements.forEach((el, idx) => {
+      el.classList.remove('revealed');
+      el.classList.add('tile-flip');
+      el.textContent = tilesData[idx].icon;
     });
 
-    // Step 3: Interactive cannon target countdown after 1.5 seconds
+    // Step 3: 🚂 "ПАРОВОЗИК" TRAIN SHUFFLE (Rows glide left and right!)
     setTimeout(() => {
-      let hasShot = false;
-      let timeLeft = 7;
-      if (countdownLbl) countdownLbl.textContent = `🎯 ОБЕРІТЬ МІШЕНЬ ПРИЦІЛОМ! (${timeLeft}с)`;
-      if (statusLbl) statusLbl.textContent = 'Клікніть на будь-яку мішень, щоб вистрілити з гармати!';
+      if (countdownLbl) countdownLbl.innerHTML = '🚂 <strong style="color:#ffd700">ПЕРЕМІШУВАННЯ ПАРОВОЗИКОМ!</strong>';
+      if (statusLbl) statusLbl.textContent = 'Ряди іконок рухаються вліво та вправо, як вагони поїзда!';
 
-      allDivs.forEach((d, idx) => {
-        d.classList.remove('shuffle-spin');
-        d.onclick = () => {
-          if (hasShot) return;
-          hasShot = true;
-          shootCannon(idx);
-        };
+      // Rhythmic train engine sound
+      let chugTicks = 0;
+      const chugTimer = setInterval(() => {
+        chugTicks++;
+        CtAudio.trainChug();
+        if (chugTicks % 2 === 0) CtAudio.slotTick();
+        if (chugTicks >= 23) clearInterval(chugTimer);
+      }, 120);
+
+      // Start alternating left/right train slide animations on rows
+      rowElements.forEach((rEl, rIdx) => {
+        rEl.classList.remove('train-right', 'train-left');
+        void rEl.offsetWidth; // force reflow
+        if (rIdx % 2 === 0) {
+          rEl.classList.add('train-right');
+        } else {
+          rEl.classList.add('train-left');
+        }
       });
 
-      const countTimer = setInterval(() => {
-        timeLeft--;
-        if (countdownLbl) countdownLbl.textContent = `🎯 ОБЕРІТЬ МІШЕНЬ ПРИЦІЛОМ! (${timeLeft}с)`;
-        if (timeLeft <= 0) {
-          clearInterval(countTimer);
-          if (!hasShot) {
-            hasShot = true;
-            const randIdx = Math.floor(Math.random() * 108);
-            shootCannon(randIdx);
-          }
-        }
-      }, 1000);
-
-      function shootCannon(chosenIdx) {
-        clearInterval(countTimer);
-        CtAudio.winFanfare();
-
-        const wonMult = tiles[chosenIdx].mult;
-
-        // Reveal all tiles with player's target highlighted
-        allDivs.forEach((d, i) => {
-          d.classList.add('revealed');
-          d.textContent = `${tiles[i].mult}x`;
-          if (i === chosenIdx) {
-            d.classList.add('selected-target');
-            d.textContent = `👑 ${wonMult}x`;
-          }
+      // Rapidly scramble and cycle icons during the train motion
+      let scrambleCount = 0;
+      const scrambleTimer = setInterval(() => {
+        scrambleCount++;
+        tileElements.forEach(el => {
+          el.textContent = ICONS[Math.floor(Math.random() * ICONS.length)];
         });
-
-        if (countdownLbl) countdownLbl.textContent = `💥 ПОСТРІЛ ВЛУЧНИЙ!`;
-        if (statusLbl) statusLbl.innerHTML = `🎯 ВАШ ВИГРАШНИЙ МНОЖНИК: <strong style="color:#ffd700;font-size:16px;">${wonMult}x</strong>!`;
-
-        if (userBet > 0) {
-          const winPayout = userBet * wonMult;
-          setChips(getChips() + winPayout);
+        if (scrambleCount >= 26) {
+          clearInterval(scrambleTimer);
         }
+      }, 100);
 
-        setTimeout(() => {
-          modal.classList.remove('open');
-          if (onFinish) onFinish(wonMult);
-        }, 4500);
+      // Perform true in-memory Fisher-Yates shuffle of the tilesData
+      for (let i = tilesData.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tilesData[i], tilesData[j]] = [tilesData[j], tilesData[i]];
       }
 
-    }, 1500);
+      // Step 4: Train decelerates and snaps into place after 2.8s
+      setTimeout(() => {
+        // Stop animations and snap to grid
+        rowElements.forEach(rEl => {
+          rEl.classList.remove('train-right', 'train-left');
+        });
+
+        // Set the final shuffled icons
+        tileElements.forEach((el, idx) => {
+          el.classList.remove('tile-flip');
+          el.textContent = tilesData[idx].icon;
+        });
+
+        CtAudio.beep(880, 0.14);
+
+        // Step 5: Interactive Sniper Cannon Crosshair Countdown (7 seconds)
+        let hasShot = false;
+        let timeLeft = 7;
+        if (countdownLbl) countdownLbl.textContent = `🎯 ПРИЦІЛЮЙТЕСЬ ТА СТРІЛЯЙТЕ! (${timeLeft}с)`;
+        if (statusLbl) statusLbl.textContent = 'Клікніть на будь-який символ, щоб вистрілити з гармати!';
+
+        tileElements.forEach((el, idx) => {
+          el.onclick = () => {
+            if (hasShot) return;
+            hasShot = true;
+            shootCannon(idx);
+          };
+        });
+
+        const countTimer = setInterval(() => {
+          timeLeft--;
+          if (countdownLbl) countdownLbl.textContent = `🎯 ПРИЦІЛЮЙТЕСЬ ТА СТРІЛЯЙТЕ! (${timeLeft}с)`;
+          if (timeLeft <= 0) {
+            clearInterval(countTimer);
+            if (!hasShot) {
+              hasShot = true;
+              const randIdx = Math.floor(Math.random() * TOTAL);
+              shootCannon(randIdx);
+            }
+          }
+        }, 1000);
+
+        function shootCannon(chosenIdx) {
+          clearInterval(countTimer);
+          CtAudio.cannonShot();
+
+          const chosenTile = tileElements[chosenIdx];
+          if (chosenTile) chosenTile.classList.add('cannon-hit');
+
+          if (countdownLbl) countdownLbl.textContent = '💥 ПОСТРІЛ ВЛУЧНИЙ! ВІДКРИТТЯ СТІНИ...';
+          if (statusLbl) statusLbl.textContent = 'Стіна розкриває всі сховані множники!';
+
+          // Reveal all tiles with player's target highlighted
+          setTimeout(() => {
+            CtAudio.winFanfare();
+            const wonMult = tilesData[chosenIdx].mult;
+
+            tileElements.forEach((el, i) => {
+              el.classList.add('revealed');
+              el.textContent = `${tilesData[i].mult}x`;
+              if (i === chosenIdx) {
+                el.classList.add('selected-target');
+                el.textContent = `👑 ${wonMult}x`;
+              }
+            });
+
+            if (countdownLbl) countdownLbl.innerHTML = `🏆 <strong style="color:#ffd700">ВЛУЧАННЯ: ${wonMult}x!</strong>`;
+            if (statusLbl) statusLbl.innerHTML = `🎯 ВАШ ВИГРАШНИЙ МНОЖНИК: <strong style="color:#ffd700;font-size:16px;">${wonMult}x</strong>!`;
+
+            if (userBet > 0) {
+              const winPayout = userBet * wonMult;
+              setChips(getChips() + winPayout);
+            }
+
+            setTimeout(() => {
+              modal.classList.remove('open');
+              if (onFinish) onFinish(wonMult);
+            }, 4500);
+
+          }, 700);
+        }
+
+      }, 2800);
+
+    }, 600);
 
   }, 2200);
 }
