@@ -688,6 +688,7 @@
           <span class="ct-round-id" id="ct-round-id-display">#CT-89241</span>
           <span class="ct-online-count">👥 <span id="ct-online-users">1,842</span> онлайн</span>
           <button class="ct-audio-toggle" id="ct-sound-btn" onclick="toggleCrazySound()">🔊 Звук: ВКЛ</button>
+          <button class="ct-mod-toggle-btn" id="ct-mod-header-btn" onclick="toggleCtModPanel()">🛡️ Панель модератора</button>
         </div>
       </div>
 
@@ -868,6 +869,139 @@
         </div>
 
       </div>
+
+      <!-- 🛡️ MODERATOR LIVE TEST PANEL -->
+      <div class="ct-mod-panel" id="ct-mod-panel">
+        <div class="ct-mod-panel-header">
+          <div class="ct-mod-panel-title">
+            <span class="ct-mod-panel-badge">MOD</span>
+            <span>🛡️ Панель модератора</span>
+          </div>
+          <button type="button" class="ct-mod-panel-close" onclick="toggleCtModPanel(false)" title="Згорнути панель">✕</button>
+        </div>
+
+        <div class="ct-mod-panel-body">
+          <div class="ct-mod-status-box">
+            <div class="ct-mod-status-label">Наступний сектор колеса:</div>
+            <div class="ct-mod-status-val" id="ct-mod-active-target">🎲 Авто (Випадково)</div>
+          </div>
+
+          <div class="ct-mod-section-title">🎯 ОБРАТИ СЕКТОР ДЛЯ ВСІХ ГРАВЦІВ:</div>
+
+          <div class="ct-mod-targets-grid">
+            <button type="button" class="ct-mod-target-btn active" id="ct-mod-btn-auto" onclick="setModForcedOutcome(null)">
+              <span class="ct-mod-btn-icon">🎲</span>
+              <span class="ct-mod-btn-name">АВТО</span>
+              <span class="ct-mod-btn-sub">Рандом</span>
+            </button>
+            <button type="button" class="ct-mod-target-btn target-1" id="ct-mod-btn-1" onclick="setModForcedOutcome('1')">
+              <span class="ct-mod-btn-icon">1️⃣</span>
+              <span class="ct-mod-btn-name">СЕКТОР 1</span>
+              <span class="ct-mod-btn-sub">1:1 (Синій)</span>
+            </button>
+            <button type="button" class="ct-mod-target-btn target-2" id="ct-mod-btn-2" onclick="setModForcedOutcome('2')">
+              <span class="ct-mod-btn-icon">2️⃣</span>
+              <span class="ct-mod-btn-name">СЕКТОР 2</span>
+              <span class="ct-mod-btn-sub">2:1 (Жовтий)</span>
+            </button>
+            <button type="button" class="ct-mod-target-btn target-5" id="ct-mod-btn-5" onclick="setModForcedOutcome('5')">
+              <span class="ct-mod-btn-icon">5️⃣</span>
+              <span class="ct-mod-btn-name">СЕКТОР 5</span>
+              <span class="ct-mod-btn-sub">5:1 (Рожевий)</span>
+            </button>
+            <button type="button" class="ct-mod-target-btn target-10" id="ct-mod-btn-10" onclick="setModForcedOutcome('10')">
+              <span class="ct-mod-btn-icon">🔟</span>
+              <span class="ct-mod-btn-name">СЕКТОР 10</span>
+              <span class="ct-mod-btn-sub">10:1 (Фіолет)</span>
+            </button>
+            <button type="button" class="ct-mod-target-btn target-cf" id="ct-mod-btn-cf" onclick="setModForcedOutcome('cf')">
+              <span class="ct-mod-btn-icon">🪙</span>
+              <span class="ct-mod-btn-name">COIN FLIP</span>
+              <span class="ct-mod-btn-sub">Бонус</span>
+            </button>
+            <button type="button" class="ct-mod-target-btn target-pac" id="ct-mod-btn-pac" onclick="setModForcedOutcome('pac')">
+              <span class="ct-mod-btn-icon">🟣</span>
+              <span class="ct-mod-btn-name">PACHINKO</span>
+              <span class="ct-mod-btn-sub">Бонус</span>
+            </button>
+            <button type="button" class="ct-mod-target-btn target-ch" id="ct-mod-btn-ch" onclick="setModForcedOutcome('ch')">
+              <span class="ct-mod-btn-icon">🎯</span>
+              <span class="ct-mod-btn-name">CASH HUNT</span>
+              <span class="ct-mod-btn-sub">Паровозик</span>
+            </button>
+            <button type="button" class="ct-mod-target-btn target-ct" id="ct-mod-btn-ct" onclick="setModForcedOutcome('ct')">
+              <span class="ct-mod-btn-icon">🎪</span>
+              <span class="ct-mod-btn-name">CRAZY TIME</span>
+              <span class="ct-mod-btn-sub">3 Стрілки</span>
+            </button>
+          </div>
+
+          <!-- Top Slot Override Options -->
+          <div class="ct-mod-section-title" style="margin-top:4px;">⚡ ТОП-СЛОТ НАЛАШТУВАННЯ:</div>
+          <div class="ct-mod-topslot-row">
+            <select class="ct-mod-select" id="ct-mod-topslot-target" onchange="updateModTopSlot()">
+              <option value="">🎯 Ціль: Авто</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="cf">🪙 Coin Flip</option>
+              <option value="pac">🟣 Pachinko</option>
+              <option value="ch">🎯 Cash Hunt</option>
+              <option value="ct">🎪 Crazy Time</option>
+            </select>
+            <select class="ct-mod-select" id="ct-mod-topslot-mult" onchange="updateModTopSlot()">
+              <option value="">⚡ Множник: Авто</option>
+              <option value="2">×2</option>
+              <option value="3">×3</option>
+              <option value="4">×4</option>
+              <option value="5">×5</option>
+              <option value="7">×7</option>
+              <option value="10">×10</option>
+              <option value="15">×15</option>
+              <option value="20">×20</option>
+              <option value="25">×25</option>
+              <option value="50">×50</option>
+            </select>
+          </div>
+
+          <div class="ct-mod-checkbox-row">
+            <label class="ct-mod-check-label">
+              <input type="checkbox" id="ct-mod-topslot-forcematch" onchange="updateModTopSlot()">
+              <span>Завжди активувати збіг Топ-Слота</span>
+            </label>
+          </div>
+
+          <!-- Quick Test Actions -->
+          <div class="ct-mod-section-title" style="margin-top:4px;">⚡ ШВИДКІ ДІЇ ТЕСТУВАННЯ:</div>
+          <div class="ct-mod-actions-col">
+            <button type="button" class="btn btn-primary btn-sm btn-full" onclick="modFastForwardSpin()">
+              ⚡ Запустити спін зараз (пропустити 20с)
+            </button>
+            <div style="display:flex;gap:6px;">
+              <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="modAddChips(1000)">
+                +1,000 🎰
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="modAddChips(10000)">
+                +10,000 🎰
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="setModForcedOutcome(null)" title="Скинути на Авто">
+                🔄 Авто
+              </button>
+            </div>
+          </div>
+
+          <div class="ct-mod-footer-hint">
+            💡 Натисніть на бажаний сектор — колесо гарантовано зупиниться на ньому і запустить реальну бонусну гру або виплату.
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating tab on right edge when panel is collapsed -->
+      <button type="button" class="ct-mod-floating-tab" id="ct-mod-floating-tab" onclick="toggleCtModPanel(true)">
+        <span>🛡️</span>
+        <span>Панель модератора</span>
+      </button>
     </div>
 
     <!-- ═══════════════════════════════════════════════════
@@ -1093,6 +1227,7 @@ function openGame(game) {
     drawCrazyTimeWheel(ctWheelCurrentAngle);
     renderCtHistoryUI();
     startCrazyTimeLiveLoop();
+    initCtModPanel();
   }
 }
 
@@ -1112,6 +1247,10 @@ setTimeout(() => {
 
 function returnToLobby() {
   stopCrazyTimeLiveLoop();
+  const panel = document.getElementById('ct-mod-panel');
+  const floatingTab = document.getElementById('ct-mod-floating-tab');
+  if (panel) panel.classList.remove('open');
+  if (floatingTab) floatingTab.style.display = 'none';
   document.querySelectorAll('.game-view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-lobby').classList.add('active');
 }
@@ -1606,6 +1745,112 @@ let ctHistory = [
   { id: 'ct', mult: 250 }
 ];
 
+// ── 🛡️ MODERATOR LIVE CONTROL STATE & RIGGING ──
+let ctModForcedOutcome = null; // null (auto) | '1' | '2' | '5' | '10' | 'cf' | 'pac' | 'ch' | 'ct'
+let ctModForcedTopSlotTarget = '';
+let ctModForcedTopSlotMult = '';
+let ctModForcedTopSlotMatch = false;
+
+function setModForcedOutcome(target) {
+  ctModForcedOutcome = target;
+  document.querySelectorAll('.ct-mod-target-btn').forEach(btn => btn.classList.remove('active'));
+
+  const statusEl = document.getElementById('ct-mod-active-target');
+  const names = {
+    '1': '1️⃣ Сектор 1 (1:1)',
+    '2': '2️⃣ Сектор 2 (2:1)',
+    '5': '5️⃣ Сектор 5 (5:1)',
+    '10': '🔟 Сектор 10 (10:1)',
+    'cf': '🪙 COIN FLIP (Бонус)',
+    'pac': '🟣 PACHINKO (Бонус)',
+    'ch': '🎯 CASH HUNT (Бонус)',
+    'ct': '🎪 CRAZY TIME (Бонус)'
+  };
+
+  if (!target) {
+    const autoBtn = document.getElementById('ct-mod-btn-auto');
+    if (autoBtn) autoBtn.classList.add('active');
+    if (statusEl) {
+      statusEl.className = 'ct-mod-status-val';
+      statusEl.textContent = '🎲 Авто (Випадково)';
+    }
+  } else {
+    const btn = document.getElementById(`ct-mod-btn-${target}`);
+    if (btn) btn.classList.add('active');
+    if (statusEl) {
+      statusEl.className = 'ct-mod-status-val forced';
+      statusEl.innerHTML = `⚡ ${names[target]} (Примусово)`;
+    }
+  }
+  CtAudio.beep(740, 0.08);
+}
+
+function updateModTopSlot() {
+  const tEl = document.getElementById('ct-mod-topslot-target');
+  const mEl = document.getElementById('ct-mod-topslot-mult');
+  const matchEl = document.getElementById('ct-mod-topslot-forcematch');
+
+  ctModForcedTopSlotTarget = tEl ? tEl.value : '';
+  ctModForcedTopSlotMult = mEl && mEl.value ? parseInt(mEl.value, 10) : '';
+  ctModForcedTopSlotMatch = matchEl ? matchEl.checked : false;
+}
+
+function modFastForwardSpin() {
+  if (!isCtLoopActive) {
+    startCrazyTimeLiveLoop();
+    return;
+  }
+  if (ctLivePhase === 'BETTING') {
+    ctBettingSeconds = 1;
+    updateLiveBar('⏱️ ЗРОБІТЬ ВАШІ СТАВКИ:', 1, 5);
+    CtAudio.beep(880, 0.1);
+  } else {
+    const statusEl = document.getElementById('ct-mod-active-target');
+    if (statusEl) {
+      const prev = statusEl.innerHTML;
+      statusEl.innerHTML = `<span style="color:#ff3366;">Йде обертання або бонуска! Зачекайте</span>`;
+      setTimeout(() => { statusEl.innerHTML = prev; }, 1800);
+    }
+  }
+}
+
+function modAddChips(amount) {
+  setChips(getChips() + amount);
+  CtAudio.winFanfare();
+}
+
+function toggleCtModPanel(show) {
+  const panel = document.getElementById('ct-mod-panel');
+  const tab = document.getElementById('ct-mod-floating-tab');
+  if (!panel) return;
+
+  const willShow = (show !== undefined) ? show : !panel.classList.contains('open');
+  if (willShow) {
+    panel.classList.add('open');
+    if (tab) tab.style.display = 'none';
+    localStorage.removeItem('ct_mod_panel_closed');
+  } else {
+    panel.classList.remove('open');
+    if (tab) tab.style.display = 'flex';
+    localStorage.setItem('ct_mod_panel_closed', 'true');
+  }
+}
+
+function initCtModPanel() {
+  const panel = document.getElementById('ct-mod-panel');
+  const tab = document.getElementById('ct-mod-floating-tab');
+  if (!panel) return;
+
+  const isClosed = localStorage.getItem('ct_mod_panel_closed') === 'true';
+  if (isClosed) {
+    panel.classList.remove('open');
+    if (tab) tab.style.display = 'flex';
+  } else {
+    panel.classList.add('open');
+    if (tab) tab.style.display = 'none';
+  }
+}
+
 let ctRoundId = 89241;
 let ctLivePhase = 'IDLE'; // 'BETTING', 'LOCKED', 'TOPSLOT', 'SPINNING', 'RESOLVING'
 let ctBettingSeconds = 20;
@@ -1832,9 +2077,22 @@ function spinTopSlot(onComplete) {
     if (b) { b.style.display = 'none'; b.textContent = ''; }
   });
 
-  const chosenTarget = TOP_SLOT_TARGETS[Math.floor(Math.random() * TOP_SLOT_TARGETS.length)];
-  const chosenMult = TOP_SLOT_MULTIPLIERS[Math.floor(Math.random() * TOP_SLOT_MULTIPLIERS.length)];
-  const willMatch = Math.random() < 0.48; // 48% payline alignment chance
+  let chosenTarget = TOP_SLOT_TARGETS[Math.floor(Math.random() * TOP_SLOT_TARGETS.length)];
+  let chosenMult = TOP_SLOT_MULTIPLIERS[Math.floor(Math.random() * TOP_SLOT_MULTIPLIERS.length)];
+  let willMatch = Math.random() < 0.48; // 48% payline alignment chance
+
+  // 🛡️ Moderator Overrides
+  if (ctModForcedTopSlotTarget) {
+    chosenTarget = ctModForcedTopSlotTarget;
+  }
+  if (ctModForcedTopSlotMult) {
+    chosenMult = ctModForcedTopSlotMult;
+  }
+  if (ctModForcedTopSlotMatch) {
+    willMatch = true;
+  } else if (ctModForcedOutcome && ctModForcedTopSlotTarget === ctModForcedOutcome) {
+    willMatch = true;
+  }
 
   let step = 0;
   const maxSteps = 22;
@@ -2048,7 +2306,24 @@ function lockBetsAndProceed() {
 
       // Spin main wheel
       const totalSlices = CRAZY_SEGMENTS.length;
-      const winIndex = Math.floor(Math.random() * totalSlices);
+      let winIndex;
+
+      // 🛡️ Moderator Forced Outcome
+      if (ctModForcedOutcome) {
+        const matchingIndices = [];
+        for (let i = 0; i < totalSlices; i++) {
+          if (CRAZY_SEGMENTS[i].id === ctModForcedOutcome) {
+            matchingIndices.push(i);
+          }
+        }
+        if (matchingIndices.length > 0) {
+          winIndex = matchingIndices[Math.floor(Math.random() * matchingIndices.length)];
+        } else {
+          winIndex = Math.floor(Math.random() * totalSlices);
+        }
+      } else {
+        winIndex = Math.floor(Math.random() * totalSlices);
+      }
       const winSegment = CRAZY_SEGMENTS[winIndex];
 
       spinCrazyTimeWheel(winIndex, () => {
