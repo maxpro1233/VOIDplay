@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>VØIDplay — Картковий клуб (Blackjack · Crazy Time · Roulette)</title>
-<link rel="stylesheet" href="style.css?v=20260910_mod2">
+<link rel="stylesheet" href="style.css?v=20260910_mod4">
 <style>
 .cards-page {
   padding-top: calc(var(--header-h) + 16px);
@@ -524,7 +524,14 @@
   .poker-pot-badge { font-size: 12px; padding: 4px 10px; }
   .chips-stat-group { gap: 6px; }
   .chip-badge-val { font-size: 12px; padding: 4px 8px; }
+}
+
 /* ── 🛡️ MODERATOR DROPDOWN MENU (RIGHT OF "В МОНЕТИ") ── */
+.mod-dd-wrap {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
 .btn-mod-bar {
   background: linear-gradient(135deg, #ffd700 0%, #ff9100 100%) !important;
   color: #111 !important;
@@ -568,7 +575,7 @@
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
   z-index: 100000 !important;
-  display: none;
+  display: none !important;
   flex-direction: column !important;
   overflow: hidden !important;
   animation: modDdSlide .2s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -1359,12 +1366,13 @@
   </div>
 </div>
 
-<script src="script.js?v=20260910_mod3"></script>
+<script src="script.js?v=20260910_mod4"></script>
 <script>
 requireAuth();
 buildNavbar('cards');
 setLang(currentLang);
 initMusic();
+syncUIBalance();
 
 // ── CRAZY TIME GLOBAL ENGINE & MODERATOR STATE ──
 let ctWheelCurrentAngle = 0;
