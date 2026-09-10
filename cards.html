@@ -927,31 +927,35 @@
     <div class="ct-modal-overlay" id="modal-crazytime">
       <div class="ct-modal-card crazytime-world-card">
         <div class="ct-modal-title" style="font-size:24px;color:#ffd700;">🎪 CRAZY TIME VIRTUAL WORLD</div>
-        <div style="font-size:13px;color:#fff;margin-bottom:12px;">Оберіть свій вказівник перед запуском гігантського колеса!</div>
+        <div class="ct-flapper-countdown" id="ct-flapper-countdown-text">ОБЕРІТЬ СВОЮ СТРІЛКУ! (6с)</div>
+        <div style="font-size:12.5px;color:#ccc;margin-bottom:12px;">Оберіть стрілку: Жовту, Синю чи Червону перед запуском колеса!</div>
         
-        <!-- Flapper pickers -->
+        <!-- Flapper pickers: Yellow, Blue, Red -->
         <div class="ct-flapper-pick-row">
-          <button class="ct-flapper-btn green" id="btn-flap-green" onclick="selectCrazyFlapper('green')">
-            <span>▼</span> ЗЕЛЕНИЙ
+          <button type="button" class="ct-flapper-btn yellow" id="btn-flap-yellow" onclick="selectCrazyFlapper('yellow')">
+            <span>▼</span> 🟡 ЖОВТА
           </button>
-          <button class="ct-flapper-btn blue active" id="btn-flap-blue" onclick="selectCrazyFlapper('blue')">
-            <span>▼</span> СИНІЙ
+          <button type="button" class="ct-flapper-btn blue active" id="btn-flap-blue" onclick="selectCrazyFlapper('blue')">
+            <span>▼</span> 🔵 СИНЯ
           </button>
-          <button class="ct-flapper-btn yellow" id="btn-flap-yellow" onclick="selectCrazyFlapper('yellow')">
-            <span>▼</span> ЖОВТИЙ
+          <button type="button" class="ct-flapper-btn red" id="btn-flap-red" onclick="selectCrazyFlapper('red')">
+            <span>▼</span> 🔴 ЧЕРВОНА
           </button>
         </div>
 
         <div class="ct-giant-wheel-stage">
           <div class="ct-giant-flappers-bar">
-            <div class="ct-g-flapper green" id="g-flapper-green"></div>
-            <div class="ct-g-flapper blue" id="g-flapper-blue"></div>
-            <div class="ct-g-flapper yellow" id="g-flapper-yellow"></div>
+            <div class="ct-g-flapper yellow" id="g-flapper-yellow" title="Жовта стрілка" onclick="selectCrazyFlapper('yellow')"></div>
+            <div class="ct-g-flapper blue active" id="g-flapper-blue" title="Синя стрілка" onclick="selectCrazyFlapper('blue')"></div>
+            <div class="ct-g-flapper red" id="g-flapper-red" title="Червона стрілка" onclick="selectCrazyFlapper('red')"></div>
           </div>
           <canvas id="ctGiantWheelCanvas" width="380" height="380"></canvas>
         </div>
 
-        <div class="cf-status-badge" id="ct-giant-status-text">Обертання гігантського колеса...</div>
+        <!-- Flapper outcomes summary strip -->
+        <div class="ct-flappers-summary-bar" id="ct-flappers-summary" style="display:none;"></div>
+
+        <div class="cf-status-badge" id="ct-giant-status-text">Оберіть свою стрілку...</div>
       </div>
     </div>
 
@@ -2609,15 +2613,26 @@ function runCashHuntBonus(userBet, topMult, onFinish) {
   }, 2200);
 }
 
-// ── 4. CRAZY TIME VIRTUAL WORLD (60 FPS + DOUBLE/TRIPLE RESPIN) ──
+// ── 4. CRAZY TIME VIRTUAL WORLD (YELLOW · BLUE · RED FLAPPER CHOICE + 60 FPS) ──
 let selectedCrazyFlapper = 'blue';
 let ctGiantWheelBuffer = null;
 
 function selectCrazyFlapper(color) {
   selectedCrazyFlapper = color;
   document.querySelectorAll('.ct-flapper-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.ct-g-flapper').forEach(f => f.classList.remove('active'));
+  
   const btn = document.getElementById(`btn-flap-${color}`);
   if (btn) btn.classList.add('active');
+  const flapper = document.getElementById(`g-flapper-${color}`);
+  if (flapper) flapper.classList.add('active');
+
+  const names = { yellow: 'ЖОВТУ 🟡', blue: 'СИНЮ 🔵', red: 'ЧЕРВОНУ 🔴' };
+  const status = document.getElementById('ct-giant-status-text');
+  if (status) {
+    status.innerHTML = `✅ Ваша стрілка: <strong style="color:#ffd700">${names[color]}</strong>! Очікування запуску колеса...`;
+    CtAudio.beep(660, 0.1);
+  }
 }
 
 function initGiantWheelBuffer(sectors) {
@@ -2665,6 +2680,17 @@ function runCrazyTimeWorldBonus(userBet, topMult, onFinish) {
   const canvas = document.getElementById('ctGiantWheelCanvas');
   const ctx = canvas.getContext('2d');
   const status = document.getElementById('ct-giant-status-text');
+  const countdownEl = document.getElementById('ct-flapper-countdown-text');
+  const summaryEl = document.getElementById('ct-flappers-summary');
+
+  if (summaryEl) {
+    summaryEl.style.display = 'none';
+    summaryEl.innerHTML = '';
+  }
+
+  // Reset and enable flapper picker buttons
+  document.querySelectorAll('.ct-flapper-btn').forEach(b => b.disabled = false);
+  selectCrazyFlapper(selectedCrazyFlapper || 'blue');
 
   let giantSectors = [
     { label: '20x', mult: 20 },
@@ -2689,13 +2715,45 @@ function runCrazyTimeWorldBonus(userBet, topMult, onFinish) {
 
   initGiantWheelBuffer(giantSectors);
 
-  if (status) status.textContent = 'Оберіть прапорець (Зелений, Синій, Жовтий)! Колесо розганяється...';
+  // Initial stationary render
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.drawImage(ctGiantWheelBuffer, -cx, -cy);
+  ctx.restore();
+
+  // Phase 1: 6-second active choice phase for player to pick Yellow, Blue, or Red
+  let chooseTime = 6;
+  if (countdownEl) countdownEl.textContent = `🎯 ОБЕРІТЬ СВОЮ СТРІЛКУ! (${chooseTime}с)`;
+  if (status) status.innerHTML = `Клікніть на 🟡 <strong>Жовту</strong>, 🔵 <strong>Синю</strong> чи 🔴 <strong>Червону</strong> стрілку!`;
+
+  const flapperTimer = setInterval(() => {
+    chooseTime--;
+    CtAudio.tick();
+    if (countdownEl) countdownEl.textContent = `🎯 ОБЕРІТЬ СВОЮ СТРІЛКУ! (${chooseTime}с)`;
+    if (chooseTime <= 0) {
+      clearInterval(flapperTimer);
+      startSpinPhase();
+    }
+  }, 1000);
+
+  function startSpinPhase() {
+    // Disable picker buttons during spin
+    document.querySelectorAll('.ct-flapper-btn').forEach(b => b.disabled = true);
+
+    const names = { yellow: 'ЖОВТУ 🟡', blue: 'СИНЮ 🔵', red: 'ЧЕРВОНУ 🔴' };
+    if (countdownEl) countdownEl.textContent = '🎡 ГІГАНТСЬКЕ КОЛЕСО КРУТИТЬСЯ!';
+    if (status) status.innerHTML = `Ваша стрілка: <strong style="color:#ffd700">${names[selectedCrazyFlapper]}</strong>! Колесо розганяється...`;
+
+    spinGiantWheel();
+  }
 
   function spinGiantWheel() {
     let currentAngle = 0;
-    const targetSpin = Math.PI * 2 * (6 + Math.random() * 4);
+    const targetSpin = Math.PI * 2 * (7 + Math.random() * 5);
     const startTime = performance.now();
-    const duration = 6500;
+    const duration = 6800;
 
     function animateGiant(now) {
       const elapsed = now - startTime;
@@ -2703,7 +2761,6 @@ function runCrazyTimeWorldBonus(userBet, topMult, onFinish) {
       const ease = 1 - Math.pow(1 - p, 4); // Smooth 60fps quartic deceleration
       currentAngle = targetSpin * ease;
 
-      const cx = canvas.width / 2, cy = canvas.height / 2;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save();
       ctx.translate(cx, cy);
@@ -2714,23 +2771,43 @@ function runCrazyTimeWorldBonus(userBet, topMult, onFinish) {
       if (p < 1) {
         requestAnimationFrame(animateGiant);
       } else {
-        // Evaluate sector under chosen flapper
+        // Evaluate sector under ALL THREE flappers
         const total = giantSectors.length;
         const arc = (Math.PI * 2) / total;
 
-        // Flapper offsets: Blue is at top (-PI/2), Green is left, Yellow is right
-        let flapperOffset = 0;
-        if (selectedCrazyFlapper === 'green') flapperOffset = -0.3;
-        else if (selectedCrazyFlapper === 'yellow') flapperOffset = 0.3;
+        function getSector(offset) {
+          const stopAngleNorm = ((-Math.PI / 2 + offset - currentAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+          const winIdx = Math.floor(stopAngleNorm / arc);
+          return giantSectors[winIdx] || giantSectors[0];
+        }
 
-        const stopAngleNorm = ((-Math.PI / 2 + flapperOffset - currentAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
-        const winIdx = Math.floor(stopAngleNorm / arc);
-        const wonSector = giantSectors[winIdx] || giantSectors[0];
+        // Flapper offsets:
+        // Yellow (left): -0.38 rad
+        // Blue (center): 0 rad
+        // Red (right): +0.38 rad
+        const resYellow = getSector(-0.38);
+        const resBlue   = getSector(0);
+        const resRed    = getSector(0.38);
+
+        const results = { yellow: resYellow, blue: resBlue, red: resRed };
+
+        // Render flapper outcomes summary strip
+        if (summaryEl) {
+          summaryEl.style.display = 'flex';
+          summaryEl.innerHTML = `
+            <span class="ct-flapper-res-tag ${selectedCrazyFlapper === 'yellow' ? 'my-choice' : ''}" style="color:#ffd700;">🟡 Жовта: <strong>${resYellow.label}</strong></span>
+            <span class="ct-flapper-res-tag ${selectedCrazyFlapper === 'blue' ? 'my-choice' : ''}" style="color:#00d4ff;">🔵 Синя: <strong>${resBlue.label}</strong></span>
+            <span class="ct-flapper-res-tag ${selectedCrazyFlapper === 'red' ? 'my-choice' : ''}" style="color:#ff3355;">🔴 Червона: <strong>${resRed.label}</strong></span>
+          `;
+        }
+
+        const wonSector = results[selectedCrazyFlapper];
 
         if (wonSector.mult === 'DOUBLE' || wonSector.mult === 'TRIPLE') {
           const factor = wonSector.mult === 'DOUBLE' ? 2 : 3;
           CtAudio.winFanfare();
-          if (status) status.innerHTML = `🔥 <strong>${wonSector.mult}!</strong> ВСІ МНОЖНИКИ ×${factor}! РЕСПІН!`;
+          if (status) status.innerHTML = `🔥 <strong>${wonSector.mult}!</strong> Ваша стрілка влучила в ${wonSector.mult}! ВСІ МНОЖНИКИ ×${factor}! РЕСПІН!`;
+          if (countdownEl) countdownEl.textContent = `🔥 РЕСПІН ${wonSector.mult} (×${factor})!`;
 
           giantSectors = giantSectors.map(s => {
             if (s.mult === 'DOUBLE' || s.mult === 'TRIPLE') return s;
@@ -2747,9 +2824,11 @@ function runCrazyTimeWorldBonus(userBet, topMult, onFinish) {
           // Final Multiplier!
           const finalMult = wonSector.mult;
           CtAudio.winFanfare();
+          const names = { yellow: 'ЖОВТА 🟡', blue: 'СИНЯ 🔵', red: 'ЧЕРВОНА 🔴' };
           if (status) {
-            status.innerHTML = `🎪 ШАЛЕНИЙ ВИГРАШ! Прапорець <strong style="color:#ffd700">${selectedCrazyFlapper.toUpperCase()}</strong> влучив у: <strong>${finalMult}x</strong>!`;
+            status.innerHTML = `🎪 ШАЛЕНИЙ ВИГРАШ! Ваша стрілка <strong style="color:#ffd700">${names[selectedCrazyFlapper]}</strong> влучила в: <strong>${finalMult}x</strong>!`;
           }
+          if (countdownEl) countdownEl.innerHTML = `🏆 <strong style="color:#ffd700">ВИГРАШ: ${finalMult}x!</strong>`;
 
           if (userBet > 0) {
             const winPayout = userBet * finalMult;
@@ -2759,15 +2838,13 @@ function runCrazyTimeWorldBonus(userBet, topMult, onFinish) {
           setTimeout(() => {
             modal.classList.remove('open');
             if (onFinish) onFinish(finalMult);
-          }, 4500);
+          }, 5000);
         }
       }
     }
 
     requestAnimationFrame(animateGiant);
   }
-
-  setTimeout(spinGiantWheel, 1200);
 }
 
 /* ═══════════════════════════════════════════════════
