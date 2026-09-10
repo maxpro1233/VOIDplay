@@ -524,82 +524,173 @@
   .poker-pot-badge { font-size: 12px; padding: 4px 10px; }
   .chips-stat-group { gap: 6px; }
   .chip-badge-val { font-size: 12px; padding: 4px 8px; }
-/* ── 🛡️ MODERATOR LIVE CONTROL PANEL (EMBEDDED FOR 100% RELIABILITY) ── */
-.ct-mod-panel {
-  position: fixed !important;
-  top: 90px !important;
-  right: 18px !important;
+/* ── 🛡️ MODERATOR DROPDOWN MENU (RIGHT OF "В МОНЕТИ") ── */
+.btn-mod-bar {
+  background: linear-gradient(135deg, #ffd700 0%, #ff9100 100%) !important;
+  color: #111 !important;
+  font-weight: 900 !important;
+  border: 1px solid #ffe066 !important;
+  border-radius: 9px !important;
+  padding: 6px 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.45) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  font-size: 13px !important;
+  user-select: none !important;
+}
+.btn-mod-bar:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 0 24px rgba(255, 215, 0, 0.75) !important;
+  filter: brightness(1.08) !important;
+}
+.mod-caret {
+  font-size: 10px !important;
+  transition: transform 0.25s ease !important;
+  display: inline-block !important;
+}
+.btn-mod-bar.open .mod-caret {
+  transform: rotate(180deg) !important;
+}
+
+.mod-dropdown-menu {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
   width: 320px !important;
-  max-height: calc(100vh - 110px) !important;
+  max-height: 480px !important;
   background: rgba(13, 16, 28, 0.98) !important;
   border: 2px solid #ffd700 !important;
-  border-radius: 18px !important;
-  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 215, 0, 0.3) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
-  z-index: 99999 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.95), 0 0 25px rgba(255, 215, 0, 0.3) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  z-index: 100000 !important;
   display: none;
   flex-direction: column !important;
   overflow: hidden !important;
-  transition: transform .25s ease, opacity .25s ease !important;
-  animation: slideInRightCtMod .3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  animation: modDdSlide .2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-.ct-mod-panel.open {
+.mod-dropdown-menu.open {
   display: flex !important;
 }
-.ct-mod-floating-tab {
-  position: fixed !important;
-  top: 150px !important;
-  right: 0 !important;
-  background: linear-gradient(135deg, #ffd700, #b8860b) !important;
-  color: #111 !important;
-  border: none !important;
-  border-top-left-radius: 12px !important;
-  border-bottom-left-radius: 12px !important;
-  padding: 10px 14px !important;
-  cursor: pointer !important;
-  font-weight: 900 !important;
-  font-size: 12px !important;
-  display: none;
-  align-items: center !important;
-  gap: 6px !important;
-  box-shadow: -4px 4px 15px rgba(0, 0, 0, 0.65), 0 0 12px rgba(255, 215, 0, 0.45) !important;
-  z-index: 99998 !important;
-  transition: transform .2s, box-shadow .2s !important;
+@keyframes modDdSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.ct-mod-floating-tab:hover {
-  transform: translateX(-4px) !important;
-  box-shadow: -6px 6px 22px rgba(0, 0, 0, 0.85), 0 0 18px rgba(255, 215, 0, 0.65) !important;
+
+.mod-dd-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 0, 85, 0.15));
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
 }
-.ct-mod-toggle-btn {
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.1)) !important;
-  border: 1.5px solid #ffd700 !important;
+.mod-dd-badge {
+  background: #ffd700;
+  color: #000;
+  font-size: 9.5px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 5px;
+  letter-spacing: 0.8px;
+}
+.mod-dd-title {
+  font-size: 12.5px;
+  font-weight: 900;
+  color: #ffd700;
+  text-transform: uppercase;
+}
+.mod-dd-status {
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.55);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+.mod-dd-status-label {
+  color: #a0aec0;
+  font-weight: 700;
+}
+.mod-dd-status-val {
+  color: #00ff88;
+  font-weight: 900;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+}
+.mod-dd-status-val.forced {
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+}
+
+.mod-dd-list {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  max-height: 290px;
+}
+.mod-dd-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all .15s ease;
+  user-select: none;
+}
+.mod-dd-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(3px);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.mod-dd-item .mdd-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  line-height: 1;
+}
+.mod-dd-item .mdd-info {
+  flex: 1;
+}
+.mod-dd-item .mdd-name {
+  font-size: 12.5px;
+  font-weight: 900;
+  color: #fff;
+}
+.mod-dd-item .mdd-desc {
+  font-size: 10px;
+  color: #a0aec0;
+}
+.mod-dd-item .mdd-check {
+  font-size: 13px;
+  color: transparent;
+  font-weight: 900;
+}
+.mod-dd-item.active {
+  border-color: #ffd700 !important;
+  background: rgba(255, 215, 0, 0.18) !important;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;
+}
+.mod-dd-item.active .mdd-name {
   color: #ffd700 !important;
-  padding: 4px 10px !important;
-  border-radius: 8px !important;
-  font-size: 11px !important;
-  font-weight: 800 !important;
-  cursor: pointer !important;
-  transition: all .2s !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 5px !important;
 }
-.ct-mod-toggle-btn:hover {
-  background: #ffd700 !important;
-  color: #000 !important;
-  box-shadow: 0 0 12px #ffd700 !important;
-  transform: translateY(-1px) !important;
+.mod-dd-item.active .mdd-check {
+  color: #00ff88 !important;
 }
-@media (max-width: 768px) {
-  .ct-mod-panel {
-    top: auto !important;
-    bottom: 10px !important;
-    right: 10px !important;
-    left: 10px !important;
-    width: auto !important;
-    max-height: 72vh !important;
-  }
+
+.mod-dd-actions {
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.65);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 </style>
 </head>
@@ -620,10 +711,125 @@
           <span class="js-chips" id="chips-top-count" style="color:var(--primary-light)">0</span>
         </div>
       </div>
-      <div style="display:flex;gap:6px;">
-        <button type="button" class="btn btn-sm ct-mod-toggle-btn" onclick="openGameAndModPanel()" style="background:linear-gradient(135deg,#ffd700,#ff9900)!important;color:#111!important;font-weight:900!important;border:none!important;box-shadow:0 0 12px rgba(255,215,0,0.5)!important;">🛡️ Панель модератора</button>
-        <button class="btn btn-primary btn-sm" onclick="openCashierModal()" data-i="btn_open_cashier">💵 Касир</button>
+      <div style="display:flex;gap:8px;align-items:center;position:relative;">
+        <button class="btn btn-primary btn-sm" onclick="openCashierModal()" data-i="btn_open_cashier">💵 Обмінник фішок</button>
         <button class="btn btn-secondary btn-sm" onclick="handleManualCashout()" title="Обміняти фішки назад на монети">↩️ В монети</button>
+
+        <!-- 🛡️ ПАНЕЛЬ МОДЕРАТОРА (СПРАВА ВІД "В МОНЕТИ") -->
+        <div class="mod-dd-wrap" id="mod-dd-wrap" style="position:relative;">
+          <button type="button" class="btn btn-sm btn-mod-bar" id="btn-mod-bar" onclick="toggleModDropdown(event)">
+            <span>🛡️ Панель модератора</span>
+            <span class="mod-caret" id="mod-caret">▼</span>
+          </button>
+
+          <!-- СПИСОЧОК ЗНИЗУ (ЗВЕРХУ ВНИЗ) -->
+          <div class="mod-dropdown-menu" id="mod-dropdown-menu">
+            <div class="mod-dd-header">
+              <span class="mod-dd-badge">MOD LIVE</span>
+              <span class="mod-dd-title">Оберіть, що випаде в лайві:</span>
+            </div>
+
+            <div class="mod-dd-status">
+              <span class="mod-dd-status-label">Зараз встановлено:</span>
+              <strong class="mod-dd-status-val" id="mod-dd-status-val">🎲 Авто (Випадково)</strong>
+            </div>
+
+            <div class="mod-dd-list">
+              <div class="mod-dd-item active" id="mdd-auto" onclick="selectModOutcome(null)">
+                <span class="mdd-icon">🎲</span>
+                <div class="mdd-info">
+                  <div class="mdd-name">Авто (Випадково)</div>
+                  <div class="mdd-desc">Стандартний генератор чисел</div>
+                </div>
+                <span class="mdd-check">✔</span>
+              </div>
+
+              <div class="mod-dd-item" id="mdd-1" onclick="selectModOutcome('1')">
+                <span class="mdd-icon">1️⃣</span>
+                <div class="mdd-info">
+                  <div class="mdd-name" style="color:#00a2ff;">Сектор 1</div>
+                  <div class="mdd-desc">Виплата 1:1 (Синій колір)</div>
+                </div>
+                <span class="mdd-check">✔</span>
+              </div>
+
+              <div class="mod-dd-item" id="mdd-2" onclick="selectModOutcome('2')">
+                <span class="mdd-icon">2️⃣</span>
+                <div class="mdd-info">
+                  <div class="mdd-name" style="color:#ffb300;">Сектор 2</div>
+                  <div class="mdd-desc">Виплата 2:1 (Жовтий колір)</div>
+                </div>
+                <span class="mdd-check">✔</span>
+              </div>
+
+              <div class="mod-dd-item" id="mdd-5" onclick="selectModOutcome('5')">
+                <span class="mdd-icon">5️⃣</span>
+                <div class="mdd-info">
+                  <div class="mdd-name" style="color:#ff2d87;">Сектор 5</div>
+                  <div class="mdd-desc">Виплата 5:1 (Рожевий колір)</div>
+                </div>
+                <span class="mdd-check">✔</span>
+              </div>
+
+              <div class="mod-dd-item" id="mdd-10" onclick="selectModOutcome('10')">
+                <span class="mdd-icon">🔟</span>
+                <div class="mdd-info">
+                  <div class="mdd-name" style="color:#ba68c8;">Сектор 10</div>
+                  <div class="mdd-desc">Виплата 10:1 (Фіолетовий колір)</div>
+                </div>
+                <span class="mdd-check">✔</span>
+              </div>
+
+              <div class="mod-dd-item" id="mdd-cf" onclick="selectModOutcome('cf')">
+                <span class="mdd-icon">🪙</span>
+                <div class="mdd-info">
+                  <div class="mdd-name" style="color:#42a5f5;">Coin Flip</div>
+                  <div class="mdd-desc">Бонусна гра з 3D монетою</div>
+                </div>
+                <span class="mdd-check">✔</span>
+              </div>
+
+              <div class="mod-dd-item" id="mdd-pac" onclick="selectModOutcome('pac')">
+                <span class="mdd-icon">🟣</span>
+                <div class="mdd-info">
+                  <div class="mdd-name" style="color:#ec407a;">Pachinko</div>
+                  <div class="mdd-desc">Бонусна гра з падінням шайби</div>
+                </div>
+                <span class="mdd-check">✔</span>
+              </div>
+
+              <div class="mod-dd-item" id="mdd-ch" onclick="selectModOutcome('ch')">
+                <span class="mdd-icon">🎯</span>
+                <div class="mdd-info">
+                  <div class="mdd-name" style="color:#00e676;">Cash Hunt</div>
+                  <div class="mdd-desc">Бонуска 108 мішеней «Паровозик»</div>
+                </div>
+                <span class="mdd-check">✔</span>
+              </div>
+
+              <div class="mod-dd-item" id="mdd-ct" onclick="selectModOutcome('ct')">
+                <span class="mdd-icon">🎪</span>
+                <div class="mdd-info">
+                  <div class="mdd-name" style="color:#ff1744;">Crazy Time</div>
+                  <div class="mdd-desc">Гігантське колесо (3 стрілки)</div>
+                </div>
+                <span class="mdd-check">✔</span>
+              </div>
+            </div>
+
+            <!-- Дії для швидкого тестування -->
+            <div class="mod-dd-actions">
+              <button type="button" class="btn btn-primary btn-sm btn-full" onclick="modFastForwardSpin()" style="margin-bottom:6px;">
+                ⚡ Запустити спін зараз (пропустити 20с)
+              </button>
+              <div style="display:flex;gap:6px;">
+                <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="modAddChips(1000)">+1,000 🎰</button>
+                <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="modAddChips(10000)">+10,000 🎰</button>
+                <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="selectModOutcome(null)">🔄 Авто</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1153,156 +1359,113 @@
   </div>
 </div>
 
-<!-- 🛡️ MODERATOR LIVE TEST PANEL (DIRECT BODY CHILD FOR RELIABLE FIXED VIEWPORT POSITIONING) -->
-<div class="ct-mod-panel" id="ct-mod-panel">
-  <div class="ct-mod-panel-header">
-    <div class="ct-mod-panel-title">
-      <span class="ct-mod-panel-badge">MOD</span>
-      <span>🛡️ Панель модератора</span>
-    </div>
-    <button type="button" class="ct-mod-panel-close" onclick="toggleCtModPanel(false)" title="Згорнути панель">✕</button>
-  </div>
-
-  <div class="ct-mod-panel-body">
-    <div class="ct-mod-status-box">
-      <div class="ct-mod-status-label">Наступний сектор колеса:</div>
-      <div class="ct-mod-status-val" id="ct-mod-active-target">🎲 Авто (Випадково)</div>
-    </div>
-
-    <div class="ct-mod-section-title">🎯 ОБРАТИ СЕКТОР ДЛЯ ВСІХ ГРАВЦІВ:</div>
-
-    <div class="ct-mod-targets-grid">
-      <button type="button" class="ct-mod-target-btn active" id="ct-mod-btn-auto" onclick="setModForcedOutcome(null)">
-        <span class="ct-mod-btn-icon">🎲</span>
-        <span class="ct-mod-btn-name">АВТО</span>
-        <span class="ct-mod-btn-sub">Рандом</span>
-      </button>
-      <button type="button" class="ct-mod-target-btn target-1" id="ct-mod-btn-1" onclick="setModForcedOutcome('1')">
-        <span class="ct-mod-btn-icon">1️⃣</span>
-        <span class="ct-mod-btn-name">СЕКТОР 1</span>
-        <span class="ct-mod-btn-sub">1:1 (Синій)</span>
-      </button>
-      <button type="button" class="ct-mod-target-btn target-2" id="ct-mod-btn-2" onclick="setModForcedOutcome('2')">
-        <span class="ct-mod-btn-icon">2️⃣</span>
-        <span class="ct-mod-btn-name">СЕКТОР 2</span>
-        <span class="ct-mod-btn-sub">2:1 (Жовтий)</span>
-      </button>
-      <button type="button" class="ct-mod-target-btn target-5" id="ct-mod-btn-5" onclick="setModForcedOutcome('5')">
-        <span class="ct-mod-btn-icon">5️⃣</span>
-        <span class="ct-mod-btn-name">СЕКТОР 5</span>
-        <span class="ct-mod-btn-sub">5:1 (Рожевий)</span>
-      </button>
-      <button type="button" class="ct-mod-target-btn target-10" id="ct-mod-btn-10" onclick="setModForcedOutcome('10')">
-        <span class="ct-mod-btn-icon">🔟</span>
-        <span class="ct-mod-btn-name">СЕКТОР 10</span>
-        <span class="ct-mod-btn-sub">10:1 (Фіолет)</span>
-      </button>
-      <button type="button" class="ct-mod-target-btn target-cf" id="ct-mod-btn-cf" onclick="setModForcedOutcome('cf')">
-        <span class="ct-mod-btn-icon">🪙</span>
-        <span class="ct-mod-btn-name">COIN FLIP</span>
-        <span class="ct-mod-btn-sub">Бонус</span>
-      </button>
-      <button type="button" class="ct-mod-target-btn target-pac" id="ct-mod-btn-pac" onclick="setModForcedOutcome('pac')">
-        <span class="ct-mod-btn-icon">🟣</span>
-        <span class="ct-mod-btn-name">PACHINKO</span>
-        <span class="ct-mod-btn-sub">Бонус</span>
-      </button>
-      <button type="button" class="ct-mod-target-btn target-ch" id="ct-mod-btn-ch" onclick="setModForcedOutcome('ch')">
-        <span class="ct-mod-btn-icon">🎯</span>
-        <span class="ct-mod-btn-name">CASH HUNT</span>
-        <span class="ct-mod-btn-sub">Паровозик</span>
-      </button>
-      <button type="button" class="ct-mod-target-btn target-ct" id="ct-mod-btn-ct" onclick="setModForcedOutcome('ct')">
-        <span class="ct-mod-btn-icon">🎪</span>
-        <span class="ct-mod-btn-name">CRAZY TIME</span>
-        <span class="ct-mod-btn-sub">3 Стрілки</span>
-      </button>
-    </div>
-
-    <!-- Top Slot Override Options -->
-    <div class="ct-mod-section-title" style="margin-top:4px;">⚡ ТОП-СЛОТ НАЛАШТУВАННЯ:</div>
-    <div class="ct-mod-topslot-row">
-      <select class="ct-mod-select" id="ct-mod-topslot-target" onchange="updateModTopSlot()">
-        <option value="">🎯 Ціль: Авто</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="cf">🪙 Coin Flip</option>
-        <option value="pac">🟣 Pachinko</option>
-        <option value="ch">🎯 Cash Hunt</option>
-        <option value="ct">🎪 Crazy Time</option>
-      </select>
-      <select class="ct-mod-select" id="ct-mod-topslot-mult" onchange="updateModTopSlot()">
-        <option value="">⚡ Множник: Авто</option>
-        <option value="2">×2</option>
-        <option value="3">×3</option>
-        <option value="4">×4</option>
-        <option value="5">×5</option>
-        <option value="7">×7</option>
-        <option value="10">×10</option>
-        <option value="15">×15</option>
-        <option value="20">×20</option>
-        <option value="25">×25</option>
-        <option value="50">×50</option>
-      </select>
-    </div>
-
-    <div class="ct-mod-checkbox-row">
-      <label class="ct-mod-check-label">
-        <input type="checkbox" id="ct-mod-topslot-forcematch" onchange="updateModTopSlot()">
-        <span>Завжди активувати збіг Топ-Слота</span>
-      </label>
-    </div>
-
-    <!-- Quick Test Actions -->
-    <div class="ct-mod-section-title" style="margin-top:4px;">⚡ ШВИДКІ ДІЇ ТЕСТУВАННЯ:</div>
-    <div class="ct-mod-actions-col">
-      <button type="button" class="btn btn-primary btn-sm btn-full" onclick="modFastForwardSpin()">
-        ⚡ Запустити спін зараз (пропустити 20с)
-      </button>
-      <div style="display:flex;gap:6px;">
-        <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="modAddChips(1000)">
-          +1,000 🎰
-        </button>
-        <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="modAddChips(10000)">
-          +10,000 🎰
-        </button>
-        <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="setModForcedOutcome(null)" title="Скинути на Авто">
-          🔄 Авто
-        </button>
-      </div>
-    </div>
-
-    <div class="ct-mod-footer-hint">
-      💡 Натисніть на бажаний сектор — колесо гарантовано зупиниться на ньому і запустить реальну бонусну гру або виплату.
-    </div>
-  </div>
-</div>
-
-<!-- Floating tab on right edge when panel is collapsed -->
-<button type="button" class="ct-mod-floating-tab" id="ct-mod-floating-tab" onclick="toggleCtModPanel(true)">
-  <span>🛡️</span>
-  <span>Панель модератора</span>
-</button>
-
-<script src="script.js?v=20260910_mod2"></script>
+<script src="script.js?v=20260910_mod3"></script>
 <script>
 requireAuth();
 buildNavbar('cards');
 setLang(currentLang);
 initMusic();
 
-function openGameAndModPanel() {
-  openGame('crazytime');
-  toggleCtModPanel(true);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+// ── CRAZY TIME GLOBAL ENGINE & MODERATOR STATE ──
+let ctWheelCurrentAngle = 0;
+let ctWheelBuffer = null;
+let isCtLoopActive = false;
+let ctLivePhase = 'IDLE'; // 'BETTING', 'LOCKED', 'TOPSLOT', 'SPINNING', 'RESOLVING'
+let ctRoundId = 89241;
+let ctBettingSeconds = 20;
+let ctTimerInterval = null;
+let ctBets = {};
+let ctPreviousBets = {};
+let ctActiveRoundBets = {};
+let selectedCtChip = 1;
+let ctActiveTopSlot = null;
+let ctModForcedOutcome = null; // null (auto) | '1' | '2' | '5' | '10' | 'cf' | 'pac' | 'ch' | 'ct'
+let ctModForcedTopSlotTarget = '';
+let ctModForcedTopSlotMult = '';
+let ctModForcedTopSlotMatch = false;
+
+// ── 🛡️ MODERATOR DROPDOWN MENU HANDLERS ──
+function toggleModDropdown(event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  const dd = document.getElementById('mod-dropdown-menu');
+  const btn = document.getElementById('btn-mod-bar');
+  if (!dd) return;
+
+  const isOpen = dd.classList.contains('open');
+  if (isOpen) {
+    dd.classList.remove('open');
+    if (btn) btn.classList.remove('open');
+  } else {
+    dd.classList.add('open');
+    if (btn) btn.classList.add('open');
+
+    // Switch to crazytime if not already on it
+    const ctView = document.getElementById('view-crazytime');
+    if (ctView && !ctView.classList.contains('active')) {
+      openGame('crazytime');
+    }
+  }
 }
+
+function selectModOutcome(target) {
+  ctModForcedOutcome = target;
+
+  document.querySelectorAll('.mod-dd-item').forEach(el => el.classList.remove('active'));
+
+  const statusVal = document.getElementById('mod-dd-status-val');
+  const names = {
+    '1': '1️⃣ Сектор 1 (1:1)',
+    '2': '2️⃣ Сектор 2 (2:1)',
+    '5': '5️⃣ Сектор 5 (5:1)',
+    '10': '🔟 Сектор 10 (10:1)',
+    'cf': '🪙 COIN FLIP (Бонус)',
+    'pac': '🟣 PACHINKO (Бонус)',
+    'ch': '🎯 CASH HUNT (Бонус)',
+    'ct': '🎪 CRAZY TIME (Бонус)'
+  };
+
+  const key = target || 'auto';
+  const itemEl = document.getElementById(`mdd-${key}`);
+  if (itemEl) itemEl.classList.add('active');
+
+  if (statusVal) {
+    if (!target) {
+      statusVal.className = 'mod-dd-status-val';
+      statusVal.textContent = '🎲 Авто (Випадково)';
+    } else {
+      statusVal.className = 'mod-dd-status-val forced';
+      statusVal.innerHTML = `⚡ ${names[target]}`;
+    }
+  }
+
+  CtAudio.beep(880, 0.1);
+
+  // If not in crazytime, switch to it automatically!
+  const ctView = document.getElementById('view-crazytime');
+  if (ctView && !ctView.classList.contains('active')) {
+    openGame('crazytime');
+  }
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('mod-dd-wrap');
+  const dd = document.getElementById('mod-dropdown-menu');
+  const btn = document.getElementById('btn-mod-bar');
+  if (dd && wrap && !wrap.contains(e.target)) {
+    dd.classList.remove('open');
+    if (btn) btn.classList.remove('open');
+  }
+});
 
 /* ── VIEW SWITCHER ── */
 function openGame(game) {
   document.querySelectorAll('.game-view').forEach(v => v.classList.remove('active'));
-  document.getElementById(`view-${game}`).classList.add('active');
+  const targetView = document.getElementById(`view-${game}`);
+  if (targetView) targetView.classList.add('active');
 
   if (game === 'roulette') {
     drawRouletteWheel(0);
@@ -1310,14 +1473,7 @@ function openGame(game) {
     drawCrazyTimeWheel(ctWheelCurrentAngle);
     renderCtHistoryUI();
     startCrazyTimeLiveLoop();
-    initCtModPanel();
   }
-}
-
-// Auto-open game if query param or hash specified (default to crazytime if requested)
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('game') === 'crazytime' || window.location.hash === '#crazytime') {
-  openGame('crazytime');
 }
 
 // Only show cashier modal if user has 0 chips and hasn't seen it this session
@@ -1330,10 +1486,10 @@ setTimeout(() => {
 
 function returnToLobby() {
   stopCrazyTimeLiveLoop();
-  const panel = document.getElementById('ct-mod-panel');
-  const floatingTab = document.getElementById('ct-mod-floating-tab');
-  if (panel) panel.classList.remove('open');
-  if (floatingTab) floatingTab.style.display = 'none';
+  const dd = document.getElementById('mod-dropdown-menu');
+  const btn = document.getElementById('btn-mod-bar');
+  if (dd) dd.classList.remove('open');
+  if (btn) btn.classList.remove('open');
   document.querySelectorAll('.game-view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-lobby').classList.add('active');
 }
@@ -1809,12 +1965,6 @@ const CT_BET_SPOTS = ['1', '2', '5', '10', 'cf', 'pac', 'ch', 'ct'];
 const TOP_SLOT_TARGETS = ['1', '2', '5', '10', 'cf', 'pac', 'ch', 'ct'];
 const TOP_SLOT_MULTIPLIERS = [2, 3, 4, 5, 7, 10, 15, 20, 25, 50];
 
-let ctBets = {};
-let ctPreviousBets = {};
-let ctActiveRoundBets = {};
-let selectedCtChip = 1;
-let ctWheelCurrentAngle = 0;
-let ctActiveTopSlot = null;
 let ctHistory = [
   { id: '1', mult: null },
   { id: '2', mult: 5 },
@@ -1828,44 +1978,8 @@ let ctHistory = [
   { id: 'ct', mult: 250 }
 ];
 
-// ── 🛡️ MODERATOR LIVE CONTROL STATE & RIGGING ──
-let ctModForcedOutcome = null; // null (auto) | '1' | '2' | '5' | '10' | 'cf' | 'pac' | 'ch' | 'ct'
-let ctModForcedTopSlotTarget = '';
-let ctModForcedTopSlotMult = '';
-let ctModForcedTopSlotMatch = false;
-
 function setModForcedOutcome(target) {
-  ctModForcedOutcome = target;
-  document.querySelectorAll('.ct-mod-target-btn').forEach(btn => btn.classList.remove('active'));
-
-  const statusEl = document.getElementById('ct-mod-active-target');
-  const names = {
-    '1': '1️⃣ Сектор 1 (1:1)',
-    '2': '2️⃣ Сектор 2 (2:1)',
-    '5': '5️⃣ Сектор 5 (5:1)',
-    '10': '🔟 Сектор 10 (10:1)',
-    'cf': '🪙 COIN FLIP (Бонус)',
-    'pac': '🟣 PACHINKO (Бонус)',
-    'ch': '🎯 CASH HUNT (Бонус)',
-    'ct': '🎪 CRAZY TIME (Бонус)'
-  };
-
-  if (!target) {
-    const autoBtn = document.getElementById('ct-mod-btn-auto');
-    if (autoBtn) autoBtn.classList.add('active');
-    if (statusEl) {
-      statusEl.className = 'ct-mod-status-val';
-      statusEl.textContent = '🎲 Авто (Випадково)';
-    }
-  } else {
-    const btn = document.getElementById(`ct-mod-btn-${target}`);
-    if (btn) btn.classList.add('active');
-    if (statusEl) {
-      statusEl.className = 'ct-mod-status-val forced';
-      statusEl.innerHTML = `⚡ ${names[target]} (Примусово)`;
-    }
-  }
-  CtAudio.beep(740, 0.08);
+  selectModOutcome(target);
 }
 
 function updateModTopSlot() {
@@ -1888,7 +2002,7 @@ function modFastForwardSpin() {
     updateLiveBar('⏱️ ЗРОБІТЬ ВАШІ СТАВКИ:', 1, 5);
     CtAudio.beep(880, 0.1);
   } else {
-    const statusEl = document.getElementById('ct-mod-active-target');
+    const statusEl = document.getElementById('mod-dd-status-val') || document.getElementById('ct-mod-active-target');
     if (statusEl) {
       const prev = statusEl.innerHTML;
       statusEl.innerHTML = `<span style="color:#ff3366;">Йде обертання або бонуска! Зачекайте</span>`;
@@ -1903,47 +2017,11 @@ function modAddChips(amount) {
 }
 
 function toggleCtModPanel(show) {
-  const panel = document.getElementById('ct-mod-panel');
-  const tab = document.getElementById('ct-mod-floating-tab');
-  if (!panel) return;
-
-  const willShow = (show !== undefined) ? show : (panel.style.display !== 'flex' && !panel.classList.contains('open'));
-  if (willShow) {
-    panel.classList.add('open');
-    panel.style.display = 'flex';
-    if (tab) tab.style.display = 'none';
-    localStorage.removeItem('ct_mod_panel_closed');
-    CtAudio.beep(880, 0.08);
-  } else {
-    panel.classList.remove('open');
-    panel.style.display = 'none';
-    if (tab) tab.style.display = 'flex';
-    localStorage.setItem('ct_mod_panel_closed', 'true');
-  }
+  toggleModDropdown();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function initCtModPanel() {
-  const panel = document.getElementById('ct-mod-panel');
-  const tab = document.getElementById('ct-mod-floating-tab');
-  if (!panel) return;
-
-  const isClosed = localStorage.getItem('ct_mod_panel_closed') === 'true';
-  if (isClosed) {
-    panel.classList.remove('open');
-    panel.style.display = 'none';
-    if (tab) tab.style.display = 'flex';
-  } else {
-    panel.classList.add('open');
-    panel.style.display = 'flex';
-    if (tab) tab.style.display = 'none';
-  }
-}
-
-let ctRoundId = 89241;
-let ctLivePhase = 'IDLE'; // 'BETTING', 'LOCKED', 'TOPSLOT', 'SPINNING', 'RESOLVING'
-let ctBettingSeconds = 20;
-let ctTimerInterval = null;
-let isCtLoopActive = false;
+function initCtModPanel() {}
 
 function selectCtChip(val, el) {
   selectedCtChip = val;
@@ -2034,8 +2112,6 @@ function renderCtHistoryUI() {
 }
 
 // ── 60 FPS HARDWARE-ACCELERATED PRE-RENDERED WHEEL ──
-let ctWheelBuffer = null;
-
 function initCrazyTimeWheelBuffer() {
   const size = 440;
   ctWheelBuffer = document.createElement('canvas');
@@ -3557,6 +3633,12 @@ function renderRouletteHistory() {
 
 // Initial draw
 drawRouletteWheel(0);
+
+// Auto-open game if query param or hash specified (e.g. ?game=crazytime or #crazytime)
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('game') === 'crazytime' || window.location.hash === '#crazytime') {
+  openGame('crazytime');
+}
 </script>
 </body>
 </html>
