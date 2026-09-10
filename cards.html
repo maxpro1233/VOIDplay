@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>VØIDplay — Картковий клуб (Blackjack · Crazy Time · Roulette)</title>
-<link rel="stylesheet" href="style.css?v=20260910_1">
+<link rel="stylesheet" href="style.css?v=20260910_mod2">
 <style>
 .cards-page {
   padding-top: calc(var(--header-h) + 16px);
@@ -524,6 +524,82 @@
   .poker-pot-badge { font-size: 12px; padding: 4px 10px; }
   .chips-stat-group { gap: 6px; }
   .chip-badge-val { font-size: 12px; padding: 4px 8px; }
+/* ── 🛡️ MODERATOR LIVE CONTROL PANEL (EMBEDDED FOR 100% RELIABILITY) ── */
+.ct-mod-panel {
+  position: fixed !important;
+  top: 90px !important;
+  right: 18px !important;
+  width: 320px !important;
+  max-height: calc(100vh - 110px) !important;
+  background: rgba(13, 16, 28, 0.98) !important;
+  border: 2px solid #ffd700 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 215, 0, 0.3) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  z-index: 99999 !important;
+  display: none;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  transition: transform .25s ease, opacity .25s ease !important;
+  animation: slideInRightCtMod .3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.ct-mod-panel.open {
+  display: flex !important;
+}
+.ct-mod-floating-tab {
+  position: fixed !important;
+  top: 150px !important;
+  right: 0 !important;
+  background: linear-gradient(135deg, #ffd700, #b8860b) !important;
+  color: #111 !important;
+  border: none !important;
+  border-top-left-radius: 12px !important;
+  border-bottom-left-radius: 12px !important;
+  padding: 10px 14px !important;
+  cursor: pointer !important;
+  font-weight: 900 !important;
+  font-size: 12px !important;
+  display: none;
+  align-items: center !important;
+  gap: 6px !important;
+  box-shadow: -4px 4px 15px rgba(0, 0, 0, 0.65), 0 0 12px rgba(255, 215, 0, 0.45) !important;
+  z-index: 99998 !important;
+  transition: transform .2s, box-shadow .2s !important;
+}
+.ct-mod-floating-tab:hover {
+  transform: translateX(-4px) !important;
+  box-shadow: -6px 6px 22px rgba(0, 0, 0, 0.85), 0 0 18px rgba(255, 215, 0, 0.65) !important;
+}
+.ct-mod-toggle-btn {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.1)) !important;
+  border: 1.5px solid #ffd700 !important;
+  color: #ffd700 !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  transition: all .2s !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+.ct-mod-toggle-btn:hover {
+  background: #ffd700 !important;
+  color: #000 !important;
+  box-shadow: 0 0 12px #ffd700 !important;
+  transform: translateY(-1px) !important;
+}
+@media (max-width: 768px) {
+  .ct-mod-panel {
+    top: auto !important;
+    bottom: 10px !important;
+    right: 10px !important;
+    left: 10px !important;
+    width: auto !important;
+    max-height: 72vh !important;
+  }
 }
 </style>
 </head>
@@ -545,6 +621,7 @@
         </div>
       </div>
       <div style="display:flex;gap:6px;">
+        <button type="button" class="btn btn-sm ct-mod-toggle-btn" onclick="openGameAndModPanel()" style="background:linear-gradient(135deg,#ffd700,#ff9900)!important;color:#111!important;font-weight:900!important;border:none!important;box-shadow:0 0 12px rgba(255,215,0,0.5)!important;">🛡️ Панель модератора</button>
         <button class="btn btn-primary btn-sm" onclick="openCashierModal()" data-i="btn_open_cashier">💵 Касир</button>
         <button class="btn btn-secondary btn-sm" onclick="handleManualCashout()" title="Обміняти фішки назад на монети">↩️ В монети</button>
       </div>
@@ -869,139 +946,6 @@
         </div>
 
       </div>
-
-      <!-- 🛡️ MODERATOR LIVE TEST PANEL -->
-      <div class="ct-mod-panel" id="ct-mod-panel">
-        <div class="ct-mod-panel-header">
-          <div class="ct-mod-panel-title">
-            <span class="ct-mod-panel-badge">MOD</span>
-            <span>🛡️ Панель модератора</span>
-          </div>
-          <button type="button" class="ct-mod-panel-close" onclick="toggleCtModPanel(false)" title="Згорнути панель">✕</button>
-        </div>
-
-        <div class="ct-mod-panel-body">
-          <div class="ct-mod-status-box">
-            <div class="ct-mod-status-label">Наступний сектор колеса:</div>
-            <div class="ct-mod-status-val" id="ct-mod-active-target">🎲 Авто (Випадково)</div>
-          </div>
-
-          <div class="ct-mod-section-title">🎯 ОБРАТИ СЕКТОР ДЛЯ ВСІХ ГРАВЦІВ:</div>
-
-          <div class="ct-mod-targets-grid">
-            <button type="button" class="ct-mod-target-btn active" id="ct-mod-btn-auto" onclick="setModForcedOutcome(null)">
-              <span class="ct-mod-btn-icon">🎲</span>
-              <span class="ct-mod-btn-name">АВТО</span>
-              <span class="ct-mod-btn-sub">Рандом</span>
-            </button>
-            <button type="button" class="ct-mod-target-btn target-1" id="ct-mod-btn-1" onclick="setModForcedOutcome('1')">
-              <span class="ct-mod-btn-icon">1️⃣</span>
-              <span class="ct-mod-btn-name">СЕКТОР 1</span>
-              <span class="ct-mod-btn-sub">1:1 (Синій)</span>
-            </button>
-            <button type="button" class="ct-mod-target-btn target-2" id="ct-mod-btn-2" onclick="setModForcedOutcome('2')">
-              <span class="ct-mod-btn-icon">2️⃣</span>
-              <span class="ct-mod-btn-name">СЕКТОР 2</span>
-              <span class="ct-mod-btn-sub">2:1 (Жовтий)</span>
-            </button>
-            <button type="button" class="ct-mod-target-btn target-5" id="ct-mod-btn-5" onclick="setModForcedOutcome('5')">
-              <span class="ct-mod-btn-icon">5️⃣</span>
-              <span class="ct-mod-btn-name">СЕКТОР 5</span>
-              <span class="ct-mod-btn-sub">5:1 (Рожевий)</span>
-            </button>
-            <button type="button" class="ct-mod-target-btn target-10" id="ct-mod-btn-10" onclick="setModForcedOutcome('10')">
-              <span class="ct-mod-btn-icon">🔟</span>
-              <span class="ct-mod-btn-name">СЕКТОР 10</span>
-              <span class="ct-mod-btn-sub">10:1 (Фіолет)</span>
-            </button>
-            <button type="button" class="ct-mod-target-btn target-cf" id="ct-mod-btn-cf" onclick="setModForcedOutcome('cf')">
-              <span class="ct-mod-btn-icon">🪙</span>
-              <span class="ct-mod-btn-name">COIN FLIP</span>
-              <span class="ct-mod-btn-sub">Бонус</span>
-            </button>
-            <button type="button" class="ct-mod-target-btn target-pac" id="ct-mod-btn-pac" onclick="setModForcedOutcome('pac')">
-              <span class="ct-mod-btn-icon">🟣</span>
-              <span class="ct-mod-btn-name">PACHINKO</span>
-              <span class="ct-mod-btn-sub">Бонус</span>
-            </button>
-            <button type="button" class="ct-mod-target-btn target-ch" id="ct-mod-btn-ch" onclick="setModForcedOutcome('ch')">
-              <span class="ct-mod-btn-icon">🎯</span>
-              <span class="ct-mod-btn-name">CASH HUNT</span>
-              <span class="ct-mod-btn-sub">Паровозик</span>
-            </button>
-            <button type="button" class="ct-mod-target-btn target-ct" id="ct-mod-btn-ct" onclick="setModForcedOutcome('ct')">
-              <span class="ct-mod-btn-icon">🎪</span>
-              <span class="ct-mod-btn-name">CRAZY TIME</span>
-              <span class="ct-mod-btn-sub">3 Стрілки</span>
-            </button>
-          </div>
-
-          <!-- Top Slot Override Options -->
-          <div class="ct-mod-section-title" style="margin-top:4px;">⚡ ТОП-СЛОТ НАЛАШТУВАННЯ:</div>
-          <div class="ct-mod-topslot-row">
-            <select class="ct-mod-select" id="ct-mod-topslot-target" onchange="updateModTopSlot()">
-              <option value="">🎯 Ціль: Авто</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="cf">🪙 Coin Flip</option>
-              <option value="pac">🟣 Pachinko</option>
-              <option value="ch">🎯 Cash Hunt</option>
-              <option value="ct">🎪 Crazy Time</option>
-            </select>
-            <select class="ct-mod-select" id="ct-mod-topslot-mult" onchange="updateModTopSlot()">
-              <option value="">⚡ Множник: Авто</option>
-              <option value="2">×2</option>
-              <option value="3">×3</option>
-              <option value="4">×4</option>
-              <option value="5">×5</option>
-              <option value="7">×7</option>
-              <option value="10">×10</option>
-              <option value="15">×15</option>
-              <option value="20">×20</option>
-              <option value="25">×25</option>
-              <option value="50">×50</option>
-            </select>
-          </div>
-
-          <div class="ct-mod-checkbox-row">
-            <label class="ct-mod-check-label">
-              <input type="checkbox" id="ct-mod-topslot-forcematch" onchange="updateModTopSlot()">
-              <span>Завжди активувати збіг Топ-Слота</span>
-            </label>
-          </div>
-
-          <!-- Quick Test Actions -->
-          <div class="ct-mod-section-title" style="margin-top:4px;">⚡ ШВИДКІ ДІЇ ТЕСТУВАННЯ:</div>
-          <div class="ct-mod-actions-col">
-            <button type="button" class="btn btn-primary btn-sm btn-full" onclick="modFastForwardSpin()">
-              ⚡ Запустити спін зараз (пропустити 20с)
-            </button>
-            <div style="display:flex;gap:6px;">
-              <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="modAddChips(1000)">
-                +1,000 🎰
-              </button>
-              <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="modAddChips(10000)">
-                +10,000 🎰
-              </button>
-              <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="setModForcedOutcome(null)" title="Скинути на Авто">
-                🔄 Авто
-              </button>
-            </div>
-          </div>
-
-          <div class="ct-mod-footer-hint">
-            💡 Натисніть на бажаний сектор — колесо гарантовано зупиниться на ньому і запустить реальну бонусну гру або виплату.
-          </div>
-        </div>
-      </div>
-
-      <!-- Floating tab on right edge when panel is collapsed -->
-      <button type="button" class="ct-mod-floating-tab" id="ct-mod-floating-tab" onclick="toggleCtModPanel(true)">
-        <span>🛡️</span>
-        <span>Панель модератора</span>
-      </button>
     </div>
 
     <!-- ═══════════════════════════════════════════════════
@@ -1209,12 +1153,151 @@
   </div>
 </div>
 
-<script src="script.js?v=20260910_1"></script>
+<!-- 🛡️ MODERATOR LIVE TEST PANEL (DIRECT BODY CHILD FOR RELIABLE FIXED VIEWPORT POSITIONING) -->
+<div class="ct-mod-panel" id="ct-mod-panel">
+  <div class="ct-mod-panel-header">
+    <div class="ct-mod-panel-title">
+      <span class="ct-mod-panel-badge">MOD</span>
+      <span>🛡️ Панель модератора</span>
+    </div>
+    <button type="button" class="ct-mod-panel-close" onclick="toggleCtModPanel(false)" title="Згорнути панель">✕</button>
+  </div>
+
+  <div class="ct-mod-panel-body">
+    <div class="ct-mod-status-box">
+      <div class="ct-mod-status-label">Наступний сектор колеса:</div>
+      <div class="ct-mod-status-val" id="ct-mod-active-target">🎲 Авто (Випадково)</div>
+    </div>
+
+    <div class="ct-mod-section-title">🎯 ОБРАТИ СЕКТОР ДЛЯ ВСІХ ГРАВЦІВ:</div>
+
+    <div class="ct-mod-targets-grid">
+      <button type="button" class="ct-mod-target-btn active" id="ct-mod-btn-auto" onclick="setModForcedOutcome(null)">
+        <span class="ct-mod-btn-icon">🎲</span>
+        <span class="ct-mod-btn-name">АВТО</span>
+        <span class="ct-mod-btn-sub">Рандом</span>
+      </button>
+      <button type="button" class="ct-mod-target-btn target-1" id="ct-mod-btn-1" onclick="setModForcedOutcome('1')">
+        <span class="ct-mod-btn-icon">1️⃣</span>
+        <span class="ct-mod-btn-name">СЕКТОР 1</span>
+        <span class="ct-mod-btn-sub">1:1 (Синій)</span>
+      </button>
+      <button type="button" class="ct-mod-target-btn target-2" id="ct-mod-btn-2" onclick="setModForcedOutcome('2')">
+        <span class="ct-mod-btn-icon">2️⃣</span>
+        <span class="ct-mod-btn-name">СЕКТОР 2</span>
+        <span class="ct-mod-btn-sub">2:1 (Жовтий)</span>
+      </button>
+      <button type="button" class="ct-mod-target-btn target-5" id="ct-mod-btn-5" onclick="setModForcedOutcome('5')">
+        <span class="ct-mod-btn-icon">5️⃣</span>
+        <span class="ct-mod-btn-name">СЕКТОР 5</span>
+        <span class="ct-mod-btn-sub">5:1 (Рожевий)</span>
+      </button>
+      <button type="button" class="ct-mod-target-btn target-10" id="ct-mod-btn-10" onclick="setModForcedOutcome('10')">
+        <span class="ct-mod-btn-icon">🔟</span>
+        <span class="ct-mod-btn-name">СЕКТОР 10</span>
+        <span class="ct-mod-btn-sub">10:1 (Фіолет)</span>
+      </button>
+      <button type="button" class="ct-mod-target-btn target-cf" id="ct-mod-btn-cf" onclick="setModForcedOutcome('cf')">
+        <span class="ct-mod-btn-icon">🪙</span>
+        <span class="ct-mod-btn-name">COIN FLIP</span>
+        <span class="ct-mod-btn-sub">Бонус</span>
+      </button>
+      <button type="button" class="ct-mod-target-btn target-pac" id="ct-mod-btn-pac" onclick="setModForcedOutcome('pac')">
+        <span class="ct-mod-btn-icon">🟣</span>
+        <span class="ct-mod-btn-name">PACHINKO</span>
+        <span class="ct-mod-btn-sub">Бонус</span>
+      </button>
+      <button type="button" class="ct-mod-target-btn target-ch" id="ct-mod-btn-ch" onclick="setModForcedOutcome('ch')">
+        <span class="ct-mod-btn-icon">🎯</span>
+        <span class="ct-mod-btn-name">CASH HUNT</span>
+        <span class="ct-mod-btn-sub">Паровозик</span>
+      </button>
+      <button type="button" class="ct-mod-target-btn target-ct" id="ct-mod-btn-ct" onclick="setModForcedOutcome('ct')">
+        <span class="ct-mod-btn-icon">🎪</span>
+        <span class="ct-mod-btn-name">CRAZY TIME</span>
+        <span class="ct-mod-btn-sub">3 Стрілки</span>
+      </button>
+    </div>
+
+    <!-- Top Slot Override Options -->
+    <div class="ct-mod-section-title" style="margin-top:4px;">⚡ ТОП-СЛОТ НАЛАШТУВАННЯ:</div>
+    <div class="ct-mod-topslot-row">
+      <select class="ct-mod-select" id="ct-mod-topslot-target" onchange="updateModTopSlot()">
+        <option value="">🎯 Ціль: Авто</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="cf">🪙 Coin Flip</option>
+        <option value="pac">🟣 Pachinko</option>
+        <option value="ch">🎯 Cash Hunt</option>
+        <option value="ct">🎪 Crazy Time</option>
+      </select>
+      <select class="ct-mod-select" id="ct-mod-topslot-mult" onchange="updateModTopSlot()">
+        <option value="">⚡ Множник: Авто</option>
+        <option value="2">×2</option>
+        <option value="3">×3</option>
+        <option value="4">×4</option>
+        <option value="5">×5</option>
+        <option value="7">×7</option>
+        <option value="10">×10</option>
+        <option value="15">×15</option>
+        <option value="20">×20</option>
+        <option value="25">×25</option>
+        <option value="50">×50</option>
+      </select>
+    </div>
+
+    <div class="ct-mod-checkbox-row">
+      <label class="ct-mod-check-label">
+        <input type="checkbox" id="ct-mod-topslot-forcematch" onchange="updateModTopSlot()">
+        <span>Завжди активувати збіг Топ-Слота</span>
+      </label>
+    </div>
+
+    <!-- Quick Test Actions -->
+    <div class="ct-mod-section-title" style="margin-top:4px;">⚡ ШВИДКІ ДІЇ ТЕСТУВАННЯ:</div>
+    <div class="ct-mod-actions-col">
+      <button type="button" class="btn btn-primary btn-sm btn-full" onclick="modFastForwardSpin()">
+        ⚡ Запустити спін зараз (пропустити 20с)
+      </button>
+      <div style="display:flex;gap:6px;">
+        <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="modAddChips(1000)">
+          +1,000 🎰
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="modAddChips(10000)">
+          +10,000 🎰
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="setModForcedOutcome(null)" title="Скинути на Авто">
+          🔄 Авто
+        </button>
+      </div>
+    </div>
+
+    <div class="ct-mod-footer-hint">
+      💡 Натисніть на бажаний сектор — колесо гарантовано зупиниться на ньому і запустить реальну бонусну гру або виплату.
+    </div>
+  </div>
+</div>
+
+<!-- Floating tab on right edge when panel is collapsed -->
+<button type="button" class="ct-mod-floating-tab" id="ct-mod-floating-tab" onclick="toggleCtModPanel(true)">
+  <span>🛡️</span>
+  <span>Панель модератора</span>
+</button>
+
+<script src="script.js?v=20260910_mod2"></script>
 <script>
 requireAuth();
 buildNavbar('cards');
 setLang(currentLang);
 initMusic();
+
+function openGameAndModPanel() {
+  openGame('crazytime');
+  toggleCtModPanel(true);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 /* ── VIEW SWITCHER ── */
 function openGame(game) {
@@ -1824,13 +1907,16 @@ function toggleCtModPanel(show) {
   const tab = document.getElementById('ct-mod-floating-tab');
   if (!panel) return;
 
-  const willShow = (show !== undefined) ? show : !panel.classList.contains('open');
+  const willShow = (show !== undefined) ? show : (panel.style.display !== 'flex' && !panel.classList.contains('open'));
   if (willShow) {
     panel.classList.add('open');
+    panel.style.display = 'flex';
     if (tab) tab.style.display = 'none';
     localStorage.removeItem('ct_mod_panel_closed');
+    CtAudio.beep(880, 0.08);
   } else {
     panel.classList.remove('open');
+    panel.style.display = 'none';
     if (tab) tab.style.display = 'flex';
     localStorage.setItem('ct_mod_panel_closed', 'true');
   }
@@ -1844,9 +1930,11 @@ function initCtModPanel() {
   const isClosed = localStorage.getItem('ct_mod_panel_closed') === 'true';
   if (isClosed) {
     panel.classList.remove('open');
+    panel.style.display = 'none';
     if (tab) tab.style.display = 'flex';
   } else {
     panel.classList.add('open');
+    panel.style.display = 'flex';
     if (tab) tab.style.display = 'none';
   }
 }
